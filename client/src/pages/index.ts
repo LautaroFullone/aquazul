@@ -1,3 +1,5 @@
 import ClientDashboard from './Client/Dashboard/ClientDashboard.page'
 
-export { ClientDashboard }
+import NotFound from './NotFound.page'
+
+export { ClientDashboard, NotFound }

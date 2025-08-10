@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import ClientLayout from './shared/ClientLayout/ClientLayout'
-import { ClientDashboard } from './pages'
+import { ClientDashboard, NotFound } from './pages'
 
 const Router = () => {
    return (
@@ -9,12 +9,7 @@ const Router = () => {
             <Route path="/" element={<ClientLayout />}>
                <Route index element={<ClientDashboard />} />
 
-               <Route
-                  path="*"
-                  element={
-                     <div className="flex justify-center text-primary">404 Not Found</div>
-                  }
-               />
+               <Route path="*" element={<NotFound />} />
             </Route>
          </Routes>
       </BrowserRouter>

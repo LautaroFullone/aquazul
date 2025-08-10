@@ -3,7 +3,7 @@ import Navbar from './components/Navbar'
 
 const ClientLayout = () => {
    return (
-      <div className="font-inter bg-gray-50 min-h-screen">
+      <div className="font-inter bg-gray-50 min-h-dvh">
          <Navbar />
 
          <main className="container mx-auto px-4 py-8">
