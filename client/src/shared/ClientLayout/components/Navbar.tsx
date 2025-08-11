@@ -1,7 +1,8 @@
 import { Shirt, LogOut, Menu, UserRound } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import {
    Button,
+   cn,
    DropdownMenu,
    DropdownMenuContent,
    DropdownMenuItem,
@@ -13,12 +14,14 @@ import {
    SheetTrigger,
 } from '@shadcn'
 
+const navigationItems = [
+   { route: '/', label: 'Inicio' },
+   { route: '/pedidos/formulario', label: 'Nuevo Pedido' },
+   { route: '/pedidos', label: 'Mis Pedidos' },
+]
+
 const Navbar = () => {
-   const navigationItems = [
-      { route: '/', label: 'Inicio' },
-      { route: '/nuevo-pedido', label: 'Nuevo Pedido' },
-      { route: '/mis-pedidos', label: 'Mis Pedidos' },
-   ]
+   const { pathname } = useLocation()
 
    return (
       <header className="bg-white border-b border-gray-200 shadow-xs h-16 flex items-center">
@@ -33,15 +36,22 @@ const Navbar = () => {
 
                {/* Desktop Navigation */}
                <nav className="hidden md:flex items-center space-x-8">
-                  {navigationItems.map((item, index) => (
-                     <Link
-                        key={`nav-link-${index}`}
-                        to={item.route}
-                        className="text-gray-600 hover:text-gray-900"
-                     >
-                        {item.label}
-                     </Link>
-                  ))}
+                  {navigationItems.map((item, index) => {
+                     const isActive = pathname === item.route
+
+                     return (
+                        <Link
+                           key={`nav-link-${index}`}
+                           to={item.route}
+                           className={cn(
+                              'text-gray-600 hover:text-gray-900',
+                              isActive && 'text-black'
+                           )}
+                        >
+                           {item.label}
+                        </Link>
+                     )
+                  })}
                </nav>
 
                <div className="flex items-center space-x-2 md:space-x-4">

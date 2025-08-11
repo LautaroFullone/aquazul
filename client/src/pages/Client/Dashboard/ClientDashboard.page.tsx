@@ -59,7 +59,7 @@ const recentOrders = [
 
 const ClientDashboard = () => {
    return (
-      <div className="space-y-8">
+      <>
          {/* Welcome Header */}
          <div className="text-center space-y-2">
             <h1 className="text-3xl font-bold tracking-tight">
@@ -88,33 +88,27 @@ const ClientDashboard = () => {
 
          {/* Quick Actions */}
          <div className="grid gap-4 md:grid-cols-2">
-            <Link to="nuevo-pedido">
-               <Card className="hover:shadow-md transition-shadow cursor-pointer border-2 border-blue-200 hover:border-blue-300">
-                  <CardHeader className="text-center">
-                     <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-2">
-                        <Plus className="h-6 w-6 text-blue-600" />
-                     </div>
+            <Link to="pedidos/formulario">
+               <Card className="hover:shadow-md transition-shadow cursor-pointer border-2 border-blue-200 hover:border-blue-300 text-center">
+                  <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-2">
+                     <Plus className="h-6 w-6 text-blue-600" />
+                  </div>
 
-                     <CardTitle className="text-lg text-blue-600">Nuevo Pedido</CardTitle>
+                  <CardTitle className="text-lg text-blue-600">Nuevo Pedido</CardTitle>
 
-                     <CardDescription>
-                        Crear un nuevo pedido de lavandería
-                     </CardDescription>
-                  </CardHeader>
+                  <CardDescription>Crear un nuevo pedido de lavandería</CardDescription>
                </Card>
             </Link>
 
             <Link to="pedidos">
-               <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                  <CardHeader className="text-center">
-                     <div className="mx-auto w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-2">
-                        <FileText className="h-6 w-6 text-purple-600" />
-                     </div>
+               <Card className="hover:shadow-md transition-shadow cursor-pointer text-center">
+                  <div className="mx-auto w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-2">
+                     <FileText className="h-6 w-6 text-purple-600" />
+                  </div>
 
-                     <CardTitle className="text-lg">Historial</CardTitle>
+                  <CardTitle className="text-lg">Historial</CardTitle>
 
-                     <CardDescription>Revisar pedidos anteriores</CardDescription>
-                  </CardHeader>
+                  <CardDescription>Revisar pedidos anteriores</CardDescription>
                </Card>
             </Link>
          </div>
@@ -158,7 +152,6 @@ const ClientDashboard = () => {
                            >
                               {order.status}
                            </Badge>
-                           {/*<p className="text-xs text-muted-foreground mt-1">{order.date}</p>*/}
                         </div>
                      </div>
                   ))}
@@ -173,7 +166,7 @@ const ClientDashboard = () => {
                </div>
             </CardContent>
          </Card>
-      </div>
+      </>
    )
 }
 

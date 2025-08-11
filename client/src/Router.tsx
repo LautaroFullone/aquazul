@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import ClientLayout from './shared/ClientLayout/ClientLayout'
-import { ClientDashboard, NotFound } from './pages'
+import { ClientDashboard, ClientOrderForm, ClientOrdersPanel, NotFound } from './pages'
 
 const Router = () => {
    return (
@@ -8,6 +8,11 @@ const Router = () => {
          <Routes>
             <Route path="/" element={<ClientLayout />}>
                <Route index element={<ClientDashboard />} />
+
+               <Route path="pedidos">
+                  <Route index element={<ClientOrdersPanel />} />
+                  <Route path="formulario" element={<ClientOrderForm />} />
+               </Route>
 
                <Route path="*" element={<NotFound />} />
             </Route>
