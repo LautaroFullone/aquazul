@@ -1,5 +1,5 @@
+import { orderStatusConfig } from '@config/orderStatusConfig'
 import type { OrderStatus } from '@models/Order.model'
-import { orderStatusConfig } from '@models/orderStatusConfig'
 import { Badge, Tooltip, TooltipContent, TooltipTrigger } from '@shadcn'
 
 interface Props {

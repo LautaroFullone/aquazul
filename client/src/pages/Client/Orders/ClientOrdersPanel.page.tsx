@@ -1,13 +1,10 @@
-import {
-   ORDER_STATUS_VALUES,
-   orderStatusConfig,
-   type OrderStatus,
-} from '@models/orderStatusConfig'
+import { Eye, Loader2, Package, PackageX, Plus, Search } from 'lucide-react'
+import { orderStatusConfig } from '@config/orderStatusConfig'
 import { OrderStatusBadge } from '@shared/OrderStatusBadge'
-import { Eye, Filter, Package, Search } from 'lucide-react'
+import type { OrderStatus } from '@models/Order.model'
 import { useMemo, useState } from 'react'
+import PageTitle from '@shared/PageTitle'
 import {
-   Badge,
    Button,
    Card,
    CardContent,
@@ -29,60 +26,60 @@ import {
    TableRow,
 } from '@shadcn'
 
-const pedidos: Pedido[] = [
+const pedidos = [
    {
       id: 'PED-001',
       cantidad: 25,
-      status: 'in_progress',
+      status: 'in_progress' as OrderStatus,
       fecha: '2024-01-15',
       total: 3160,
    },
    {
       id: 'PED-002',
       cantidad: 35,
-      status: 'delivered',
+      status: 'delivered' as OrderStatus,
       fecha: '2024-01-14',
       total: 2450,
    },
    {
       id: 'PED-003',
       cantidad: 20,
-      status: 'ready',
+      status: 'ready' as OrderStatus,
       fecha: '2024-01-13',
       total: 1890,
    },
    {
       id: 'PED-004',
       cantidad: 50,
-      status: 'pending',
+      status: 'pending' as OrderStatus,
       fecha: '2024-01-18',
       total: 1720,
    },
    {
       id: 'PED-005',
       cantidad: 12,
-      status: 'delivered',
+      status: 'delivered' as OrderStatus,
       fecha: '2024-01-17',
       total: 2100,
    },
    {
       id: 'PED-006',
       cantidad: 80,
-      status: 'cancelled',
+      status: 'cancelled' as OrderStatus,
       fecha: '2024-01-09',
       total: 980,
    },
    {
       id: 'PED-007',
       cantidad: 60,
-      status: 'in_progress',
+      status: 'in_progress' as OrderStatus,
       fecha: '2024-01-20',
       total: 1200,
    },
    {
       id: 'PED-008',
       cantidad: 30,
-      status: 'pending',
+      status: 'pending' as OrderStatus,
       fecha: '2024-01-05',
       total: 0,
    },
@@ -90,13 +87,14 @@ const pedidos: Pedido[] = [
 
 const ClientOrdersPanel = () => {
    // Filtros compartidos
-   const [queryId, setQueryId] = useState('')
+   const [searchTerm, setsearchTerm] = useState('')
    const [filtrostatus, setFiltrostatus] = useState<'todos' | OrderStatus>('todos')
+   const [sortBy, setSortBy] = useState<string>('date')
    const [fechaDesde, setFechaDesde] = useState('')
    const [fechaHasta, setFechaHasta] = useState('')
 
    const limpiarFiltros = () => {
-      setQueryId('')
+      setsearchTerm('')
       setFiltrostatus('todos')
       setFechaDesde('')
       setFechaHasta('')
@@ -104,7 +102,7 @@ const ClientOrdersPanel = () => {
 
    const pedidosFiltrados = useMemo(() => {
       return pedidos.filter((p) => {
-         const byId = p.id.toLowerCase().includes(queryId.toLowerCase())
+         const byId = p.id.toLowerCase().includes(searchTerm.toLowerCase())
          const bystatus = filtrostatus === 'todos' || p.status === filtrostatus
 
          let byFecha = true
@@ -120,44 +118,46 @@ const ClientOrdersPanel = () => {
 
          return byId && bystatus && byFecha
       })
-   }, [queryId, filtrostatus, fechaDesde, fechaHasta])
+   }, [searchTerm, filtrostatus, fechaDesde, fechaHasta])
+
+   const isPending = false
 
    return (
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-         {/* Sidebar */}
-         <Card className="lg:col-span-1 h-fit">
-            <CardHeader>
-               <CardTitle className="flex items-center gap-2">
-                  <Filter className="h-5 w-5" />
-                  Filtros
-               </CardTitle>
-               <CardDescription>Refiná tu búsqueda</CardDescription>
-            </CardHeader>
+      <>
+         <PageTitle
+            title="Historial de pedidos"
+            hasGoBack
+            goBackRoute="/"
+            description="Completá la información requerida"
+         />
 
-            <CardContent className="space-y-4">
-               <div>
-                  <Label htmlFor="id-v3">Buscar por ID</Label>
-                  <div className="relative mt-1">
-                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                     <Input
-                        id="id-v3"
-                        className="pl-8"
-                        placeholder="Ej: PED-001"
-                        value={queryId}
-                        onChange={(e) => setQueryId(e.target.value)}
-                     />
-                  </div>
+         <div className="grid sm:grid-cols-2 gap-x-4 max-w-5xl space-y-4">
+            <div>
+               <Label htmlFor="id-v3">Buscador</Label>
+               <div className="relative mt-1">
+                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Input
+                     id="id-v3"
+                     className="pl-8 bg-white"
+                     placeholder="Busca por ID..."
+                     value={searchTerm}
+                     onChange={(e) => setsearchTerm(e.target.value)}
+                  />
                </div>
+            </div>
 
+            <div className="grid grid-cols-2 gap-2 ">
                <div>
-                  <Label>Estado</Label>
+                  <Label htmlFor="estado">Estado</Label>
+
                   <Select
                      value={filtrostatus}
                      onValueChange={(v: OrderStatus | 'todos') => setFiltrostatus(v)}
                   >
-                     <SelectTrigger className="mt-1">
+                     <SelectTrigger id="estado" className="mt-1 bg-white w-full">
                         <SelectValue placeholder="Todos" />
                      </SelectTrigger>
+
                      <SelectContent>
                         <SelectItem value="todos">Todos</SelectItem>
                         {(Object.keys(orderStatusConfig) as OrderStatus[]).map(
@@ -178,109 +178,161 @@ const ClientOrdersPanel = () => {
                </div>
 
                <div>
-                  <Label className="mb-2 block">Rango de fechas</Label>
-                  <div className="grid grid-cols-2 gap-2">
-                     <div>
-                        <Label htmlFor="entre-v3" className="text-xs text-gray-600">
-                           Entre
-                        </Label>
-                        <Input
-                           id="entre-v3"
-                           type="date"
-                           value={fechaDesde}
-                           onChange={(e) => setFechaDesde(e.target.value)}
-                        />
-                     </div>
-                     <div>
-                        <Label htmlFor="hasta-v3" className="text-xs text-gray-600">
-                           Hasta
-                        </Label>
+                  <Label>Ordenar Por</Label>
+                  <Select value={sortBy} onValueChange={setSortBy}>
+                     <SelectTrigger className="mt-1 bg-white w-full">
+                        <SelectValue />
+                     </SelectTrigger>
+                     <SelectContent>
+                        <SelectItem value="date">Fecha</SelectItem>
+                        <SelectItem value="amount">Cantidad de items</SelectItem>
+                        <SelectItem value="totalPrice">Total</SelectItem>
+                     </SelectContent>
+                  </Select>
+               </div>
+            </div>
 
-                        <Input
-                           id="hasta-v3"
-                           type="date"
-                           value={fechaHasta}
-                           onChange={(e) => setFechaHasta(e.target.value)}
-                        />
-                     </div>
+            <div>
+               <Label className="mb-2 block">Rango de fechas</Label>
+               <div className="grid grid-cols-2 gap-2">
+                  <div>
+                     <Label htmlFor="fromDate" className="text-xs text-gray-600">
+                        Desde
+                     </Label>
+                     <Input
+                        id="fromDate"
+                        type="date"
+                        className="bg-white"
+                        value={fechaDesde}
+                        onChange={(e) => setFechaDesde(e.target.value)}
+                     />
+                  </div>
+
+                  <div>
+                     <Label htmlFor="toDate" className="text-xs text-gray-600">
+                        Hasta
+                     </Label>
+
+                     <Input
+                        id="toDate"
+                        type="date"
+                        className="bg-white"
+                        value={fechaHasta}
+                        onChange={(e) => setFechaHasta(e.target.value)}
+                     />
                   </div>
                </div>
+            </div>
 
-               <div className="flex items-center justify-between pt-2">
-                  <Button
-                     variant="outline"
-                     className="bg-transparent"
-                     onClick={limpiarFiltros}
-                  >
-                     Limpiar
-                  </Button>
-                  <Badge variant="outline">{pedidosFiltrados.length} resultados</Badge>
-               </div>
-            </CardContent>
-         </Card>
+            <div className="flex items-end mb-4 ">
+               <Button
+                  variant="outline"
+                  className="w-full sm:w-min"
+                  onClick={limpiarFiltros}
+               >
+                  Limpiar Filtros
+               </Button>
 
-         {/* Tabla */}
-         <Card className="lg:col-span-3">
+               {/* <Badge variant="outline">{pedidosFiltrados.length} resultados</Badge> */}
+            </div>
+         </div>
+
+         <Card>
             <CardHeader>
                <CardTitle className="flex items-center gap-2">
                   <Package className="h-5 w-5" />
-                  Pedidos (Sidebar)
+                  Pedidos
                </CardTitle>
+
                <CardDescription>Resultados según tus filtros</CardDescription>
             </CardHeader>
+
             <CardContent>
-               <div className="overflow-x-auto">
-                  <Table className="min-w-full">
-                     <TableHeader>
-                        <TableRow>
-                           <TableHead>ID</TableHead>
-                           <TableHead>Fecha</TableHead>
-                           <TableHead>Estado</TableHead>
-                           <TableHead>Cant.</TableHead>
-                           <TableHead>Total</TableHead>
-                           <TableHead>Acciones</TableHead>
-                        </TableRow>
-                     </TableHeader>
+               {isPending ? (
+                  <div className="h-[60vh] flex items-center justify-center p-8">
+                     <div className="flex flex-col items-center justify-center h-screen">
+                        <Loader2 className="h-8 w-8 animate-spin" />
 
-                     <TableBody>
-                        {pedidosFiltrados.map((p) => (
-                           <TableRow key={p.id}>
-                              <TableCell className="font-medium">{p.id}</TableCell>
-
-                              <TableCell>
-                                 {new Date(p.fecha).toLocaleDateString()}
-                              </TableCell>
-
-                              <TableCell>
-                                 <OrderStatusBadge status={p.status} />
-                              </TableCell>
-
-                              <TableCell>{p.cantidad}</TableCell>
-
-                              <TableCell className="font-medium">
-                                 ${p.total.toLocaleString()}
-                              </TableCell>
-
-                              <TableCell>
-                                 <Button variant="outline" size="sm">
-                                    <Eye className="h-4 w-4 mr-1" />
-                                    Ver
-                                 </Button>
-                              </TableCell>
+                        <p className="text-sm text-muted-foreground mt-2">
+                           Cargando pedidos...
+                        </p>
+                     </div>
+                  </div>
+               ) : pedidosFiltrados?.length ? (
+                  <div className="overflow-x-auto">
+                     <Table className="min-w-full">
+                        <TableHeader>
+                           <TableRow>
+                              <TableHead>ID</TableHead>
+                              <TableHead>Fecha</TableHead>
+                              <TableHead>Estado</TableHead>
+                              <TableHead>Cant.</TableHead>
+                              <TableHead>Total</TableHead>
+                              <TableHead>Acciones</TableHead>
                            </TableRow>
-                        ))}
-                     </TableBody>
-                  </Table>
-               </div>
+                        </TableHeader>
 
-               {pedidosFiltrados.length === 0 && (
-                  <div className="text-center py-10 text-gray-500">
-                     No hay pedidos para los filtros aplicados
+                        <TableBody>
+                           {pedidosFiltrados.map((p) => (
+                              <TableRow key={p.id}>
+                                 <TableCell className="font-medium">{p.id}</TableCell>
+
+                                 <TableCell>
+                                    {new Date(p.fecha).toLocaleDateString()}
+                                 </TableCell>
+
+                                 <TableCell>
+                                    <OrderStatusBadge status={p.status} />
+                                 </TableCell>
+
+                                 <TableCell>{p.cantidad}</TableCell>
+
+                                 <TableCell className="font-medium">
+                                    ${p.total.toLocaleString()}
+                                 </TableCell>
+
+                                 <TableCell>
+                                    <Button variant="outline" size="sm">
+                                       <Eye className="h-4 w-4 mr-1" />
+                                       Ver
+                                    </Button>
+                                 </TableCell>
+                              </TableRow>
+                           ))}
+                        </TableBody>
+                     </Table>
+                  </div>
+               ) : (
+                  <div className="flex items-center justify-center p-8 text-center">
+                     <div className="max-w-sm">
+                        <PackageX className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-20" />
+
+                        <h3 className="text-lg font-medium mb-2 text-muted-foreground">
+                           No hay pedidos registrados
+                        </h3>
+
+                        <p className="text-muted-foreground mb-4">
+                           {searchTerm ||
+                           filtrostatus !== 'todos' ||
+                           fechaDesde ||
+                           fechaHasta
+                              ? `No hay pedidos que coincidan con los filtros. Intenta con otros términos de búsqueda.`
+                              : 'Comenzá haciendo tu primer pedido.'}
+                        </p>
+
+                        <Button
+                           onClick={() => console.log('form')}
+                           className="bg-blue-800 hover:bg-blue-800/90 text-white "
+                        >
+                           <Plus />
+                           Nuevo Pedido
+                        </Button>
+                     </div>
                   </div>
                )}
             </CardContent>
          </Card>
-      </div>
+      </>
    )
 }
 export default ClientOrdersPanel

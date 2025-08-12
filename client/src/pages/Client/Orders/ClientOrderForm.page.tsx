@@ -1,6 +1,7 @@
-import { Plus, Trash2, Save, Info } from 'lucide-react'
-import { useState, useEffect } from 'react'
+import OrderArticleRow from './components/OrderArticleRow'
+import { Plus, Save, Info } from 'lucide-react'
 import PageTitle from '@shared/PageTitle'
+import { useState } from 'react'
 import {
    Button,
    Card,
@@ -8,16 +9,9 @@ import {
    CardDescription,
    CardHeader,
    CardTitle,
-   Input,
-   Select,
-   SelectContent,
-   SelectItem,
-   SelectTrigger,
-   SelectValue,
    Textarea,
    Table,
    TableBody,
-   TableCell,
    TableHead,
    TableHeader,
    TableRow,
@@ -26,27 +20,8 @@ import {
    TooltipTrigger,
    TooltipContent,
 } from '@shadcn'
-
-const articulosDisponibles = [
-   { id: 1, nombre: 'Sábanas Individuales', categoria: 'Ropa de Cama' },
-   { id: 2, nombre: 'Sábanas Matrimoniales', categoria: 'Ropa de Cama' },
-   { id: 3, nombre: 'Toallas Pequeñas', categoria: 'Toallas' },
-   { id: 4, nombre: 'Toallas Grandes', categoria: 'Toallas' },
-   { id: 5, nombre: 'Acolchados', categoria: 'Ropa de Cama' },
-   { id: 6, nombre: 'Fundas de Almohada', categoria: 'Ropa de Cama' },
-   { id: 7, nombre: 'Mantas', categoria: 'Ropa de Cama' },
-]
-
-// Precios específicos para el cliente (simulando los del "Hotel Plaza" del panel de administración)
-const preciosCliente = {
-   1: 15.0, // Sábanas Individuales
-   2: 25.0, // Sábanas Matrimoniales
-   3: 8.0, // Toallas Pequeñas
-   4: 12.0, // Toallas Grandes
-   5: 35.0, // Acolchados
-   6: 5.0, // Fundas de Almohada
-   7: 20.0, // Mantas
-}
+import type { Order } from '@models/Order.model'
+import { valueToCurrency } from '@utils/valueToCurrency'
 
 const clienteLogueado = {
    nombre: 'Hotel Plaza Grande',
@@ -56,85 +31,24 @@ const clienteLogueado = {
    direccion: 'Av. Independencia 3030',
 }
 
+type OrderFormData = Pick<Order, 'observation' | 'articles' | 'totalPrice'>
+
 const ClientOrderForm = () => {
-   const [articulosPedido, setArticulosPedido] = useState([])
    const [observaciones, setObservaciones] = useState('')
-   const [fechaPedido, setFechaPedido] = useState('')
-
-   useEffect(() => {
-      // Establecer la fecha de pedido por defecto al cargar la página
-      const today = new Date()
-      setFechaPedido(today.toISOString().split('T')[0])
-   }, [])
-
-   const agregarArticulo = () => {
-      setArticulosPedido([
-         ...articulosPedido,
-         {
-            id: Date.now(), // ID único para el item en el pedido
-            articuloId: '',
-            cantidad: 1,
-            precioUnitario: 0,
-            subtotal: 0,
-         },
-      ])
-   }
-
-   const actualizarArticulo = (id, campo, valor) => {
-      setArticulosPedido(
-         articulosPedido.map((item) => {
-            if (item.id === id) {
-               const updated = { ...item, [campo]: valor }
-
-               if (campo === 'articuloId') {
-                  const precio = preciosCliente[valor] || 0
-                  updated.precioUnitario = precio
-                  updated.subtotal = (updated.cantidad * precio).toFixed(2)
-               }
-
-               if (campo === 'cantidad') {
-                  updated.subtotal = (valor * updated.precioUnitario).toFixed(2)
-               }
-
-               return updated
-            }
-            return item
-         })
-      )
-   }
-
-   const eliminarArticulo = (id) => {
-      setArticulosPedido(articulosPedido.filter((item) => item.id !== id))
-   }
-
-   const totalPedido = articulosPedido.reduce(
-      (sum, item) => sum + Number.parseFloat(item.subtotal),
-      0
-   )
-
-   const handleCrearPedido = () => {
-      // Aquí iría la lógica para enviar el pedido a la base de datos
-      console.log('Pedido a crear:', {
-         cliente: clienteLogueado.nombre,
-         fechaPedido,
-         articulos: articulosPedido,
-         observaciones,
-         totalPedido: totalPedido.toFixed(2),
-      })
-      alert('Pedido creado con éxito!')
-      // Opcional: Redirigir al historial de pedidos o limpiar el formulario
-      // setArticulosPedido([]);
-      // setObservaciones("");
-   }
+   const [currentOrder] = useState<OrderFormData>({
+      articles: [],
+      observation: '',
+      totalPrice: '',
+   })
 
    return (
       <>
-         <div className="flex justify-between items-center">
+         <div className="flex justify-between articles-center">
             <PageTitle
                title="Crear Nuevo Pedido"
                hasGoBack
                goBackRoute="/"
-               description="Completá la información requerida"
+               description="Completá la información necesaria"
             />
 
             <Button
@@ -149,14 +63,13 @@ const ClientOrderForm = () => {
          </div>
 
          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Columna Izquierda (Formulario Principal) */}
             <div className="lg:col-span-2 space-y-6">
-               {/* Observaciones */}
                <Card>
                   <CardHeader>
-                     <CardTitle>Observaciones (opcional)</CardTitle>
+                     <CardTitle>Observaciones</CardTitle>
                      <CardDescription>
-                        Datos que tendremos en cuenta al momento de procesar tu pedido
+                        Datos que tendremos en cuenta al momento de procesar tu pedido.
+                        (Opcional)
                      </CardDescription>
                   </CardHeader>
 
@@ -177,9 +90,9 @@ const ClientOrderForm = () => {
                {/* Artículos del Pedido */}
                <Card>
                   <CardHeader>
-                     <div className="flex justify-between items-center gap-4">
+                     <div className="flex justify-between articles-center gap-4">
                         <CardTitle>Artículos del Pedido</CardTitle>
-                        <Button onClick={agregarArticulo}>
+                        <Button onClick={() => {}}>
                            <Plus className="w-4 h-4 mr-2" />
                            Agregar Artículo
                         </Button>
@@ -187,7 +100,7 @@ const ClientOrderForm = () => {
                   </CardHeader>
 
                   <CardContent>
-                     {articulosPedido.length === 0 ? (
+                     {currentOrder.articles.length === 0 ? (
                         <p className="text-gray-500 text-center py-8">
                            Hace click en "Agregar Artículo" para empezar tu pedido
                         </p>
@@ -204,74 +117,86 @@ const ClientOrderForm = () => {
                            </TableHeader>
 
                            <TableBody>
-                              {articulosPedido.map((item) => (
-                                 <TableRow key={item.id}>
-                                    <TableCell>
-                                       <Select
-                                          value={item.articuloId.toString()}
-                                          onValueChange={(value) =>
-                                             actualizarArticulo(
-                                                item.id,
-                                                'articuloId',
-                                                Number(value)
-                                             )
-                                          }
-                                       >
-                                          <SelectTrigger>
-                                             <SelectValue placeholder="Seleccionar artículo" />
-                                          </SelectTrigger>
+                              {currentOrder.articles.map((article, index) => (
+                                 // <TableRow key={article.id}>
+                                 //    <TableCell>
+                                 //       <Select
+                                 //          value={article.articuloId.toString()}
+                                 //          onValueChange={(value) =>
+                                 //             actualizarArticulo(
+                                 //                article.id,
+                                 //                'articuloId',
+                                 //                Number(value)
+                                 //             )
+                                 //          }
+                                 //       >
+                                 //          <SelectTrigger>
+                                 //             <SelectValue placeholder="Seleccionar artículo" />
+                                 //          </SelectTrigger>
 
-                                          <SelectContent>
-                                             {articulosDisponibles.map((articulo) => (
-                                                <SelectItem
-                                                   key={articulo.id}
-                                                   value={articulo.id.toString()}
-                                                >
-                                                   {articulo.nombre}
-                                                </SelectItem>
-                                             ))}
-                                          </SelectContent>
-                                       </Select>
-                                    </TableCell>
-                                    <TableCell>
-                                       <Input
-                                          type="number"
-                                          value={item.cantidad}
-                                          onChange={(e) =>
-                                             actualizarArticulo(
-                                                item.id,
-                                                'cantidad',
-                                                Number.parseInt(e.target.value) || 0
-                                             )
-                                          }
-                                          className="w-20"
-                                          min="1"
-                                       />
-                                    </TableCell>
-                                    <TableCell>
-                                       ${item.precioUnitario.toFixed(2)}
-                                    </TableCell>
-                                    <TableCell className="font-medium">
-                                       ${item.subtotal}
-                                    </TableCell>
-                                    <TableCell>
-                                       <Button
-                                          variant="outline"
-                                          size="icon"
-                                          onClick={() => eliminarArticulo(item.id)}
-                                       >
-                                          <Trash2 className="w-4 h-4" />
-                                       </Button>
-                                    </TableCell>
-                                 </TableRow>
+                                 //          <SelectContent>
+                                 //             {articulosDisponibles.map((articulo) => (
+                                 //                <SelectItem
+                                 //                   key={articulo.id}
+                                 //                   value={articulo.id.toString()}
+                                 //                >
+                                 //                   {articulo.nombre}
+                                 //                </SelectItem>
+                                 //             ))}
+                                 //          </SelectContent>
+                                 //       </Select>
+                                 //    </TableCell>
+
+                                 //    <TableCell>
+                                 //       <Input
+                                 //          type="number"
+                                 //          value={article.cantidad}
+                                 //          onChange={(e) =>
+                                 //             actualizarArticulo(
+                                 //                article.id,
+                                 //                'cantidad',
+                                 //                Number.parseInt(e.target.value) || 0
+                                 //             )
+                                 //          }
+                                 //          className="w-20"
+                                 //          min="1"
+                                 //       />
+                                 //    </TableCell>
+
+                                 //    <TableCell>
+                                 //       ${article.precioUnitario.toFixed(2)}
+                                 //    </TableCell>
+
+                                 //    <TableCell className="font-medium">
+                                 //       ${article.subtotal}
+                                 //    </TableCell>
+
+                                 //    <TableCell>
+                                 //       <Button
+                                 //          variant="outline"
+                                 //          size="icon"
+                                 //          className=""
+                                 //          onClick={() => eliminarArticulo(article.id)}
+                                 //       >
+                                 //          <Trash2 className="w-4 h-4 text-destructive" />
+                                 //       </Button>
+                                 //    </TableCell>
+                                 // </TableRow>
+                                 <OrderArticleRow
+                                    key={`article-row-${index}`}
+                                    article={article}
+                                    onArticleChange={() => {}}
+                                    onDeleteRow={() => {}}
+                                 />
                               ))}
                            </TableBody>
                         </Table>
                      )}
-                     {articulosPedido.length > 0 && (
+
+                     {currentOrder.articles.length > 0 && (
                         <div className="flex justify-end mt-4 pt-4 border-t">
                            <div className="text-lg font-bold">
-                              Total: ${totalPedido.toFixed(2)}
+                              Total: ${valueToCurrency(currentOrder.totalPrice)}
                            </div>
                         </div>
                      )}
@@ -279,43 +204,49 @@ const ClientOrderForm = () => {
                </Card>
             </div>
 
-            {/* Columna Derecha (Información del Cliente y Resumen) */}
+            {/* Columna Derecha */}
             <div className="space-y-6">
                {/* Información del Cliente */}
                <Card>
-                  <CardHeader className="relative">
+                  <CardHeader className="flex  gap-1">
                      <CardTitle>Tu Información</CardTitle>
 
                      <Tooltip>
-                        <TooltipTrigger className="absolute right-26">
-                           <Info className="h-4 w-4 text-muted-foreground" />
+                        <TooltipTrigger>
+                           <Info className="size-4 text-muted-foreground" />
                         </TooltipTrigger>
-                        <TooltipContent>
+
+                        <TooltipContent side="top" align="center">
                            <p className="text-center">
-                              Si hay algun error en sus datos, <br />
+                              Si hay algún error con tus datos, <br />
                               contacte con el administrador.
                            </p>
                         </TooltipContent>
                      </Tooltip>
                   </CardHeader>
 
-                  <CardContent className="space-y-6">
+                  <CardContent className="space-y-4">
                      <div>
                         <h3 className="font-medium text-lg">{clienteLogueado.nombre}</h3>
+
                         <p className="text-sm text-gray-600">
                            Contacto: {clienteLogueado.contacto}
                         </p>
                      </div>
+
                      <Separator />
+
                      <div className="space-y-2">
                         <div className="flex justify-between text-sm">
                            <span>Teléfono:</span>
                            <span>{clienteLogueado.telefono}</span>
                         </div>
+
                         <div className="flex justify-between text-sm">
                            <span>Email:</span>
                            <span className="text-blue-600">{clienteLogueado.email}</span>
                         </div>
+
                         <div className="flex justify-between text-sm">
                            <span>Dirección:</span>
                            <span>{clienteLogueado.direccion}</span>
@@ -334,11 +265,11 @@ const ClientOrderForm = () => {
                      <div className="space-y-2">
                         <div className="flex justify-between">
                            <span>Cantidad de artículos:</span>
-                           <span>{articulosPedido.length}</span>
+                           <span>{currentOrder.articles.length}</span>
                         </div>
                         <div className="border-t pt-2 flex justify-between font-bold">
                            <span>Total a Pagar:</span>
-                           <span>${totalPedido.toFixed(2)}</span>
+                           <span>${valueToCurrency(currentOrder.totalPrice)}</span>
                         </div>
                      </div>
                   </CardContent>

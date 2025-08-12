@@ -160,7 +160,7 @@ const ClientDashboard = () => {
                <div className="pt-4">
                   <Link to="pedidos">
                      <Button variant="outline" className="w-full bg-transparent">
-                        Ver Todos los Pedidos
+                        Ver todos tus Pedidos
                      </Button>
                   </Link>
                </div>

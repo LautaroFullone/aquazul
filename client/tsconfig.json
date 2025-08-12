@@ -14,7 +14,8 @@
          "@stores/": ["./src/stores/*"],
          "@shadcn": ["./src/shared/shadcn/ui"],
          "@shadcn/*": ["./src/shared/shadcn/ui/*"],
-         "@shared/*": ["./src/shared/*"]
+         "@shared/*": ["./src/shared/*"],
+         "@utils/*": ["./src/utils/*"]
       }
    }
 }

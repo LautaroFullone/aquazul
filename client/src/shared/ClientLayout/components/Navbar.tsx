@@ -1,4 +1,4 @@
-import { Shirt, LogOut, Menu, UserRound } from 'lucide-react'
+import { LogOut, Menu, UserRound, Bubbles } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import {
    Button,
@@ -17,7 +17,7 @@ import {
 const navigationItems = [
    { route: '/', label: 'Inicio' },
    { route: '/pedidos/formulario', label: 'Nuevo Pedido' },
-   { route: '/pedidos', label: 'Mis Pedidos' },
+   { route: '/pedidos', label: 'Historial' },
 ]
 
 const Navbar = () => {
@@ -29,7 +29,7 @@ const Navbar = () => {
             <div className="flex  justify-between ">
                <Link to="/" className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                     <Shirt className="w-5 h-5 text-white" />
+                     <Bubbles className="w-5 h-5 text-white" />
                   </div>
                   <span className="text-xl font-bold text-gray-900">AQUAZUL</span>
                </Link>
@@ -80,9 +80,9 @@ const Navbar = () => {
 
                         <DropdownMenuItem
                            onClick={() => window.alert('logout')}
-                           className="text-red-600 cursor-pointer"
+                           className="text-destructive! hover:bg-red-50 cursor-pointer"
                         >
-                           <LogOut className="mr-2 h-4 w-4 text-red-600" />
+                           <LogOut className="mr-2 h-4 w-4 text-destructive" />
                            <span>Cerrar Sesión</span>
                         </DropdownMenuItem>
                      </DropdownMenuContent>

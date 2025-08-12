@@ -1,4 +1,4 @@
-import type { OrderStatus } from './Order.model'
+import type { OrderStatus } from '@models/Order.model'
 import {
    Clock,
    Loader2,
