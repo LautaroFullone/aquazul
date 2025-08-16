@@ -1,8 +1,8 @@
-import { ApiError } from './ApiError'
+import { NOT_FOUND_MESSAGES } from './errorLabels'
 import { Prisma } from '@prisma/client'
+import { ApiError } from './ApiError'
 import { Response } from 'express'
 import z, { ZodError } from 'zod'
-import { NOT_FOUND_MESSAGES } from './errorLabels'
 
 export function handleRouteError(res: Response, caughtError: unknown) {
    console.log('\n----<|| ERROR ||>-----------------------\n')

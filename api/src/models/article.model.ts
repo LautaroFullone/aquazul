@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 export const articleCreateSchema = z.object({
    name: z.string().trim().min(1, 'El nombre es requerido'),
-   basePrice: z.number().int().nonnegative('El precio debe ser un entero ≥ 0 (centavos)'),
+   basePrice: z.number().int().nonnegative('El precio debe ser un entero ≥ 0'),
 })
 
 export const articleUpdateSchema = z.object({
@@ -11,5 +11,5 @@ export const articleUpdateSchema = z.object({
 })
 
 export const articlePriceByClientSchema = z.object({
-   price: z.number().int().nonnegative('El precio debe ser un entero ≥ 0 (centavos)'),
+   price: z.number().int().nonnegative('El precio debe ser un entero ≥ 0'),
 })
