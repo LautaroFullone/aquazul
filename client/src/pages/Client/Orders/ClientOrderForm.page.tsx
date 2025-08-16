@@ -1,4 +1,6 @@
 import OrderArticleRow from './components/OrderArticleRow'
+import { valueToCurrency } from '@utils/valueToCurrency'
+import type { Order, OrderArticle } from '@models/Order.model'
 import { Plus, Save, Info } from 'lucide-react'
 import PageTitle from '@shared/PageTitle'
 import { useState } from 'react'
@@ -20,10 +22,10 @@ import {
    TooltipTrigger,
    TooltipContent,
 } from '@shadcn'
-import type { Order } from '@models/Order.model'
-import { valueToCurrency } from '@utils/valueToCurrency'
+import useArticles from '@hooks/useArticles'
 
 const clienteLogueado = {
+   id: '1',
    nombre: 'Hotel Plaza Grande',
    contacto: 'María Rodríguez',
    telefono: '+54 9 11 5555-1234',
@@ -34,12 +36,44 @@ const clienteLogueado = {
 type OrderFormData = Pick<Order, 'observation' | 'articles' | 'totalPrice'>
 
 const ClientOrderForm = () => {
+   const [orderArticles, setOrderArticles] = useState<OrderArticle[]>([])
    const [observaciones, setObservaciones] = useState('')
    const [currentOrder] = useState<OrderFormData>({
       articles: [],
       observation: '',
       totalPrice: '',
    })
+
+   const { articles } = useArticles(clienteLogueado.id)
+
+   const addArticleRow = () => {
+      setOrderArticles([
+         ...orderArticles,
+         {
+            articleId: '',
+            quantity: 1,
+            clientPrice: '',
+         },
+      ])
+   }
+
+   const deleteArticleRow = (rowId: string) => {
+      setOrderArticles(orderArticles.filter((row) => row.articleId !== rowId))
+   }
+
+   const updateArticleRow = (
+      rowArticleId: string,
+      field: keyof OrderArticle,
+      value: unknown
+   ) => {
+      setOrderArticles((orderArticles) =>
+         orderArticles.map((orderArticle) =>
+            orderArticle.articleId === rowArticleId
+               ? { ...orderArticle, [field]: value }
+               : orderArticle
+         )
+      )
+   }
 
    return (
       <>
@@ -63,7 +97,9 @@ const ClientOrderForm = () => {
          </div>
 
          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Columna Izquierda */}
             <div className="lg:col-span-2 space-y-6">
+               {/* Observaciones */}
                <Card>
                   <CardHeader>
                      <CardTitle>Observaciones</CardTitle>
@@ -92,7 +128,7 @@ const ClientOrderForm = () => {
                   <CardHeader>
                      <div className="flex justify-between articles-center gap-4">
                         <CardTitle>Artículos del Pedido</CardTitle>
-                        <Button onClick={() => {}}>
+                        <Button onClick={() => addArticleRow()}>
                            <Plus className="w-4 h-4 mr-2" />
                            Agregar Artículo
                         </Button>
@@ -100,7 +136,7 @@ const ClientOrderForm = () => {
                   </CardHeader>
 
                   <CardContent>
-                     {currentOrder.articles.length === 0 ? (
+                     {orderArticles.length === 0 ? (
                         <p className="text-gray-500 text-center py-8">
                            Hace click en "Agregar Artículo" para empezar tu pedido
                         </p>
@@ -117,76 +153,15 @@ const ClientOrderForm = () => {
                            </TableHeader>
 
                            <TableBody>
-                              {currentOrder.articles.map((article, index) => (
-                                 // <TableRow key={article.id}>
-                                 //    <TableCell>
-                                 //       <Select
-                                 //          value={article.articuloId.toString()}
-                                 //          onValueChange={(value) =>
-                                 //             actualizarArticulo(
-                                 //                article.id,
-                                 //                'articuloId',
-                                 //                Number(value)
-                                 //             )
-                                 //          }
-                                 //       >
-                                 //          <SelectTrigger>
-                                 //             <SelectValue placeholder="Seleccionar artículo" />
-                                 //          </SelectTrigger>
-
-                                 //          <SelectContent>
-                                 //             {articulosDisponibles.map((articulo) => (
-                                 //                <SelectItem
-                                 //                   key={articulo.id}
-                                 //                   value={articulo.id.toString()}
-                                 //                >
-                                 //                   {articulo.nombre}
-                                 //                </SelectItem>
-                                 //             ))}
-                                 //          </SelectContent>
-                                 //       </Select>
-                                 //    </TableCell>
-
-                                 //    <TableCell>
-                                 //       <Input
-                                 //          type="number"
-                                 //          value={article.cantidad}
-                                 //          onChange={(e) =>
-                                 //             actualizarArticulo(
-                                 //                article.id,
-                                 //                'cantidad',
-                                 //                Number.parseInt(e.target.value) || 0
-                                 //             )
-                                 //          }
-                                 //          className="w-20"
-                                 //          min="1"
-                                 //       />
-                                 //    </TableCell>
-
-                                 //    <TableCell>
-                                 //       ${article.precioUnitario.toFixed(2)}
-                                 //    </TableCell>
-
-                                 //    <TableCell className="font-medium">
-                                 //       ${article.subtotal}
-                                 //    </TableCell>
-
-                                 //    <TableCell>
-                                 //       <Button
-                                 //          variant="outline"
-                                 //          size="icon"
-                                 //          className=""
-                                 //          onClick={() => eliminarArticulo(article.id)}
-                                 //       >
-                                 //          <Trash2 className="w-4 h-4 text-destructive" />
-                                 //       </Button>
-                                 //    </TableCell>
-                                 // </TableRow>
+                              {orderArticles.map((orderArticle, index) => (
+                                 //TODO: revisar esto
                                  <OrderArticleRow
                                     key={`article-row-${index}`}
-                                    article={article}
-                                    onArticleChange={() => {}}
-                                    onDeleteRow={() => {}}
+                                    articlesList={articles}
+                                    orderArticle={orderArticle}
+                                    orderArticles={orderArticles}
+                                    onUpdateRow={updateArticleRow}
+                                    onDeleteRow={deleteArticleRow}
                                  />
                               ))}
                            </TableBody>
@@ -196,7 +171,7 @@ const ClientOrderForm = () => {
                      {currentOrder.articles.length > 0 && (
                         <div className="flex justify-end mt-4 pt-4 border-t">
                            <div className="text-lg font-bold">
-                              Total: ${valueToCurrency(currentOrder.totalPrice)}
+                              Total: {valueToCurrency(currentOrder.totalPrice)}
                            </div>
                         </div>
                      )}
@@ -218,7 +193,7 @@ const ClientOrderForm = () => {
 
                         <TooltipContent side="top" align="center">
                            <p className="text-center">
-                              Si hay algún error con tus datos, <br />
+                              Si hay algún error con sus datos, <br />
                               contacte con el administrador.
                            </p>
                         </TooltipContent>
@@ -269,7 +244,7 @@ const ClientOrderForm = () => {
                         </div>
                         <div className="border-t pt-2 flex justify-between font-bold">
                            <span>Total a Pagar:</span>
-                           <span>${valueToCurrency(currentOrder.totalPrice)}</span>
+                           <span>{valueToCurrency(currentOrder.totalPrice)}</span>
                         </div>
                      </div>
                   </CardContent>
