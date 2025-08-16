@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum OrderStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model Client {
+  id            String   @id @default(cuid())
+  name          String
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Article {
+  id        String    @id @default(cuid())
+  name      String    @db.Citext @unique   //case-insensitive text (guarda el casing original)
+  basePrice Int       @default(0)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model ClientArticlePrice {
+  clientId  String
+  articleId String
+  price     Int      
+
+  @@id([clientId, articleId])
+  @@index([articleId])
+}
+
+model Order {
+  id          String       @id @default(cuid())
+  observation String?
+  status      OrderStatus  @default(PENDING)
+  totalPrice  Int          // suma del precio de todos los articulo (clientPrice * quantity) 
+  articles    Json[]       // { articleId, quantity, clientPrice }
+
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
