@@ -1,4 +1,8 @@
-import { articleCreateSchema, articleUpdateSchema } from '../models/article.model'
+import {
+   articleCreateSchema,
+   articlePriceByClientSchema,
+   articleUpdateSchema,
+} from '../models/article.model'
 import { BadRequestError, ConflictError, NotFoundError } from '../errors/ApiError'
 import { handleRouteError } from '../errors/handleRouteError'
 import { Router, type Request, type Response } from 'express'
@@ -28,22 +32,23 @@ articlesRouter.get('/client/:id', async (req: Request, res: Response) => {
    const { id: clientId } = req.params
 
    try {
-      //chequeo que exista el cliente
+      // 1) chequeo que exista el cliente
       await prismaClient.client.findUniqueOrThrow({
          where: { id: clientId },
       })
 
-      //traigo todos los articulos
+      // 2) traigo todos los articulos
       const articlesList = await prismaClient.article.findMany({
          orderBy: { name: 'asc' },
          select: { id: true, name: true, basePrice: true },
       })
 
-      //traigo todos los precios de articulos del cliente
+      // 3) traigo todos los precios de articulos del cliente
       const clientArticlesPrices = await prismaClient.clientArticlePrice.findMany({
          where: { clientId },
       })
 
+      // 4) formateo la lista de articulos con el precio del cliente
       const listFormated = articlesList.map((article) => {
          const clientPriceArticle = clientArticlesPrices.find(
             (price) => price.articleId === article.id
@@ -64,14 +69,52 @@ articlesRouter.get('/client/:id', async (req: Request, res: Response) => {
    }
 })
 
+// POST /articles/:id/client/:clientId/price - setear precio de artículo por cliente
+articlesRouter.put('/:id/client/:clientId/price', async (req: Request, res: Response) => {
+   const { id: articleId, clientId } = req.params
+
+   try {
+      const body = articlePriceByClientSchema.parse(req.body)
+
+      await Promise.all([
+         prismaClient.article.findUniqueOrThrow({ where: { id: articleId } }),
+         prismaClient.client.findUniqueOrThrow({ where: { id: clientId } }),
+      ])
+
+      const existing = await prismaClient.clientArticlePrice.findUnique({
+         where: { clientId_articleId: { clientId, articleId } },
+      })
+
+      if (existing && existing.price === body.price) {
+         return res.status(200).send({
+            message: 'Sin cambios: el precio es el mismo',
+            article: existing,
+         })
+      }
+
+      const createdPrice = await prismaClient.clientArticlePrice.upsert({
+         where: { clientId_articleId: { clientId, articleId } },
+         create: { clientId, articleId, price: body.price },
+         update: { price: body.price },
+      })
+
+      return res.status(201).send({
+         message: 'Precio de artículo guardado',
+         article: createdPrice,
+      })
+   } catch (error) {
+      return handleRouteError(res, error)
+   }
+})
+
 // POST /articles - crear artículo
 articlesRouter.post('/', async (req: Request, res: Response) => {
    try {
-      const parsedArticle = articleCreateSchema.parse(req.body)
+      const body = articleCreateSchema.parse(req.body)
 
       //CHEQUEO DE DUPLICADOS AUTOMATICO (name es @unique y case insensitive)
       const createdArticle = await prismaClient.article.create({
-         data: parsedArticle,
+         data: body,
       })
 
       return res.status(201).send({
@@ -84,12 +127,12 @@ articlesRouter.post('/', async (req: Request, res: Response) => {
 })
 
 // PUT /articles/:id - actualizar artículo
-articlesRouter.put('/:id', async (req: Request, res: Response) => {
+articlesRouter.patch('/:id', async (req: Request, res: Response) => {
    const { id: articleId } = req.params
 
    try {
       // 1) validar payload
-      const newArticle = articleUpdateSchema.parse(req.body)
+      const body = articleUpdateSchema.parse(req.body)
 
       // 2) buscar artículo actual, sino tira excepcion
       const currentArticle = await prismaClient.article.findUniqueOrThrow({
@@ -97,7 +140,7 @@ articlesRouter.put('/:id', async (req: Request, res: Response) => {
       })
 
       // 3) preparar update solo con cambios reales
-      if (!hasRealChanges(currentArticle, newArticle)) {
+      if (!hasRealChanges(currentArticle, body)) {
          return res.send({
             message: 'No hay cambios para aplicar',
             article: currentArticle,
@@ -107,7 +150,7 @@ articlesRouter.put('/:id', async (req: Request, res: Response) => {
       // 4) actualizar
       const updatedArticle = await prismaClient.article.update({
          where: { id: articleId },
-         data: newArticle,
+         data: body,
       })
 
       return res.status(200).send({
@@ -119,7 +162,6 @@ articlesRouter.put('/:id', async (req: Request, res: Response) => {
    }
 })
 
-// TODO: probar
 // DELETE /articles/:id - eliminar artículo
 articlesRouter.delete('/:id', async (req: Request, res: Response) => {
    try {
