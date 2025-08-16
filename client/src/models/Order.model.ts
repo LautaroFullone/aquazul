@@ -14,5 +14,5 @@ export interface Order {
 export interface OrderArticle {
    articleId: Article['id']
    quantity: number
-   clientPrice: string
+   clientPrice: number
 }

@@ -1,7 +1,7 @@
-import OrderArticleRow from './components/OrderArticleRow'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import type { Order, OrderArticle } from '@models/Order.model'
 import { Plus, Save, Info } from 'lucide-react'
+import useArticles from '@hooks/useArticles'
 import PageTitle from '@shared/PageTitle'
 import { useState } from 'react'
 import {
@@ -22,7 +22,7 @@ import {
    TooltipTrigger,
    TooltipContent,
 } from '@shadcn'
-import useArticles from '@hooks/useArticles'
+import OrderArticleRow from './components/OrderArticleRow'
 
 const clienteLogueado = {
    id: '1',
@@ -34,9 +34,12 @@ const clienteLogueado = {
 }
 
 type OrderFormData = Pick<Order, 'observation' | 'articles' | 'totalPrice'>
+export type OrderArticleRowType = OrderArticle & { rowId: string }
 
 const ClientOrderForm = () => {
-   const [orderArticles, setOrderArticles] = useState<OrderArticle[]>([])
+   const [orderArticleRows, setOrderArticlesRows] = useState<OrderArticleRowType[]>([])
+   const [openRowId, setOpenRowId] = useState<string | null>(null)
+
    const [observaciones, setObservaciones] = useState('')
    const [currentOrder] = useState<OrderFormData>({
       articles: [],
@@ -47,30 +50,31 @@ const ClientOrderForm = () => {
    const { articles } = useArticles(clienteLogueado.id)
 
    const addArticleRow = () => {
-      setOrderArticles([
-         ...orderArticles,
+      // evita agregar más filas si hay una sin completar
+      if (orderArticleRows.find((row) => row.articleId === '')) return
+
+      setOrderArticlesRows([
+         ...orderArticleRows,
          {
+            rowId: crypto.randomUUID(),
             articleId: '',
             quantity: 1,
-            clientPrice: '',
+            clientPrice: 0,
          },
       ])
    }
+   console.log('orderArticleRows', orderArticleRows)
 
    const deleteArticleRow = (rowId: string) => {
-      setOrderArticles(orderArticles.filter((row) => row.articleId !== rowId))
+      setOrderArticlesRows(orderArticleRows.filter((row) => row.rowId !== rowId))
    }
 
-   const updateArticleRow = (
-      rowArticleId: string,
-      field: keyof OrderArticle,
-      value: unknown
-   ) => {
-      setOrderArticles((orderArticles) =>
-         orderArticles.map((orderArticle) =>
-            orderArticle.articleId === rowArticleId
-               ? { ...orderArticle, [field]: value }
-               : orderArticle
+   const updateArticleRow = (rowId: string, fields: Partial<OrderArticle>) => {
+      setOrderArticlesRows((orderArticleRow) =>
+         orderArticleRow.map((orderArticleRow) =>
+            orderArticleRow.rowId === rowId
+               ? { ...orderArticleRow, ...fields }
+               : orderArticleRow
          )
       )
    }
@@ -136,7 +140,7 @@ const ClientOrderForm = () => {
                   </CardHeader>
 
                   <CardContent>
-                     {orderArticles.length === 0 ? (
+                     {orderArticleRows.length === 0 ? (
                         <p className="text-gray-500 text-center py-8">
                            Hace click en "Agregar Artículo" para empezar tu pedido
                         </p>
@@ -153,15 +157,18 @@ const ClientOrderForm = () => {
                            </TableHeader>
 
                            <TableBody>
-                              {orderArticles.map((orderArticle, index) => (
-                                 //TODO: revisar esto
+                              {orderArticleRows.map((orderArticleRow) => (
                                  <OrderArticleRow
-                                    key={`article-row-${index}`}
+                                    key={`row-${orderArticleRow.rowId}`}
                                     articlesList={articles}
-                                    orderArticle={orderArticle}
-                                    orderArticles={orderArticles}
+                                    orderArticleRow={orderArticleRow}
+                                    orderArticleRows={orderArticleRows}
                                     onUpdateRow={updateArticleRow}
                                     onDeleteRow={deleteArticleRow}
+                                    isPopoverOpen={openRowId === orderArticleRow.rowId}
+                                    onPopoverOpenChange={(value) =>
+                                       setOpenRowId(value ? orderArticleRow.rowId : null)
+                                    }
                                  />
                               ))}
                            </TableBody>
@@ -177,6 +184,11 @@ const ClientOrderForm = () => {
                      )}
                   </CardContent>
                </Card>
+               {/* <OrderArticlesTable
+                  articlesList={articles}
+                  orderArticles={orderArticleRows}
+                  onChangeValues={setOrderArticlesRows}
+               /> */}
             </div>
 
             {/* Columna Derecha */}
