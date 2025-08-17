@@ -1,6 +1,6 @@
+import { ClientDashboard, ClientOrderForm, ClientOrdersPanel, NotFound } from './pages'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import ClientLayout from './shared/ClientLayout/ClientLayout'
-import { ClientDashboard, ClientOrderForm, ClientOrdersPanel, NotFound } from './pages'
 
 const Router = () => {
    return (

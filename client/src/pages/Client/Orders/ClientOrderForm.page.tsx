@@ -1,7 +1,8 @@
+import OrderArticlesTable from './components/OrderArticlesTable'
 import { valueToCurrency } from '@utils/valueToCurrency'
-import type { Order, OrderArticle } from '@models/Order.model'
-import { Plus, Save, Info } from 'lucide-react'
+import type { OrderArticle } from '@models/Order.model'
 import useArticles from '@hooks/useArticles'
+import { Save, Info } from 'lucide-react'
 import PageTitle from '@shared/PageTitle'
 import { useState } from 'react'
 import {
@@ -12,20 +13,14 @@ import {
    CardHeader,
    CardTitle,
    Textarea,
-   Table,
-   TableBody,
-   TableHead,
-   TableHeader,
-   TableRow,
    Separator,
    Tooltip,
    TooltipTrigger,
    TooltipContent,
 } from '@shadcn'
-import OrderArticleRow from './components/OrderArticleRow'
 
 const clienteLogueado = {
-   id: '1',
+   id: '2',
    nombre: 'Hotel Plaza Grande',
    contacto: 'María Rodríguez',
    telefono: '+54 9 11 5555-1234',
@@ -33,50 +28,34 @@ const clienteLogueado = {
    direccion: 'Av. Independencia 3030',
 }
 
-type OrderFormData = Pick<Order, 'observation' | 'articles' | 'totalPrice'>
-export type OrderArticleRowType = OrderArticle & { rowId: string }
+//type OrderFormData = Pick<Order, 'observation' | 'articles'>
 
 const ClientOrderForm = () => {
-   const [orderArticleRows, setOrderArticlesRows] = useState<OrderArticleRowType[]>([])
-   const [openRowId, setOpenRowId] = useState<string | null>(null)
-
+   const [orderArticles, setOrderArticles] = useState<OrderArticle[]>([])
    const [observaciones, setObservaciones] = useState('')
-   const [currentOrder] = useState<OrderFormData>({
-      articles: [],
-      observation: '',
-      totalPrice: '',
-   })
+   const [showValidation, setShowValidation] = useState(false)
 
    const { articles } = useArticles(clienteLogueado.id)
 
-   const addArticleRow = () => {
-      // evita agregar más filas si hay una sin completar
-      if (orderArticleRows.find((row) => row.articleId === '')) return
+   const canSave = orderArticles.length > 0
+   const allArticlesdAreValid = orderArticles.every((article) => article.articleId !== '')
 
-      setOrderArticlesRows([
-         ...orderArticleRows,
-         {
-            rowId: crypto.randomUUID(),
-            articleId: '',
-            quantity: 1,
-            clientPrice: 0,
-         },
-      ])
-   }
-   console.log('orderArticleRows', orderArticleRows)
+   const articlesTotalQuantity = orderArticles.reduce(
+      (acc, a) => acc + (a.quantity || 0),
+      0
+   )
+   const articlesTotalPrice = orderArticles.reduce(
+      (acc, a) => acc + Number(a.clientPrice) * Number(a.quantity || 0),
+      0
+   )
 
-   const deleteArticleRow = (rowId: string) => {
-      setOrderArticlesRows(orderArticleRows.filter((row) => row.rowId !== rowId))
-   }
+   const handleSave = () => {
+      if (!allArticlesdAreValid) {
+         setShowValidation(true)
+         return
+      }
 
-   const updateArticleRow = (rowId: string, fields: Partial<OrderArticle>) => {
-      setOrderArticlesRows((orderArticleRow) =>
-         orderArticleRow.map((orderArticleRow) =>
-            orderArticleRow.rowId === rowId
-               ? { ...orderArticleRow, ...fields }
-               : orderArticleRow
-         )
-      )
+      console.log('form submit OK', orderArticles)
    }
 
    return (
@@ -89,10 +68,11 @@ const ClientOrderForm = () => {
                description="Completá la información necesaria"
             />
 
+            {/* TODO: mostrar boton en mobile */}
             <Button
-               onClick={() => console.log('form')}
+               onClick={() => handleSave()}
                size="lg"
-               disabled
+               disabled={!canSave}
                className="bg-blue-800 hover:bg-blue-800/90 text-white hidden sm:flex"
             >
                <Save />
@@ -106,11 +86,13 @@ const ClientOrderForm = () => {
                {/* Observaciones */}
                <Card>
                   <CardHeader>
-                     <CardTitle>Observaciones</CardTitle>
-                     <CardDescription>
-                        Datos que tendremos en cuenta al momento de procesar tu pedido.
-                        (Opcional)
-                     </CardDescription>
+                     <div className="flex flex-col">
+                        <CardTitle>Observaciones</CardTitle>
+                        <CardDescription>
+                           Datos que tendremos en cuenta al momento de procesar tu pedido.
+                           (Opcional)
+                        </CardDescription>
+                     </div>
                   </CardHeader>
 
                   <CardContent>
@@ -127,68 +109,13 @@ const ClientOrderForm = () => {
                   </CardContent>
                </Card>
 
-               {/* Artículos del Pedido */}
-               <Card>
-                  <CardHeader>
-                     <div className="flex justify-between articles-center gap-4">
-                        <CardTitle>Artículos del Pedido</CardTitle>
-                        <Button onClick={() => addArticleRow()}>
-                           <Plus className="w-4 h-4 mr-2" />
-                           Agregar Artículo
-                        </Button>
-                     </div>
-                  </CardHeader>
-
-                  <CardContent>
-                     {orderArticleRows.length === 0 ? (
-                        <p className="text-gray-500 text-center py-8">
-                           Hace click en "Agregar Artículo" para empezar tu pedido
-                        </p>
-                     ) : (
-                        <Table>
-                           <TableHeader>
-                              <TableRow>
-                                 <TableHead>Artículo</TableHead>
-                                 <TableHead>Cantidad</TableHead>
-                                 <TableHead>Precio Unit.</TableHead>
-                                 <TableHead>Subtotal</TableHead>
-                                 <TableHead></TableHead>
-                              </TableRow>
-                           </TableHeader>
-
-                           <TableBody>
-                              {orderArticleRows.map((orderArticleRow) => (
-                                 <OrderArticleRow
-                                    key={`row-${orderArticleRow.rowId}`}
-                                    articlesList={articles}
-                                    orderArticleRow={orderArticleRow}
-                                    orderArticleRows={orderArticleRows}
-                                    onUpdateRow={updateArticleRow}
-                                    onDeleteRow={deleteArticleRow}
-                                    isPopoverOpen={openRowId === orderArticleRow.rowId}
-                                    onPopoverOpenChange={(value) =>
-                                       setOpenRowId(value ? orderArticleRow.rowId : null)
-                                    }
-                                 />
-                              ))}
-                           </TableBody>
-                        </Table>
-                     )}
-
-                     {currentOrder.articles.length > 0 && (
-                        <div className="flex justify-end mt-4 pt-4 border-t">
-                           <div className="text-lg font-bold">
-                              Total: {valueToCurrency(currentOrder.totalPrice)}
-                           </div>
-                        </div>
-                     )}
-                  </CardContent>
-               </Card>
-               {/* <OrderArticlesTable
+               {/* Artículos */}
+               <OrderArticlesTable
                   articlesList={articles}
-                  orderArticles={orderArticleRows}
-                  onChangeValues={setOrderArticlesRows}
-               /> */}
+                  orderArticles={orderArticles}
+                  onChangeValues={setOrderArticles}
+                  showValidation={showValidation}
+               />
             </div>
 
             {/* Columna Derecha */}
@@ -252,11 +179,11 @@ const ClientOrderForm = () => {
                      <div className="space-y-2">
                         <div className="flex justify-between">
                            <span>Cantidad de artículos:</span>
-                           <span>{currentOrder.articles.length}</span>
+                           <span>{articlesTotalQuantity}</span>
                         </div>
                         <div className="border-t pt-2 flex justify-between font-bold">
                            <span>Total a Pagar:</span>
-                           <span>{valueToCurrency(currentOrder.totalPrice)}</span>
+                           <span>{valueToCurrency(articlesTotalPrice)}</span>
                         </div>
                      </div>
                   </CardContent>
