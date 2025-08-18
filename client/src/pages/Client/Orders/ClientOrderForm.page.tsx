@@ -65,7 +65,7 @@ const ClientOrderForm = () => {
                title="Crear Nuevo Pedido"
                hasGoBack
                goBackRoute="/"
-               description="Completá la información necesaria"
+               description="Completá el contenido de tu pedido"
             />
 
             {/* TODO: mostrar boton en mobile */}
@@ -89,7 +89,7 @@ const ClientOrderForm = () => {
                      <div className="flex flex-col">
                         <CardTitle>Observaciones</CardTitle>
                         <CardDescription>
-                           Datos que tendremos en cuenta al momento de procesar tu pedido.
+                           Datos que tendremos en cuenta al momento de procesar la orden.
                            (Opcional)
                         </CardDescription>
                      </div>
@@ -189,6 +189,16 @@ const ClientOrderForm = () => {
                   </CardContent>
                </Card>
             </div>
+
+            <Button
+               onClick={() => handleSave()}
+               size="lg"
+               disabled={!canSave}
+               className="bg-blue-800 hover:bg-blue-800/90 text-white sm:hidden"
+            >
+               <Save />
+               Guardar Pedido
+            </Button>
          </div>
       </>
    )

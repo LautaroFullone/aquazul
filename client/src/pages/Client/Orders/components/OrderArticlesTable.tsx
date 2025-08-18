@@ -1,4 +1,4 @@
-import { Check, ChevronsUpDown, Trash2, Plus, Info } from 'lucide-react'
+import { Check, ChevronsUpDown, Trash2, Plus, Info, PackagePlus } from 'lucide-react'
 import { useEffect, useState, useCallback } from 'react'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import type { OrderArticle } from '@models/Order.model'
@@ -111,7 +111,7 @@ const OrderArticlesTable: React.FC<Props> = ({
    return (
       <Card>
          <CardHeader>
-            <div className="flex justify-between items-center gap-4">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                <div>
                   <CardTitle>Artículos del Pedido</CardTitle>
 
@@ -120,8 +120,7 @@ const OrderArticlesTable: React.FC<Props> = ({
                   </CardDescription>
                </div>
 
-               {/* TODO: Pasar boton debajo del titulo en mobile */}
-               <Button onClick={addArticleRow}>
+               <Button onClick={addArticleRow} className="w-full sm:w-min">
                   <Plus className="w-4 h-4 mr-2" />
                   Agregar Artículo
                </Button>
@@ -151,10 +150,11 @@ const OrderArticlesTable: React.FC<Props> = ({
             )}
 
             {rows.length === 0 ? (
-               <div className="text-center py-12 px-4 border-2 border-dashed border-gray-200 rounded-lg">
+               <div className="text-center py-6 sm:py-8 px-4 border-2 border-dashed border-gray-200 rounded-md">
                   <div className="flex flex-col items-center gap-2">
                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                        <Plus className="w-6 h-6 text-gray-400" />
+                        {/* <Plus className="w-6 h-6 text-gray-400" /> */}
+                        <PackagePlus className="w-6 h-6 text-gray-400" />
                      </div>
 
                      <p className="text-gray-500 font-medium">
