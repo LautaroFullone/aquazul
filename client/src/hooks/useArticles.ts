@@ -1,8 +1,10 @@
+import { queryOptions, useMutation } from '@tanstack/react-query'
 import { getArticlesByClient } from '@services/articles.service'
-import { useQuery } from '@tanstack/react-query'
+import { createOrder } from '@services/orders.service'
+import type { Order } from '@models/Order.model'
 
-const useArticles = (clientId: string) => {
-   const { data, isPending, error, isError } = useQuery({
+const useArticles = (clientId: Order['clientId']) => {
+   const articlesQueryOptions = queryOptions({
       queryKey: ['articles'],
       queryFn: async () => {
          const response = await getArticlesByClient(clientId)
@@ -12,7 +14,17 @@ const useArticles = (clientId: string) => {
       retry: 1,
    })
 
-   return { articles: data || [], isPending, isError, error }
+   const { mutate: createOrderMutate, isPending: isCreationPending } = useMutation({
+      mutationFn: createOrder,
+      onSuccess: (data) => {
+         console.log('Order created', data)
+      },
+      onError: (error) => {
+         console.error(error.message)
+      },
+   })
+
+   return { articlesQueryOptions, createOrderMutate, isCreationPending }
 }
 
 export default useArticles

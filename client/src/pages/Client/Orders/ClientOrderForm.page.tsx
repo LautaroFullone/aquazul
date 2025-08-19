@@ -1,6 +1,8 @@
 import OrderArticlesTable from './components/OrderArticlesTable'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import type { OrderArticle } from '@models/Order.model'
+import { useQuery } from '@tanstack/react-query'
+import TextAreaForm from '@shared/TextAreaForm'
 import useArticles from '@hooks/useArticles'
 import { Save, Info } from 'lucide-react'
 import PageTitle from '@shared/PageTitle'
@@ -12,7 +14,6 @@ import {
    CardDescription,
    CardHeader,
    CardTitle,
-   Textarea,
    Separator,
    Tooltip,
    TooltipTrigger,
@@ -28,14 +29,13 @@ const clienteLogueado = {
    direccion: 'Av. Independencia 3030',
 }
 
-//type OrderFormData = Pick<Order, 'observation' | 'articles'>
-
 const ClientOrderForm = () => {
    const [orderArticles, setOrderArticles] = useState<OrderArticle[]>([])
-   const [observaciones, setObservaciones] = useState('')
    const [showValidation, setShowValidation] = useState(false)
+   const [observation, setObservation] = useState('')
 
-   const { articles } = useArticles(clienteLogueado.id)
+   const { articlesQueryOptions, createOrderMutate } = useArticles(clienteLogueado.id)
+   const { data: articles = [] } = useQuery(articlesQueryOptions)
 
    const canSave = orderArticles.length > 0
    const allArticlesdAreValid = orderArticles.every((article) => article.articleId !== '')
@@ -44,18 +44,23 @@ const ClientOrderForm = () => {
       (acc, a) => acc + (a.quantity || 0),
       0
    )
+
    const articlesTotalPrice = orderArticles.reduce(
       (acc, a) => acc + Number(a.clientPrice) * Number(a.quantity || 0),
       0
    )
 
-   const handleSave = () => {
+   const handleSaveOrder = () => {
       if (!allArticlesdAreValid) {
          setShowValidation(true)
          return
       }
 
-      console.log('form submit OK', orderArticles)
+      createOrderMutate({
+         clientId: clienteLogueado.id,
+         articles: orderArticles,
+         observation,
+      })
    }
 
    return (
@@ -68,9 +73,8 @@ const ClientOrderForm = () => {
                description="Completá el contenido de tu pedido"
             />
 
-            {/* TODO: mostrar boton en mobile */}
             <Button
-               onClick={() => handleSave()}
+               onClick={() => handleSaveOrder()}
                size="lg"
                disabled={!canSave}
                className="bg-blue-800 hover:bg-blue-800/90 text-white hidden sm:flex"
@@ -96,16 +100,13 @@ const ClientOrderForm = () => {
                   </CardHeader>
 
                   <CardContent>
-                     <Textarea
-                        placeholder="Ej: Ropa delicada, retirar en recepción, etc."
-                        value={observaciones}
-                        onChange={(e) => setObservaciones(e.target.value)}
-                        rows={4}
-                        maxLength={200}
+                     <TextAreaForm
+                        name="description"
+                        value={observation}
+                        onChange={(e) => setObservation(e.target.value)}
+                        placeholder="Ej: Artículos delicada, retirar en recepción, etc."
+                        limit={200}
                      />
-                     <div className="mt-1 text-xs text-zinc-500 text-right">
-                        {observaciones.length}/200
-                     </div>
                   </CardContent>
                </Card>
 
@@ -191,7 +192,7 @@ const ClientOrderForm = () => {
             </div>
 
             <Button
-               onClick={() => handleSave()}
+               onClick={() => handleSaveOrder()}
                size="lg"
                disabled={!canSave}
                className="bg-blue-800 hover:bg-blue-800/90 text-white sm:hidden"

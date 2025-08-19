@@ -7,19 +7,15 @@ export const orderStatusSchema = z.enum([
    'CANCELLED',
 ])
 
-export const orderItemInputSchema = z.object({
+export const orderArticleSchema = z.object({
    articleId: z.string().min(1),
+   clientPrice: z.number().positive(),
    quantity: z.number().int().positive(),
 })
 
 export const orderCreateSchema = z.object({
-   observation: z.string().trim().optional().nullable(),
+   clientId: z.string().trim(),
+   observation: z.string().trim().optional(),
    status: orderStatusSchema.optional(), // default server: 'PENDING'
-   // clientId: z.string().trim().optional().nullable(),
-   items: z.array(orderItemInputSchema).min(1),
-})
-
-export const orderUpdateSchema = z.object({
-   observation: z.string().trim().optional().nullable(),
-   status: orderStatusSchema.optional(),
+   articles: z.array(orderArticleSchema).min(1),
 })
