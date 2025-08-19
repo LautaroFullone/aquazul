@@ -21,6 +21,8 @@ model Client {
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  orders    Order[]  @relation("ClientOrders")
 }
 
 model Article {
@@ -43,6 +45,7 @@ model ClientArticlePrice {
 
 model Order {
   id          String       @id @default(cuid())
+  clientId    String
   observation String?
   status      OrderStatus  @default(PENDING)
   totalPrice  Int          // suma del precio de todos los articulo (clientPrice * quantity) 
@@ -50,4 +53,6 @@ model Order {
 
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+
+   client      Client   @relation("ClientOrders", fields: [clientId], references: [id])
 }
