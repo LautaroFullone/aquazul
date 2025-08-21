@@ -8,9 +8,9 @@ import { Link } from 'react-router-dom'
 import { useMemo } from 'react'
 import {
    CheckCircle,
+   ClipboardList,
    Clock,
    DollarSign,
-   File,
    FilePlus,
    FileText,
    Plus,
@@ -48,7 +48,7 @@ const ClientDashboard = () => {
          {
             title: 'Pedidos totales',
             value: totalOrdersCount,
-            icon: File,
+            icon: ClipboardList,
             description: 'Total de pedidos realizados',
          },
          {
