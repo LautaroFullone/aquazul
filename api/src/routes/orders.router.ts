@@ -1,24 +1,51 @@
-// routes/orders.routes.ts
-import { handleRouteError } from '../errors/handleRouteError'
 import { Router, type Request, type Response } from 'express'
-import { orderCreateSchema } from '../models/order.model'
-import prismaClient from '../prisma/prismaClient'
+import { handleRouteError } from '../errors/handleRouteError'
 import { NotFoundError } from '../errors/ApiError'
+import prismaClient from '../prisma/prismaClient'
+import {
+   getOrdersSchema,
+   getOrdersStatsSchema,
+   orderCreateSchema,
+} from '../models/order.model'
 
 const ordersRouter = Router()
 
-// ordersRouter.get('/', async (_req: Request, res: Response) => {
-//    try {
-//       const orders = await prismaClient.order.findMany({
-//          orderBy: { createdAt: 'desc' },
-//          include: { articles: { include: { article: true } } },
-//       })
+ordersRouter.get('/', async (req, res) => {
+   try {
+      const { limit, clientId, page, pageSize } = getOrdersSchema.parse(req.query)
 
-//       return res.status(200).send({ message: 'Pedidos obtenidos', orders })
-//    } catch (error) {
-//       return handleRouteError(res, error)
-//    }
-// })
+      const where: any = {}
+      if (clientId) where.clientId = clientId
+
+      // A) Si viene `limit` ignoro la paginación
+      if (limit) {
+         const orders = await prismaClient.order.findMany({
+            where,
+            orderBy: { createdAt: 'desc' },
+            take: limit,
+         })
+         await new Promise((resolve) => setTimeout(resolve, 2200)) // Simular un delay de 2.2 segundos
+
+         return res.send({ message: 'Pedidos obtenidos', orders, count: orders.length })
+      }
+
+      // B) paginación clásica
+      const orders = await prismaClient.order.findMany({
+         where,
+         orderBy: { createdAt: 'desc' },
+         skip: (page - 1) * pageSize,
+         take: pageSize,
+      })
+
+      return res.send({
+         message: 'Pedidos obtenidos',
+         orders,
+         count: orders.length,
+      })
+   } catch (error) {
+      return handleRouteError(res, error)
+   }
+})
 
 // POST /orders - crear
 ordersRouter.post('/', async (req: Request, res: Response) => {
@@ -43,7 +70,7 @@ ordersRouter.post('/', async (req: Request, res: Response) => {
          }
       }
 
-      // podria trer los precios de articulos del cliente
+      // podria trer y validar los precios de articulos del cliente
       // const clientArticlesPrices = await prismaClient.clientArticlePrice.findMany({
       //    where: { clientId: body.clientId },
       // })
@@ -66,6 +93,46 @@ ordersRouter.post('/', async (req: Request, res: Response) => {
       return res
          .status(201)
          .send({ message: 'Pedido creado correctamente', order: newOrder })
+   } catch (error) {
+      return handleRouteError(res, error)
+   }
+})
+
+//
+ordersRouter.get('/client/:clientId/stats', async (req, res) => {
+   try {
+      const { clientId } = getOrdersStatsSchema.parse(req.params)
+
+      const [totalOrdersCount, ordersInProgressCount, ordersCompletedCount] =
+         await Promise.all([
+            prismaClient.order.count({ where: { clientId } }),
+            prismaClient.order.count({ where: { clientId, status: 'IN_PROGRESS' } }),
+            prismaClient.order.count({ where: { clientId, status: 'COMPLETED' } }),
+         ])
+
+      const now = new Date()
+      const startOfCurrentMonth = new Date(
+         Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1, 0, 0, 0, 0)
+      )
+      const endOfCurrentMonth = new Date(
+         Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1, 0, 0, 0, 0)
+      )
+
+      const totalOrdersMonthPrice = await prismaClient.order.aggregate({
+         _sum: { totalPrice: true },
+         where: {
+            clientId,
+            status: 'COMPLETED',
+            createdAt: { gte: startOfCurrentMonth, lt: endOfCurrentMonth },
+         },
+      })
+
+      return res.send({
+         totalOrdersCount,
+         ordersInProgressCount,
+         ordersCompletedCount,
+         totalOrdersMonthPrice: totalOrdersMonthPrice._sum.totalPrice || 0,
+      })
    } catch (error) {
       return handleRouteError(res, error)
    }

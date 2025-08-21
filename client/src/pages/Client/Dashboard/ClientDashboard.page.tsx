@@ -1,66 +1,71 @@
-import { Badge, Card, CardContent, CardDescription, CardHeader, CardTitle } from '@shadcn'
-import { Button } from '@shadcn/button'
-import { CheckCircle, Clock, FileText, Package, Plus } from 'lucide-react'
+import { CheckCircle, Clock, DollarSign, File, FileText, Plus } from 'lucide-react'
+import RecentOrderEmptyBanner from './components/RecentOrderEmptyBanner'
+import RecentOrderCard from './components/RecentOrderCard'
+import { valueToCurrency } from '@utils/valueToCurrency'
+import ClientStatCard from './components/ClientStatCard'
+import { useQuery } from '@tanstack/react-query'
+import useOrders from '@hooks/useOrders'
 import { Link } from 'react-router-dom'
+import { useMemo } from 'react'
+import {
+   Button,
+   Card,
+   CardContent,
+   CardDescription,
+   CardHeader,
+   CardTitle,
+} from '@shadcn'
 
-const stats = [
-   {
-      title: 'Pedidos totales',
-      value: '8',
-      description: 'Total de pedidos',
-      icon: Package,
-   },
-   {
-      title: 'En Proceso',
-      value: '2',
-      description: 'Pedidos activos',
-      icon: Clock,
-   },
-   {
-      title: 'Completados',
-      value: '6',
-      description: 'Mes actual',
-      icon: CheckCircle,
-   },
-   {
-      title: 'Gasto Mensual',
-      value: '$1,240',
-      description: 'Mes actual',
-      icon: FileText,
-   },
-]
-
-const recentOrders = [
-   {
-      id: 'PED-001',
-      service: 'Paquete Ropa de Cama',
-      quantity: 25,
-      status: 'En Proceso',
-      date: '2024-01-15',
-      //estimatedDelivery: "2024-01-16",
-   },
-   {
-      id: 'PED-002',
-      service: 'Servicio de Toallas',
-      quantity: 35,
-      status: 'Completado',
-      date: '2024-01-14',
-      //estimatedDelivery: "2024-01-15",
-   },
-   {
-      id: 'PED-003',
-      service: 'Limpieza de Uniformes',
-      quantity: 20,
-      status: 'Listo para retirar',
-      date: '2024-01-13',
-      //estimatedDelivery: "2024-01-14",
-   },
-]
+const ORDERS_LIMIT = 6
+const STATS_COUNT = 4
 
 const ClientDashboard = () => {
+   const { getOrdersQueryOptions, getClientStatsQueryOptions } = useOrders()
+
+   const clientStatsQueryOptions = getClientStatsQueryOptions('1')
+   const { data: clientStats, isLoading: isLoadingStats } = useQuery(
+      clientStatsQueryOptions
+   )
+
+   const ordersQueryOptions = getOrdersQueryOptions({
+      clientId: '1',
+      limit: ORDERS_LIMIT,
+   })
+   const { data: orders = [], isLoading: isLoadingOrders } = useQuery(ordersQueryOptions)
+
+   const stats = useMemo(
+      () => [
+         {
+            title: 'Pedidos totales',
+            value: clientStats?.totalOrdersCount || 0,
+            icon: File,
+            description: 'Total de pedidos realizados',
+         },
+         {
+            title: 'En Proceso',
+            value: clientStats?.ordersInProgressCount || 0,
+            icon: Clock,
+            description: 'Pedidos que están siendo procesados',
+         },
+         {
+            title: 'Completados',
+            value: clientStats?.ordersCompletedCount || 0,
+            icon: CheckCircle,
+            description: 'Pedidos que ya fueron completados',
+         },
+         {
+            title: 'Gasto Mensual',
+            value: valueToCurrency(clientStats?.totalOrdersMonthPrice || 0),
+            icon: DollarSign,
+            description: 'De pedidos completados este mes',
+         },
+      ],
+      [clientStats]
+   )
+
    return (
       <>
-         {/* Welcome Header */}
+         {/* Header Bienvenida */}
          <div className="text-center space-y-2">
             <h1 className="text-3xl font-bold tracking-tight">
                Bienvenido, Hotel Plaza Grande
@@ -70,24 +75,25 @@ const ClientDashboard = () => {
             </p>
          </div>
 
-         {/* Stats Grid */}
-         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            {stats.map((stat, index) => (
-               <Card key={index}>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                     <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-                     <stat.icon className="h-4 w-4 text-muted-foreground" />
-                  </CardHeader>
-                  <CardContent>
-                     <div className="text-2xl font-bold">{stat.value}</div>
-                     <p className="text-xs text-muted-foreground">{stat.description}</p>
-                  </CardContent>
-               </Card>
-            ))}
+         {/* Cards Estadísticas */}
+         <div className="hidden sm:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {isLoadingStats
+               ? Array.from({ length: STATS_COUNT }).map((_, i) => (
+                    <ClientStatCard.Skeleton key={`stat-skel-${i}`} />
+                 ))
+               : stats.map((stat, i) => (
+                    <ClientStatCard
+                       key={`orders-stat-${i}`}
+                       title={stat.title}
+                       value={stat.value}
+                       description={stat.description}
+                       icon={stat.icon}
+                    />
+                 ))}
          </div>
 
          {/* Quick Actions */}
-         <div className="grid gap-4 md:grid-cols-2">
+         <div className="grid gap-6 md:grid-cols-2">
             <Link to="pedidos/formulario">
                <Card className="hover:shadow-md transition-shadow cursor-pointer border-2 border-blue-200 hover:border-blue-300 text-center">
                   <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-2">
@@ -113,51 +119,41 @@ const ClientDashboard = () => {
             </Link>
          </div>
 
-         {/* Recent Orders */}
+         {/* Pedidos Recientes */}
          <Card>
             <CardHeader>
-               <CardTitle>Pedidos Recientes</CardTitle>
-               <CardDescription>Tus últimos pedidos y su estado actual</CardDescription>
+               <div className="flex flex-col">
+                  <CardTitle>Pedidos Recientes</CardTitle>
+                  <CardDescription>
+                     Tus últimos pedidos y su estado actual
+                  </CardDescription>
+               </div>
             </CardHeader>
 
             <CardContent>
-               <div className="space-y-4">
-                  {recentOrders.map((order) => (
-                     <div
-                        key={order.id}
-                        className="flex items-center justify-between p-4 border rounded-lg"
-                     >
-                        <div className="space-y-1">
-                           <p className="text-sm font-medium leading-none">
-                              {order.service}
-                           </p>
-                           <p className="text-sm text-muted-foreground">
-                              Cantidad: {order.quantity} • {order.id}
-                           </p>
-                           <p className="text-xs text-muted-foreground">
-                              Fecha: {order.date}
-                           </p>
-                        </div>
-                        <div className="text-right">
-                           <Badge
-                              variant={
-                                 order.status === 'Completado'
-                                    ? 'default'
-                                    : order.status === 'En Proceso'
-                                    ? 'secondary'
-                                    : order.status === 'Listo para retirar'
-                                    ? 'default'
-                                    : 'outline'
-                              }
-                           >
-                              {order.status}
-                           </Badge>
-                        </div>
-                     </div>
-                  ))}
-               </div>
+               {isLoadingOrders ? (
+                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+                     {Array.from({ length: ORDERS_LIMIT }).map((_, index) => (
+                        <RecentOrderCard.Skeleton key={`client-order-ske-${index}`} />
+                     ))}
+                  </div>
+               ) : orders.length ? (
+                  <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
+                     {orders.map((order, index) => (
+                        <RecentOrderCard
+                           key={`client-order-${index}`}
+                           title={`PED-${order.id}`}
+                           articlesCount={5}
+                           status={order.status}
+                           createdAt={order.createdAt}
+                        />
+                     ))}
+                  </div>
+               ) : (
+                  <RecentOrderEmptyBanner />
+               )}
 
-               <div className="pt-4">
+               <div className="pt-4 sm:col-span-2">
                   <Link to="pedidos">
                      <Button variant="outline" className="w-full bg-transparent">
                         Ver todos tus Pedidos

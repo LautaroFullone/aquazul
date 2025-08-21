@@ -7,7 +7,14 @@ export const orderStatusSchema = z.enum([
    'CANCELLED',
 ])
 
-export const orderArticleSchema = z.object({
+export const getOrdersSchema = z.object({
+   limit: z.coerce.number().int().positive().max(100).optional(),
+   clientId: z.string().optional(),
+   page: z.coerce.number().int().positive().default(1),
+   pageSize: z.coerce.number().int().positive().max(100).default(20),
+})
+
+const orderArticleSchema = z.object({
    articleId: z.string().min(1),
    clientPrice: z.number().positive(),
    quantity: z.number().int().positive(),
@@ -18,4 +25,8 @@ export const orderCreateSchema = z.object({
    observation: z.string().trim().optional(),
    status: orderStatusSchema.optional(), // default server: 'PENDING'
    articles: z.array(orderArticleSchema).min(1),
+})
+
+export const getOrdersStatsSchema = z.object({
+   clientId: z.string().trim(),
 })

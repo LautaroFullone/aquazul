@@ -26,65 +26,6 @@ import {
    TableRow,
 } from '@shadcn'
 
-const pedidos = [
-   {
-      id: 'PED-001',
-      cantidad: 25,
-      status: 'in_progress' as OrderStatus,
-      fecha: '2024-01-15',
-      total: 3160,
-   },
-   {
-      id: 'PED-002',
-      cantidad: 35,
-      status: 'delivered' as OrderStatus,
-      fecha: '2024-01-14',
-      total: 2450,
-   },
-   {
-      id: 'PED-003',
-      cantidad: 20,
-      status: 'ready' as OrderStatus,
-      fecha: '2024-01-13',
-      total: 1890,
-   },
-   {
-      id: 'PED-004',
-      cantidad: 50,
-      status: 'pending' as OrderStatus,
-      fecha: '2024-01-18',
-      total: 1720,
-   },
-   {
-      id: 'PED-005',
-      cantidad: 12,
-      status: 'delivered' as OrderStatus,
-      fecha: '2024-01-17',
-      total: 2100,
-   },
-   {
-      id: 'PED-006',
-      cantidad: 80,
-      status: 'cancelled' as OrderStatus,
-      fecha: '2024-01-09',
-      total: 980,
-   },
-   {
-      id: 'PED-007',
-      cantidad: 60,
-      status: 'in_progress' as OrderStatus,
-      fecha: '2024-01-20',
-      total: 1200,
-   },
-   {
-      id: 'PED-008',
-      cantidad: 30,
-      status: 'pending' as OrderStatus,
-      fecha: '2024-01-05',
-      total: 0,
-   },
-]
-
 const ClientOrdersPanel = () => {
    // Filtros compartidos
    const [searchTerm, setsearchTerm] = useState('')
@@ -92,6 +33,7 @@ const ClientOrdersPanel = () => {
    const [sortBy, setSortBy] = useState<string>('date')
    const [fechaDesde, setFechaDesde] = useState('')
    const [fechaHasta, setFechaHasta] = useState('')
+   const pedidos = []
 
    const limpiarFiltros = () => {
       setsearchTerm('')
