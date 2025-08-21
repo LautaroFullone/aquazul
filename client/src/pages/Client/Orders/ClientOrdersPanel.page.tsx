@@ -25,6 +25,7 @@ import {
    TableHeader,
    TableRow,
 } from '@shadcn'
+import EmptyBanner from '@shared/EmptyBanner'
 
 const ClientOrdersPanel = () => {
    // Filtros compartidos
@@ -70,7 +71,7 @@ const ClientOrdersPanel = () => {
             title="Historial de pedidos"
             hasGoBack
             goBackRoute="/"
-            description="Completá la información requerida"
+            description="Observá tus pedidos realizados"
          />
 
          <div className="grid sm:grid-cols-2 gap-x-4 max-w-5xl space-y-4">
@@ -181,10 +182,7 @@ const ClientOrdersPanel = () => {
 
          <Card>
             <CardHeader>
-               <CardTitle className="flex items-center gap-2">
-                  <Package className="h-5 w-5" />
-                  Pedidos
-               </CardTitle>
+               <CardTitle className="flex items-center gap-2">Pedidos</CardTitle>
 
                <CardDescription>Resultados según tus filtros</CardDescription>
             </CardHeader>
@@ -245,32 +243,15 @@ const ClientOrdersPanel = () => {
                      </Table>
                   </div>
                ) : (
-                  <div className="flex items-center justify-center p-8 text-center">
-                     <div className="max-w-sm">
-                        <PackageX className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-20" />
-
-                        <h3 className="text-lg font-medium mb-2 text-muted-foreground">
-                           No hay pedidos registrados
-                        </h3>
-
-                        <p className="text-muted-foreground mb-4">
-                           {searchTerm ||
-                           filtrostatus !== 'todos' ||
-                           fechaDesde ||
-                           fechaHasta
-                              ? `No hay pedidos que coincidan con los filtros. Intenta con otros términos de búsqueda.`
-                              : 'Comenzá haciendo tu primer pedido.'}
-                        </p>
-
-                        <Button
-                           onClick={() => console.log('form')}
-                           className="bg-blue-800 hover:bg-blue-800/90 text-white "
-                        >
-                           <Plus />
-                           Nuevo Pedido
-                        </Button>
-                     </div>
-                  </div>
+                  <EmptyBanner
+                     icon={PackageX}
+                     title="No hay pedidos registrados"
+                     description={
+                        searchTerm || filtrostatus !== 'todos' || fechaDesde || fechaHasta
+                           ? `No hay pedidos que coincidan con los filtros, intentá con otros términos de búsqueda`
+                           : 'Podés navegar hasta "Nuevo Pedido" para crear el primero'
+                     }
+                  />
                )}
             </CardContent>
          </Card>

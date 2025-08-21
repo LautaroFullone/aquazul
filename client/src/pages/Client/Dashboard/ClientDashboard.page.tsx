@@ -1,9 +1,8 @@
-import { CheckCircle, Clock, DollarSign, File, FileText, Plus } from 'lucide-react'
-import RecentOrderEmptyBanner from './components/RecentOrderEmptyBanner'
 import RecentOrderCard from './components/RecentOrderCard'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import ClientStatCard from './components/ClientStatCard'
 import { useQuery } from '@tanstack/react-query'
+import EmptyBanner from '@shared/EmptyBanner'
 import useOrders from '@hooks/useOrders'
 import { Link } from 'react-router-dom'
 import { useMemo } from 'react'
@@ -15,6 +14,15 @@ import {
    CardHeader,
    CardTitle,
 } from '@shadcn'
+import {
+   CheckCircle,
+   Clock,
+   DollarSign,
+   File,
+   FilePlus,
+   FileText,
+   Plus,
+} from 'lucide-react'
 
 const ORDERS_LIMIT = 6
 const STATS_COUNT = 4
@@ -31,6 +39,7 @@ const ClientDashboard = () => {
       clientId: '1',
       limit: ORDERS_LIMIT,
    })
+
    const { data: orders = [], isLoading: isLoadingOrders } = useQuery(ordersQueryOptions)
 
    const stats = useMemo(
@@ -150,7 +159,11 @@ const ClientDashboard = () => {
                      ))}
                   </div>
                ) : (
-                  <RecentOrderEmptyBanner />
+                  <EmptyBanner
+                     title="Todavía no tenés pedidos"
+                     description='Hacé click en "Nuevo Pedido" para crear el primero'
+                     icon={FilePlus}
+                  />
                )}
 
                <div className="pt-4 sm:col-span-2">
