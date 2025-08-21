@@ -144,7 +144,7 @@ ordersRouter.get('/client/:clientId/stats', async (req, res) => {
          totalOrdersCount,
          ordersInProgressCount,
          ordersCompletedCount,
-         totalOrdersMonthPrice: totalOrdersMonthPrice._sum.totalPrice || 0,
+         totalOrdersMonthPrice: totalOrdersMonthPrice._sum.totalPrice,
       })
    } catch (error) {
       return handleRouteError(res, error)

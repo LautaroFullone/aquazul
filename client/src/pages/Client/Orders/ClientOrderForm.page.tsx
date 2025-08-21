@@ -1,9 +1,9 @@
 import OrderArticlesTable from './components/OrderArticlesTable'
+import useFetchArticles from '@hooks/Articles/useFetchArticles'
+import useCreateOrder from '@hooks/Orders/useCreateOrder'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import type { OrderArticle } from '@models/Order.model'
-import { useQuery } from '@tanstack/react-query'
 import TextAreaForm from '@shared/TextAreaForm'
-import useArticles from '@hooks/useArticles'
 import { Save, Info } from 'lucide-react'
 import PageTitle from '@shared/PageTitle'
 import { useState } from 'react'
@@ -34,8 +34,8 @@ const ClientOrderForm = () => {
    const [showValidation, setShowValidation] = useState(false)
    const [observation, setObservation] = useState('')
 
-   const { articlesQueryOptions, createOrderMutate } = useArticles(clienteLogueado.id)
-   const { data: articles = [] } = useQuery(articlesQueryOptions)
+   const { articles } = useFetchArticles(clienteLogueado.id)
+   const { createOrderMutate } = useCreateOrder()
 
    const canSave = orderArticles.length > 0
    const allArticlesdAreValid = orderArticles.every((article) => article.articleId !== '')
@@ -60,6 +60,9 @@ const ClientOrderForm = () => {
          clientId: clienteLogueado.id,
          articles: orderArticles,
          observation,
+      }).then(() => {
+         setObservation('')
+         setOrderArticles([])
       })
    }
 

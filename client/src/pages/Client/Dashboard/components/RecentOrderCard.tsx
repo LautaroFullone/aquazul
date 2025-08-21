@@ -1,4 +1,4 @@
-import { OrderStatusBadge } from '@shared/OrderStatusBadge'
+import OrderStatusBadge from '@shared/OrderStatusBadge'
 import type { OrderStatus } from '@models/Order.model'
 import { Skeleton } from '@shadcn'
 

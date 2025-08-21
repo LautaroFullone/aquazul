@@ -1,16 +1,16 @@
 import { Eye, Loader2, PackageX, Search } from 'lucide-react'
 import { orderStatusConfig } from '@config/orderStatusConfig'
-import { OrderStatusBadge } from '@shared/OrderStatusBadge'
 import { formatDateToShow } from '@utils/formatDateToShow'
+import useFetchOrders from '@hooks/Orders/useFetchOrders'
 import { valueToCurrency } from '@utils/valueToCurrency'
+import OrderStatusBadge from '@shared/OrderStatusBadge'
 import type { OrderStatus } from '@models/Order.model'
+import { useEffect, useMemo, useState } from 'react'
 import { usePagination } from '@hooks/usePagination'
-import { useDeferredValue, useEffect, useMemo, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import { useDebounce } from '@hooks/useDebounce'
 import EmptyBanner from '@shared/EmptyBanner'
 import Pagination from '@shared/Pagination'
 import PageTitle from '@shared/PageTitle'
-import useOrders from '@hooks/useOrders'
 import {
    Button,
    Card,
@@ -34,29 +34,22 @@ import {
 } from '@shadcn'
 
 const ClientOrdersPanel = () => {
-   const [searchTerm, setSearchTerm] = useState('')
    const [statusFilter, setStatusFilter] = useState<'todos' | OrderStatus>('todos')
+   const [searchTerm, setSearchTerm] = useState('')
    const [fromDate, setFromDate] = useState('')
    const [toDate, setToDate] = useState('')
 
-   const { getOrdersQueryOptions } = useOrders()
+   const { orders, isPending } = useFetchOrders({ clientId: '1' })
 
-   const ordersQueryOptions = useMemo(
-      () => getOrdersQueryOptions({ clientId: '1' }),
-      [getOrdersQueryOptions]
-   )
-
-   const { data: orders = [] } = useQuery(ordersQueryOptions)
-
-   const deferredSearch = useDeferredValue(searchTerm)
+   const debouncedSearch = useDebounce(searchTerm, 400)
 
    useEffect(() => {
       if (currentPage !== 1) goToPage(1)
-   }, [searchTerm, statusFilter, fromDate, toDate]) // eslint-disable-line
+   }, [debouncedSearch, fromDate, toDate]) // eslint-disable-line
 
    const filteredOrders = useMemo(() => {
       return orders.filter((order) => {
-         const byId = order.code.toLowerCase().includes(deferredSearch.toLowerCase())
+         const byId = order.code.toLowerCase().includes(debouncedSearch.toLowerCase())
          const byStatus = statusFilter === 'todos' || order.status === statusFilter
 
          let byDate = true
@@ -73,7 +66,7 @@ const ClientOrdersPanel = () => {
 
          return byId && byStatus && byDate
       })
-   }, [orders, deferredSearch, statusFilter, fromDate, toDate])
+   }, [orders, debouncedSearch, statusFilter, fromDate, toDate])
 
    const {
       currentPage,
@@ -92,17 +85,6 @@ const ClientOrdersPanel = () => {
       maxVisiblePages: 4,
    })
    const paginatedOrders = filteredOrders.slice(startIndex, endIndex)
-   console.log('# filteredOrders: ', filteredOrders)
-   console.log('# paginatedOrders: ', paginatedOrders)
-
-   const isPending = false
-
-   const cleanFilters = () => {
-      setSearchTerm('')
-      setStatusFilter('todos')
-      setFromDate('')
-      setToDate('')
-   }
 
    return (
       <>
@@ -226,7 +208,15 @@ const ClientOrdersPanel = () => {
                            </Select>
                         </div>
 
-                        <Button variant="outline" onClick={() => cleanFilters()}>
+                        <Button
+                           variant="outline"
+                           onClick={() => {
+                              setSearchTerm('')
+                              setStatusFilter('todos')
+                              setFromDate('')
+                              setToDate('')
+                           }}
+                        >
                            Limpiar Filtros
                         </Button>
                      </div>

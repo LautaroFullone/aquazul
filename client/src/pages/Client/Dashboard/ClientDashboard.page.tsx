@@ -1,9 +1,9 @@
+import useFetchRecentOrders from '@hooks/Orders/useFetchRecentOrders'
+import useFetchClientStats from '@hooks/Orders/useFetchOrdersStats'
 import RecentOrderCard from './components/RecentOrderCard'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import ClientStatCard from './components/ClientStatCard'
-import { useQuery } from '@tanstack/react-query'
 import EmptyBanner from '@shared/EmptyBanner'
-import useOrders from '@hooks/useOrders'
 import { Link } from 'react-router-dom'
 import { useMemo } from 'react'
 import {
@@ -28,48 +28,54 @@ const ORDERS_LIMIT = 6
 const STATS_COUNT = 4
 
 const ClientDashboard = () => {
-   const { getOrdersQueryOptions, getClientStatsQueryOptions } = useOrders()
+   const {
+      totalOrdersCount,
+      ordersCompletedCount,
+      ordersInProgressCount,
+      totalOrdersMonthPrice,
+      isPending: isLoadingStats,
+   } = useFetchClientStats({
+      clientId: '1',
+   })
 
-   const clientStatsQueryOptions = getClientStatsQueryOptions({ clientId: '1' })
-   const ordersQueryOptions = getOrdersQueryOptions({
+   const { orders, isPending: isLoadingOrders } = useFetchRecentOrders({
       clientId: '1',
       limit: ORDERS_LIMIT,
    })
-
-   const { data: clientStats, isLoading: isLoadingStats } = useQuery(
-      clientStatsQueryOptions
-   )
-
-   const { data: orders = [], isLoading: isLoadingOrders } = useQuery(ordersQueryOptions)
 
    const stats = useMemo(
       () => [
          {
             title: 'Pedidos totales',
-            value: clientStats?.totalOrdersCount || 0,
+            value: totalOrdersCount,
             icon: File,
             description: 'Total de pedidos realizados',
          },
          {
             title: 'En Proceso',
-            value: clientStats?.ordersInProgressCount || 0,
+            value: ordersInProgressCount,
             icon: Clock,
             description: 'Pedidos que están siendo procesados',
          },
          {
             title: 'Completados',
-            value: clientStats?.ordersCompletedCount || 0,
+            value: ordersCompletedCount,
             icon: CheckCircle,
             description: 'Pedidos que ya fueron completados',
          },
          {
             title: 'Gasto Mensual',
-            value: valueToCurrency(clientStats?.totalOrdersMonthPrice || 0),
+            value: valueToCurrency(totalOrdersMonthPrice),
             icon: DollarSign,
             description: 'De pedidos completados este mes',
          },
       ],
-      [clientStats]
+      [
+         ordersCompletedCount,
+         ordersInProgressCount,
+         totalOrdersCount,
+         totalOrdersMonthPrice,
+      ]
    )
 
    return (

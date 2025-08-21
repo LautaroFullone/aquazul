@@ -2,19 +2,19 @@ import { orderStatusConfig } from '@config/orderStatusConfig'
 import type { OrderStatus } from '@models/Order.model'
 import { Badge, Tooltip, TooltipContent, TooltipTrigger } from '@shadcn'
 
-interface Props {
+interface OrderStatusBadgeProps {
    status: OrderStatus
    disableTooltip?: boolean
    tooltipSide?: 'top' | 'right' | 'bottom' | 'left'
    tooltipAlign?: 'start' | 'center' | 'end'
 }
 
-export function OrderStatusBadge({
+const OrderStatusBadge: React.FC<OrderStatusBadgeProps> = ({
    status,
    disableTooltip,
    tooltipSide = 'top',
    tooltipAlign = 'center',
-}: Props) {
+}) => {
    const { label, description, color, icon: Icon } = orderStatusConfig[status]
 
    return (
@@ -34,3 +34,5 @@ export function OrderStatusBadge({
       </Tooltip>
    )
 }
+
+export default OrderStatusBadge

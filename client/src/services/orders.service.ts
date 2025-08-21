@@ -5,7 +5,7 @@ import { api } from '@lib/axios'
 type CreateOrderData = Pick<Order, 'clientId' | 'articles' | 'observation'>
 
 export async function createOrder(orderData: CreateOrderData) {
-   type Response = Pick<ResponseApi, 'message'>
+   type Response = Pick<ResponseApi, 'message' | 'order'>
    const { data } = await api.post<Response>(`/orders`, orderData)
    return data
 }
@@ -21,7 +21,7 @@ export async function getOrders(queryParams?: GetOrdersQueryParams) {
    return data
 }
 
-export async function getClientStats(clientId: string) {
+export async function getOrdersClientStats(clientId: string) {
    type Response = {
       totalOrdersCount: number
       ordersInProgressCount: number
