@@ -7,14 +7,6 @@ import useOrders from '@hooks/useOrders'
 import { Link } from 'react-router-dom'
 import { useMemo } from 'react'
 import {
-   Button,
-   Card,
-   CardContent,
-   CardDescription,
-   CardHeader,
-   CardTitle,
-} from '@shadcn'
-import {
    CheckCircle,
    Clock,
    DollarSign,
@@ -23,6 +15,14 @@ import {
    FileText,
    Plus,
 } from 'lucide-react'
+import {
+   Button,
+   Card,
+   CardContent,
+   CardDescription,
+   CardHeader,
+   CardTitle,
+} from '@shadcn'
 
 const ORDERS_LIMIT = 6
 const STATS_COUNT = 4
@@ -30,15 +30,15 @@ const STATS_COUNT = 4
 const ClientDashboard = () => {
    const { getOrdersQueryOptions, getClientStatsQueryOptions } = useOrders()
 
-   const clientStatsQueryOptions = getClientStatsQueryOptions('1')
-   const { data: clientStats, isLoading: isLoadingStats } = useQuery(
-      clientStatsQueryOptions
-   )
-
+   const clientStatsQueryOptions = getClientStatsQueryOptions({ clientId: '1' })
    const ordersQueryOptions = getOrdersQueryOptions({
       clientId: '1',
       limit: ORDERS_LIMIT,
    })
+
+   const { data: clientStats, isLoading: isLoadingStats } = useQuery(
+      clientStatsQueryOptions
+   )
 
    const { data: orders = [], isLoading: isLoadingOrders } = useQuery(ordersQueryOptions)
 
@@ -151,8 +151,8 @@ const ClientDashboard = () => {
                      {orders.map((order, index) => (
                         <RecentOrderCard
                            key={`client-order-${index}`}
-                           title={`PED-${order.id}`}
-                           articlesCount={5}
+                           title={order.code}
+                           articlesCount={order.articlesCount}
                            status={order.status}
                            createdAt={order.createdAt}
                         />

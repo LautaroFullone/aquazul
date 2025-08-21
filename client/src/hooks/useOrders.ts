@@ -2,26 +2,21 @@ import { getOrders, getClientStats } from '@services/orders.service'
 import { queryOptions } from '@tanstack/react-query'
 
 const useOrders = () => {
-   const getOrdersQueryOptions = (params: {
-      clientId?: string
-      limit?: number
-      page?: number
-      pageSize?: number
-   }) =>
+   const getOrdersQueryOptions = (queryParams: { clientId?: string; limit?: number }) =>
       queryOptions({
-         queryKey: ['orders', params],
+         queryKey: ['orders', queryParams],
          queryFn: async () => {
-            const response = await getOrders(params)
+            const response = await getOrders(queryParams)
             return response.orders
          },
          staleTime: 30 * 60 * 1000, // 30 min
          retry: 1,
       })
 
-   const getClientStatsQueryOptions = (clientId: string) =>
+   const getClientStatsQueryOptions = (param: { clientId: string }) =>
       queryOptions({
-         queryKey: ['client_stats', clientId],
-         queryFn: () => getClientStats(clientId),
+         queryKey: ['client_stats', param],
+         queryFn: () => getClientStats(param.clientId),
          staleTime: 30 * 60 * 1000, // 30 min
          retry: 1,
       })

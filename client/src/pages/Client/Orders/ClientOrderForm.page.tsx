@@ -21,7 +21,7 @@ import {
 } from '@shadcn'
 
 const clienteLogueado = {
-   id: '2',
+   id: '1',
    nombre: 'Hotel Plaza Grande',
    contacto: 'María Rodríguez',
    telefono: '+54 9 11 5555-1234',

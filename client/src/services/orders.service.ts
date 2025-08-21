@@ -13,8 +13,6 @@ export async function createOrder(orderData: CreateOrderData) {
 type GetOrdersQueryParams = {
    clientId?: string
    limit?: number
-   page?: number
-   pageSize?: number
 }
 
 export async function getOrders(queryParams?: GetOrdersQueryParams) {

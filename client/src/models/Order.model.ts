@@ -3,11 +3,13 @@ import type { Article } from './Article.model'
 export type OrderStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
 export interface Order {
    id: string
+   code: string
    clientId: string
    status: OrderStatus
-   articles: OrderArticle[] //JSON prisma
    observation: string
-   totalPrice: string
+   articles: OrderArticle[] //JSON prisma
+   articlesCount: number
+   totalPrice: number
    createdAt: string
 }
 

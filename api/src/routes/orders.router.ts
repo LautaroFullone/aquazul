@@ -12,35 +12,31 @@ const ordersRouter = Router()
 
 ordersRouter.get('/', async (req, res) => {
    try {
-      const { limit, clientId, page, pageSize } = getOrdersSchema.parse(req.query)
+      const { limit, clientId } = getOrdersSchema.parse(req.query)
 
       const where: any = {}
       if (clientId) where.clientId = clientId
 
-      // A) Si viene `limit` ignoro la paginación
+      // A) Si viene `limit` ignoro el get all
       if (limit) {
          const orders = await prismaClient.order.findMany({
             where,
             orderBy: { createdAt: 'desc' },
             take: limit,
          })
-         await new Promise((resolve) => setTimeout(resolve, 2200)) // Simular un delay de 2.2 segundos
 
-         return res.send({ message: 'Pedidos obtenidos', orders, count: orders.length })
+         return res.send({ message: 'Pedidos obtenidos', orders })
       }
 
-      // B) paginación clásica
+      // B) get all
       const orders = await prismaClient.order.findMany({
          where,
          orderBy: { createdAt: 'desc' },
-         skip: (page - 1) * pageSize,
-         take: pageSize,
       })
 
       return res.send({
          message: 'Pedidos obtenidos',
          orders,
-         count: orders.length,
       })
    } catch (error) {
       return handleRouteError(res, error)
@@ -75,19 +71,36 @@ ordersRouter.post('/', async (req: Request, res: Response) => {
       //    where: { clientId: body.clientId },
       // })
 
+      // 3) Seteo el total de la orden
       const totalOrderPrice = body.articles.reduce(
          (acumulation, article) => acumulation + article.clientPrice * article.quantity,
          0
       )
 
-      const newOrder = await prismaClient.order.create({
-         data: {
-            clientId: body.clientId,
-            observation: body.observation || '',
-            status: body.status || 'PENDING',
-            articles: body.articles,
-            totalPrice: totalOrderPrice,
-         },
+      // 4) Crear pedido con transacción para generar code único
+      const newOrder = await prismaClient.$transaction(async (tx) => {
+         const lastOrder = await tx.order.findFirst({
+            orderBy: { createdAt: 'desc' },
+         })
+
+         let nextNumber = 1
+         if (lastOrder?.code) {
+            const lastNumber = Number(lastOrder.code.replace('PED-', ''))
+            nextNumber = lastNumber + 1
+         }
+         const newCode = `PED-${String(nextNumber).padStart(6, '0')}`
+
+         return tx.order.create({
+            data: {
+               code: newCode,
+               clientId: body.clientId,
+               observation: body.observation || '',
+               status: body.status || 'PENDING',
+               articles: body.articles,
+               articlesCount: body.articles.length,
+               totalPrice: totalOrderPrice,
+            },
+         })
       })
 
       return res
