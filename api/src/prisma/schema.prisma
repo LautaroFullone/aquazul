@@ -16,8 +16,9 @@ enum OrderStatus {
 }
 
 model Client {
-   id   String @id @default(cuid())
-   name String
+   id          String @id @default(cuid())
+   name        String @default("")
+   contactName String @default("")
 
    createdAt DateTime @default(now())
    updatedAt DateTime @updatedAt
