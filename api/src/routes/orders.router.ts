@@ -7,11 +7,13 @@ import {
    getOrdersStatsSchema,
    orderCreateSchema,
 } from '../models/order.model'
+import { sleep } from '../lib/sleep'
 
 const ordersRouter = Router()
 
 ordersRouter.get('/', async (req, res) => {
    try {
+      await sleep(2000)
       const { limit, clientId } = getOrdersSchema.parse(req.query)
 
       const where: any = {}

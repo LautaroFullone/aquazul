@@ -1,12 +1,11 @@
 import { orderStatusConfig } from '@config/orderStatusConfig'
 import useFetchOrders from '@hooks/Orders/useFetchOrders'
-import { Loader2, PackageX, Search } from 'lucide-react'
+import { Search } from 'lucide-react'
 import type { OrderStatus } from '@models/Order.model'
 import { useEffect, useMemo, useState } from 'react'
 import { usePagination } from '@hooks/usePagination'
 import OrdersTable from './components/OrdersTable'
 import { useDebounce } from '@hooks/useDebounce'
-import EmptyBanner from '@shared/EmptyBanner'
 import PageTitle from '@shared/PageTitle'
 import {
    Button,
@@ -30,9 +29,9 @@ const ClientOrdersPanel = () => {
    const [fromDate, setFromDate] = useState('')
    const [toDate, setToDate] = useState('')
 
-   const { orders, isPending } = useFetchOrders({ clientId: '1' })
-
    const debouncedSearch = useDebounce(searchTerm, 400)
+
+   const { orders, isPending } = useFetchOrders({ clientId: '1' })
 
    useEffect(() => {
       if (currentPage !== 1) goToPage(1)
@@ -49,6 +48,7 @@ const ClientOrdersPanel = () => {
          if (fromDate) {
             byDate = byDate && orderDate >= new Date(fromDate)
          }
+
          if (toDate) {
             const end = new Date(toDate)
             end.setHours(23, 59, 59, 999)
@@ -58,7 +58,6 @@ const ClientOrdersPanel = () => {
          return byId && byStatus && byDate
       })
    }, [orders, debouncedSearch, statusFilter, fromDate, toDate])
-
    const {
       currentPage,
       totalPages,
@@ -75,6 +74,7 @@ const ClientOrdersPanel = () => {
       itemsPerPage: 10,
       maxVisiblePages: 4,
    })
+
    const paginatedOrders = filteredOrders.slice(startIndex, endIndex)
 
    return (
@@ -103,9 +103,10 @@ const ClientOrdersPanel = () => {
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
                            id="id-v3"
+                           value={searchTerm}
+                           disabled={isPending}
                            className="pl-8 bg-white"
                            placeholder="Ej: PED-000001"
-                           value={searchTerm}
                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
                      </div>
@@ -116,6 +117,7 @@ const ClientOrdersPanel = () => {
 
                      <Select
                         value={statusFilter}
+                        disabled={isPending}
                         onValueChange={(v: OrderStatus | 'todos') => setStatusFilter(v)}
                      >
                         <SelectTrigger id="estado" className="mt-1 bg-white w-full">
@@ -145,9 +147,10 @@ const ClientOrdersPanel = () => {
                      <Label htmlFor="fromDate">Fecha Desde</Label>
                      <Input
                         id="fromDate"
+                        value={fromDate}
+                        disabled={isPending}
                         type="date"
                         className="bg-white mt-1"
-                        value={fromDate}
                         onChange={(e) => setFromDate(e.target.value)}
                      />
                   </div>
@@ -157,9 +160,10 @@ const ClientOrdersPanel = () => {
 
                      <Input
                         id="toDate"
+                        value={toDate}
+                        disabled={isPending}
                         type="date"
                         className="bg-white mt-1"
-                        value={toDate}
                         onChange={(e) => setToDate(e.target.value)}
                      />
                   </div>
@@ -185,6 +189,7 @@ const ClientOrdersPanel = () => {
 
                            <Select
                               value={itemsPerPage.toString()}
+                              disabled={isPending}
                               onValueChange={(v) => setItemsPerPage(Number(v))}
                            >
                               <SelectTrigger id="items-per-page">
@@ -214,38 +219,22 @@ const ClientOrdersPanel = () => {
                   </div>
                </div>
 
-               {isPending ? (
-                  <div className="h-[60vh] flex items-center justify-center p-8">
-                     <div className="flex flex-col items-center justify-center h-screen">
-                        <Loader2 className="h-8 w-8 animate-spin" />
-
-                        <p className="text-sm text-muted-foreground mt-2">
-                           Cargando pedidos...
-                        </p>
-                     </div>
-                  </div>
-               ) : paginatedOrders?.length ? (
-                  <OrdersTable
-                     paginatedOrders={paginatedOrders}
-                     showPagination={filteredOrders.length > 0}
-                     canGoNext={canGoNext}
-                     canGoPrevious={canGoPrevious}
-                     currentPage={currentPage}
-                     onPageChange={goToPage}
-                     totalPages={totalPages}
-                     visiblePages={visiblePages}
-                  />
-               ) : (
-                  <EmptyBanner
-                     icon={PackageX}
-                     title="No hay pedidos registrados"
-                     description={
-                        debouncedSearch || statusFilter !== 'todos' || fromDate || toDate
-                           ? `No hay pedidos que coincidan con los filtros, probá limpiarlos o intentá con otros términos de búsqueda`
-                           : 'Podés navegar hasta "Nuevo Pedido" para crear el primero'
-                     }
-                  />
-               )}
+               <OrdersTable
+                  paginatedOrders={paginatedOrders}
+                  itemsPerPage={itemsPerPage}
+                  isLoading={isPending}
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  canGoNext={canGoNext}
+                  canGoPrevious={canGoPrevious}
+                  visiblePages={visiblePages}
+                  onPageChange={goToPage}
+                  emptyMessage={
+                     debouncedSearch || statusFilter !== 'todos' || fromDate || toDate
+                        ? `No hay pedidos que coincidan con los filtros, probá limpiarlos o intentá con otros términos de búsqueda`
+                        : 'Podés navegar hasta "Nuevo Pedido" para crear el primero'
+                  }
+               />
             </CardContent>
          </Card>
       </>

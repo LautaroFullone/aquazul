@@ -1,11 +1,13 @@
-import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
+import { ChevronLeft, ChevronRight, MoreHorizontal, PackageX } from 'lucide-react'
 import { formatDateToShow } from '@utils/formatDateToShow'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import OrderStatusBadge from '@shared/OrderStatusBadge'
 import type { Order } from '@models/Order.model'
+import EmptyBanner from '@shared/EmptyBanner'
 import { Eye } from 'lucide-react'
 import {
    Button,
+   Skeleton,
    Table,
    TableBody,
    TableCell,
@@ -15,25 +17,29 @@ import {
 } from '@shadcn'
 
 interface OrdersTableProps {
-   showPagination: boolean
    paginatedOrders: Order[]
+   itemsPerPage: number
+   isLoading: boolean
    currentPage: number
    totalPages: number
+   canGoNext: boolean
+   canGoPrevious: boolean
    visiblePages: (number | 'ellipsis')[]
    onPageChange: (page: number) => void
-   canGoPrevious: boolean
-   canGoNext: boolean
+   emptyMessage: string
 }
 
 const OrdersTable: React.FC<OrdersTableProps> = ({
-   showPagination,
    paginatedOrders,
+   itemsPerPage,
+   isLoading,
    currentPage,
    totalPages,
+   canGoNext,
+   canGoPrevious,
    visiblePages,
    onPageChange,
-   canGoPrevious,
-   canGoNext,
+   emptyMessage,
 }) => {
    return (
       <>
@@ -51,35 +57,72 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
                </TableHeader>
 
                <TableBody>
-                  {paginatedOrders.map((order) => (
-                     <TableRow key={order.id}>
-                        <TableCell className="font-medium">{order.code}</TableCell>
+                  {isLoading ? (
+                     Array.from({ length: itemsPerPage }).map((_, i) => (
+                        <TableRow key={i}>
+                           <TableCell>
+                              <Skeleton className="h-5 w-22" />
+                           </TableCell>
+                           <TableCell>
+                              <Skeleton className="h-5 w-20" />
+                           </TableCell>
+                           <TableCell>
+                              <Skeleton className="h-6 w-20 mr-4" />
+                           </TableCell>
+                           <TableCell>
+                              <Skeleton className="h-5 w-12" />
+                           </TableCell>
+                           <TableCell>
+                              <Skeleton className="h-5 w-20" />
+                           </TableCell>
+                           <TableCell>
+                              <Skeleton className="h-8 w-16" />
+                           </TableCell>
+                        </TableRow>
+                     ))
+                  ) : paginatedOrders.length ? (
+                     paginatedOrders.map((order) => (
+                        <TableRow key={order.id}>
+                           <TableCell className="font-medium">{order.code}</TableCell>
 
-                        <TableCell>{formatDateToShow(order.createdAt, 'date')}</TableCell>
+                           <TableCell>
+                              {formatDateToShow(order.createdAt, 'date')}
+                           </TableCell>
 
-                        <TableCell>
-                           <OrderStatusBadge status={order.status} />
-                        </TableCell>
+                           <TableCell>
+                              <OrderStatusBadge status={order.status} />
+                           </TableCell>
 
-                        <TableCell>{order.articlesCount}</TableCell>
+                           <TableCell>{order.articlesCount}</TableCell>
 
-                        <TableCell className="font-medium">
-                           {valueToCurrency(order.totalPrice || 0)}
-                        </TableCell>
+                           <TableCell className="font-medium">
+                              {valueToCurrency(order.totalPrice || 0)}
+                           </TableCell>
 
-                        <TableCell>
-                           <Button variant="outline" size="sm">
-                              <Eye className="h-4 w-4 mr-1" />
-                              Ver
-                           </Button>
+                           <TableCell>
+                              <Button variant="outline" size="sm">
+                                 <Eye className="h-4 w-4 mr-1" />
+                                 Ver
+                              </Button>
+                           </TableCell>
+                        </TableRow>
+                     ))
+                  ) : (
+                     <TableRow className="hover:bg-background ">
+                        <TableCell colSpan={6} className="px-0">
+                           <EmptyBanner
+                              icon={PackageX}
+                              title="No hay pedidos registrados"
+                              description={emptyMessage}
+                           />
                         </TableCell>
                      </TableRow>
-                  ))}
+                  )}
                </TableBody>
             </Table>
          </div>
 
-         {showPagination && totalPages > 1 && (
+         {totalPages > 1 && !isLoading && (
             <div className={'flex items-center justify-center gap-1'}>
                <Button
                   variant="outline"
