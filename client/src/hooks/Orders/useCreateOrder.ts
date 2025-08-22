@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createOrder } from '@services/orders.service'
+import { queriesKeys } from '@config/reactQueryKeys'
 import { toast } from 'sonner'
 
 const useCreateOrder = () => {
@@ -11,10 +12,10 @@ const useCreateOrder = () => {
          toast.success(message)
 
          queryClient.invalidateQueries({
-            queryKey: ['orders_stats', order.clientId],
+            queryKey: [queriesKeys.ORDERS_STATS, order.clientId],
          })
          queryClient.invalidateQueries({
-            queryKey: ['recent_orders', order.clientId],
+            queryKey: [queriesKeys.RECENTS_ORDERS, order.clientId],
          })
       },
       onError: (error) => {

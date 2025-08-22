@@ -1,16 +1,19 @@
 import { getOrdersClientStats } from '@services/orders.service'
+import { queriesKeys } from '@config/reactQueryKeys'
 import { useQuery } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 const useFetchOrdersClientStats = (param: { clientId: string }) => {
    const { data, isPending, error, isError } = useQuery({
-      queryKey: ['orders_stats', param.clientId],
+      queryKey: [queriesKeys.ORDERS_STATS, param.clientId],
       queryFn: () => getOrdersClientStats(param.clientId),
       staleTime: 20 * 60 * 1000, // 20 min
       retry: 1,
    })
 
    if (isError) {
-      //toast.error(error.message)
+      //ID to avoid duplicated toasts
+      toast.error(error.message, { id: `error-${queriesKeys.ORDERS_STATS}` })
    }
 
    return {

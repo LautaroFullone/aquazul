@@ -1,6 +1,6 @@
 import { Router, type Request, type Response } from 'express'
 import { handleRouteError } from '../errors/handleRouteError'
-import { NotFoundError } from '../errors/ApiError'
+import { BadRequestError, NotFoundError } from '../errors/ApiError'
 import prismaClient from '../prisma/prismaClient'
 import {
    getOrdersSchema,
