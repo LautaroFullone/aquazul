@@ -1,15 +1,12 @@
-import { Eye, Loader2, PackageX, Search } from 'lucide-react'
 import { orderStatusConfig } from '@config/orderStatusConfig'
-import { formatDateToShow } from '@utils/formatDateToShow'
 import useFetchOrders from '@hooks/Orders/useFetchOrders'
-import { valueToCurrency } from '@utils/valueToCurrency'
-import OrderStatusBadge from '@shared/OrderStatusBadge'
+import { Loader2, PackageX, Search } from 'lucide-react'
 import type { OrderStatus } from '@models/Order.model'
 import { useEffect, useMemo, useState } from 'react'
 import { usePagination } from '@hooks/usePagination'
+import OrdersTable from './components/OrdersTable'
 import { useDebounce } from '@hooks/useDebounce'
 import EmptyBanner from '@shared/EmptyBanner'
-import Pagination from '@shared/Pagination'
 import PageTitle from '@shared/PageTitle'
 import {
    Button,
@@ -25,12 +22,6 @@ import {
    SelectItem,
    SelectTrigger,
    SelectValue,
-   Table,
-   TableBody,
-   TableCell,
-   TableHead,
-   TableHeader,
-   TableRow,
 } from '@shadcn'
 
 const ClientOrdersPanel = () => {
@@ -234,70 +225,22 @@ const ClientOrdersPanel = () => {
                      </div>
                   </div>
                ) : paginatedOrders?.length ? (
-                  <>
-                     <div className="overflow-x-auto">
-                        <Table className="min-w-full">
-                           <TableHeader>
-                              <TableRow>
-                                 <TableHead>ID</TableHead>
-                                 <TableHead>Fecha</TableHead>
-                                 <TableHead>Estado</TableHead>
-                                 <TableHead>Cant. Artículos</TableHead>
-                                 <TableHead>Total</TableHead>
-                                 <TableHead>Acciones</TableHead>
-                              </TableRow>
-                           </TableHeader>
-
-                           <TableBody>
-                              {paginatedOrders.map((order) => (
-                                 <TableRow key={order.id}>
-                                    <TableCell className="font-medium">
-                                       {order.code}
-                                    </TableCell>
-
-                                    <TableCell>
-                                       {formatDateToShow(order.createdAt, 'date')}
-                                    </TableCell>
-
-                                    <TableCell>
-                                       <OrderStatusBadge status={order.status} />
-                                    </TableCell>
-
-                                    <TableCell>{order.articlesCount}</TableCell>
-
-                                    <TableCell className="font-medium">
-                                       {valueToCurrency(order.totalPrice || 0)}
-                                    </TableCell>
-
-                                    <TableCell>
-                                       <Button variant="outline" size="sm">
-                                          <Eye className="h-4 w-4 mr-1" />
-                                          Ver
-                                       </Button>
-                                    </TableCell>
-                                 </TableRow>
-                              ))}
-                           </TableBody>
-                        </Table>
-                     </div>
-
-                     {filteredOrders.length > 0 && (
-                        <Pagination
-                           currentPage={currentPage}
-                           totalPages={totalPages}
-                           visiblePages={visiblePages}
-                           onPageChange={goToPage}
-                           canGoPrevious={canGoPrevious}
-                           canGoNext={canGoNext}
-                        />
-                     )}
-                  </>
+                  <OrdersTable
+                     paginatedOrders={paginatedOrders}
+                     showPagination={filteredOrders.length > 0}
+                     canGoNext={canGoNext}
+                     canGoPrevious={canGoPrevious}
+                     currentPage={currentPage}
+                     onPageChange={goToPage}
+                     totalPages={totalPages}
+                     visiblePages={visiblePages}
+                  />
                ) : (
                   <EmptyBanner
                      icon={PackageX}
                      title="No hay pedidos registrados"
                      description={
-                        searchTerm || statusFilter !== 'todos' || fromDate || toDate
+                        debouncedSearch || statusFilter !== 'todos' || fromDate || toDate
                            ? `No hay pedidos que coincidan con los filtros, probá limpiarlos o intentá con otros términos de búsqueda`
                            : 'Podés navegar hasta "Nuevo Pedido" para crear el primero'
                      }
