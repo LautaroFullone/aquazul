@@ -1,5 +1,6 @@
-import { createOrder } from '@services/orders.service'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { createOrder } from '@services/orders.service'
+import { toast } from 'sonner'
 
 const useCreateOrder = () => {
    const queryClient = useQueryClient()
@@ -7,7 +8,7 @@ const useCreateOrder = () => {
    const { mutateAsync: createOrderMutate, isPending } = useMutation({
       mutationFn: createOrder,
       onSuccess: ({ message, order }) => {
-         //toast.success(data.message)
+         toast.success(message)
 
          queryClient.invalidateQueries({
             queryKey: ['orders_stats', order.clientId],
@@ -18,8 +19,7 @@ const useCreateOrder = () => {
       },
       onError: (error) => {
          console.log(error)
-         //const { message } = getApiError(error)
-         //toast.error(message)
+         toast.error(error.message)
       },
    })
 
