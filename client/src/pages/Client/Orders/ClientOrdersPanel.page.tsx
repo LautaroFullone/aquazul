@@ -82,7 +82,7 @@ const ClientOrdersPanel = () => {
          <PageTitle
             title="Historial de pedidos"
             hasGoBack
-            goBackRoute="/"
+            goBackRoute="/panel"
             description="Observá tus pedidos realizados"
          />
 

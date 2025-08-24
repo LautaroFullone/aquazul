@@ -6,7 +6,7 @@ import type { OrderArticle } from '@models/Order.model'
 import TextAreaForm from '@shared/TextAreaForm'
 import { Save, Info } from 'lucide-react'
 import PageTitle from '@shared/PageTitle'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
    Button,
    Card,
@@ -19,7 +19,7 @@ import {
    TooltipTrigger,
    TooltipContent,
 } from '@shadcn'
-import SaveButton from '@shared/SaveButton'
+import PrimaryButton from '@shared/PrimaryButton'
 
 const clienteLogueado = {
    id: '1',
@@ -39,16 +39,24 @@ const ClientOrderForm = () => {
    const { createOrderMutate, isPending } = useCreateOrder()
 
    const canSave = orderArticles.length > 0
-   const allArticlesdAreValid = orderArticles.every((article) => article.articleId !== '')
 
-   const articlesTotalQuantity = orderArticles.reduce(
-      (acc, a) => acc + (a.quantity || 0),
-      0
+   const allArticlesdAreValid = useMemo(
+      () => orderArticles.every((article) => article.articleId !== ''),
+      [orderArticles]
    )
 
-   const articlesTotalPrice = orderArticles.reduce(
-      (acc, a) => acc + Number(a.clientPrice) * Number(a.quantity || 0),
-      0
+   const articlesTotalQuantity = useMemo(
+      () => orderArticles.reduce((acc, a) => acc + (a.quantity || 0), 0),
+      [orderArticles]
+   )
+
+   const articlesTotalPrice = useMemo(
+      () =>
+         orderArticles.reduce(
+            (acc, a) => acc + Number(a.clientPrice) * Number(a.quantity || 0),
+            0
+         ),
+      [orderArticles]
    )
 
    const handleSaveOrder = () => {
@@ -73,12 +81,13 @@ const ClientOrderForm = () => {
             <PageTitle
                title="Crear Nuevo Pedido"
                hasGoBack
-               goBackRoute="/"
+               goBackRoute="/panel"
                description="Completá el contenido de tu pedido"
             />
 
-            <SaveButton
+            <PrimaryButton
                size="lg"
+               icon={Save}
                isLoading={isPending}
                disabled={!canSave}
                label="Crear Pedido"

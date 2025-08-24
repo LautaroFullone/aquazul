@@ -1,41 +1,44 @@
-import { Loader2, Save } from 'lucide-react'
+import { type VariantProps } from 'class-variance-authority'
+import { Loader2, type LucideIcon } from 'lucide-react'
 import { Button, buttonVariants, cn } from '@shadcn'
 import useMobile from '@hooks/useMobile'
-import { type VariantProps } from 'class-variance-authority'
 
 //types from shadcn
-interface SaveButtonProps
+interface PrimaryButtonProps
    extends Omit<React.ComponentProps<'button'>, 'children'>,
       VariantProps<typeof buttonVariants> {
+   icon: LucideIcon
    isLoading: boolean
    label?: string
    loadingLabel?: string
 }
 
-const SaveButton: React.FC<SaveButtonProps> = ({
+const PrimaryButton: React.FC<PrimaryButtonProps> = ({
+   icon,
    isLoading,
-   className,
    label = 'Guardar',
    loadingLabel = 'Guardando...',
+   className,
    ...props
 }) => {
    const isMobile = useMobile()
 
    const message = isLoading ? loadingLabel : label
-   const icon = isLoading ? <Loader2 className="animate-spin" /> : <Save />
+   const Icon = icon
+   const iconToShow = isLoading ? <Loader2 className="animate-spin" /> : <Icon />
 
    return (
       <Button
          className={cn(
-            className,
+            'bg-blue-800 hover:bg-blue-800/90 text-white',
             isMobile && 'w-full',
-            'bg-blue-800 hover:bg-blue-800/90 text-white'
+            className
          )}
          {...props}
       >
-         {icon}
+         {iconToShow}
          {message}
       </Button>
    )
 }
-export default SaveButton
+export default PrimaryButton

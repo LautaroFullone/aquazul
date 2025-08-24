@@ -15,9 +15,9 @@ import {
 } from '@shadcn'
 
 const navigationItems = [
-   { route: '/', label: 'Inicio' },
-   { route: '/pedidos/formulario', label: 'Nuevo Pedido' },
-   { route: '/pedidos', label: 'Historial' },
+   { route: '/panel', label: 'Inicio' },
+   { route: 'nuevo-pedido', label: 'Nuevo Pedido' },
+   { route: 'historial-pedidos', label: 'Historial' },
 ]
 
 const Navbar = () => {
@@ -27,7 +27,7 @@ const Navbar = () => {
       <header className="bg-white border-b border-gray-200 shadow-xs h-16 flex items-center">
          <div className="container mx-auto px-4">
             <div className="flex justify-between ">
-               <Link to="/" className="flex items-center space-x-2">
+               <Link to="/panel" className="flex items-center space-x-2">
                   <img src="/aquazul-logo.png" className="h-8" alt="AQUAZUL Logo" />
                </Link>
 
