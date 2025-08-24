@@ -8,7 +8,7 @@ interface PrimaryButtonProps
    extends Omit<React.ComponentProps<'button'>, 'children'>,
       VariantProps<typeof buttonVariants> {
    icon: LucideIcon
-   isLoading: boolean
+   isLoading?: boolean
    label?: string
    loadingLabel?: string
 }

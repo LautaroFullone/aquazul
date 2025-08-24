@@ -1,7 +1,9 @@
+import { Link, useNavigate } from 'react-router-dom'
+import { routesConfig } from '@config/routesConfig'
+import PrimaryButton from '@shared/PrimaryButton'
 import { Lock, LogIn, User } from 'lucide-react'
 import { useState } from 'react'
 import {
-   Button,
    Card,
    CardContent,
    CardDescription,
@@ -10,17 +12,18 @@ import {
    Input,
    Label,
 } from '@shadcn'
-import { Link } from 'react-router-dom'
 
 const Login = () => {
    const [nombre, setNombre] = useState('')
    const [password, setPassword] = useState('')
 
+   const navigate = useNavigate()
+
    return (
       <div className="flex flex-col items-center">
          <Card className="w-full max-w-md py-10">
             <CardHeader className="space-y-1">
-               <CardTitle className="text-2xl font-bold text-center">
+               <CardTitle className="text-2xl font-bold text-center text-blue-800">
                   Iniciar sesión
                </CardTitle>
 
@@ -38,7 +41,7 @@ const Login = () => {
 
                   <Input
                      id="nombre"
-                     placeholder="Ej: Hotel Plaza"
+                     placeholder="Ej: usuario123"
                      value={nombre}
                      onChange={(e) => setNombre(e.target.value)}
                   />
@@ -59,20 +62,26 @@ const Login = () => {
                   />
                </div>
 
-               <div className="space-y-2">
-                  <Link className="block" to="/panel-admin">
-                     <Button className="w-full">
-                        <LogIn className="mr-2 h-4 w-4" />
-                        Entrar al Panel Admin
-                     </Button>
-                  </Link>
+               <div className="space-y-2 pt-2">
+                  <PrimaryButton
+                     size={'lg'}
+                     icon={LogIn}
+                     isLoading={false}
+                     label="Entrar al Panel Admin"
+                     loadingLabel="Entrando..."
+                     className="w-full bg-primary hover:bg-primary/90"
+                     onClick={() => navigate(routesConfig.ADMIN_DASHBOARD)}
+                  />
 
-                  <Link className="block" to="/panel">
-                     <Button variant="outline" className="w-full bg-transparent">
-                        <LogIn className="mr-2 h-4 w-4" />
-                        Entrar al Panel Cliente
-                     </Button>
-                  </Link>
+                  <PrimaryButton
+                     size={'lg'}
+                     icon={LogIn}
+                     isLoading={false}
+                     label="Entrar al Panel Cliente"
+                     loadingLabel="Entrando..."
+                     className="w-full"
+                     onClick={() => navigate(routesConfig.CLIENT_DASHBOARD)}
+                  />
                </div>
 
                <div className="flex place-content-between pt-4 border-t">
@@ -80,7 +89,7 @@ const Login = () => {
 
                   <Link
                      className="text-sm text-blue-600 hover:text-blue-700"
-                     to="/acceso/registro"
+                     to={routesConfig.REGISTER}
                   >
                      Registrá tu negocio
                   </Link>

@@ -3,6 +3,7 @@ import useFetchArticles from '@hooks/Articles/useFetchArticles'
 import useCreateOrder from '@hooks/Orders/useCreateOrder'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import type { OrderArticle } from '@models/Order.model'
+import PrimaryButton from '@shared/PrimaryButton'
 import TextAreaForm from '@shared/TextAreaForm'
 import { Save, Info } from 'lucide-react'
 import PageTitle from '@shared/PageTitle'
@@ -19,7 +20,6 @@ import {
    TooltipTrigger,
    TooltipContent,
 } from '@shadcn'
-import PrimaryButton from '@shared/PrimaryButton'
 
 const clienteLogueado = {
    id: '1',
@@ -93,7 +93,7 @@ const ClientOrderForm = () => {
                label="Crear Pedido"
                loadingLabel="Creando Pedido..."
                onClick={() => handleSaveOrder()}
-               className=" hidden sm:flex"
+               className="hidden sm:flex"
             />
          </div>
 

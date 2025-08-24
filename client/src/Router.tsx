@@ -4,25 +4,32 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import ClientLayout from './shared/ClientLayout/ClientLayout'
 import Register from '@pages/Authentication/Register.page'
 import Login from '@pages/Authentication/Login.page'
+import { routesConfig } from '@config/routesConfig'
 
 const Router = () => {
    return (
       <BrowserRouter>
          <Routes>
-            <Route path="/panel" element={<ClientLayout />}>
+            <Route path={routesConfig.CLIENT_DASHBOARD} element={<ClientLayout />}>
                <Route index element={<ClientDashboard />} />
-               <Route path="historial-pedidos" element={<ClientOrdersPanel />} />
-               <Route path="nuevo-pedido" element={<ClientOrderForm />} />
+               <Route
+                  path={routesConfig.CLIENT_HISTORY_ORDERS}
+                  element={<ClientOrdersPanel />}
+               />
+               <Route
+                  path={routesConfig.CLIENT_NEW_ORDER}
+                  element={<ClientOrderForm />}
+               />
 
                <Route path="*" element={<NotFound />} />
             </Route>
 
-            <Route path="/acceso" element={<AuthenticationLayout />}>
-               <Route index element={<Login />} />
-               <Route path="registro" element={<Register />} />
+            <Route element={<AuthenticationLayout />}>
+               <Route path={routesConfig.LOGIN} element={<Login />} />
+               <Route path={routesConfig.REGISTER} element={<Register />} />
             </Route>
 
-            <Route path="*" element={<Navigate to="/acceso" />} />
+            <Route path="*" element={<Navigate to={routesConfig.LOGIN} />} />
          </Routes>
       </BrowserRouter>
    )

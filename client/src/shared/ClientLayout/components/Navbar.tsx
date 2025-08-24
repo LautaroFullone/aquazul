@@ -1,5 +1,6 @@
-import { Link, useLocation } from 'react-router-dom'
 import { LogOut, Menu, UserRound } from 'lucide-react'
+import { Link, useLocation } from 'react-router-dom'
+import { routesConfig } from '@config/routesConfig'
 import {
    Button,
    cn,
@@ -14,11 +15,11 @@ import {
    SheetTrigger,
 } from '@shadcn'
 
-const navigationItems = [
-   { route: '/panel', label: 'Inicio' },
-   { route: 'nuevo-pedido', label: 'Nuevo Pedido' },
-   { route: 'historial-pedidos', label: 'Historial' },
-]
+const navigationItems = {
+   Inicio: routesConfig.CLIENT_DASHBOARD,
+   'Nuevo Pedido': routesConfig.CLIENT_NEW_ORDER,
+   Historial: routesConfig.CLIENT_HISTORY_ORDERS,
+}
 
 const Navbar = () => {
    const { pathname } = useLocation()
@@ -27,25 +28,28 @@ const Navbar = () => {
       <header className="bg-white border-b border-gray-200 shadow-xs h-16 flex items-center">
          <div className="container mx-auto px-4">
             <div className="flex justify-between ">
-               <Link to="/panel" className="flex items-center space-x-2">
+               <Link
+                  to={routesConfig.CLIENT_DASHBOARD}
+                  className="flex items-center space-x-2"
+               >
                   <img src="/aquazul-logo.png" className="h-8" alt="AQUAZUL Logo" />
                </Link>
 
                {/* Desktop Navigation */}
                <nav className="hidden md:flex items-center space-x-8">
-                  {navigationItems.map((item, index) => {
-                     const isActive = pathname === item.route
+                  {Object.entries(navigationItems).map(([label, route], index) => {
+                     const isActive = pathname === route
 
                      return (
                         <Link
                            key={`nav-link-${index}`}
-                           to={item.route}
+                           to={route}
                            className={cn(
                               'text-gray-600 hover:text-gray-900',
                               isActive && 'text-black'
                            )}
                         >
-                           {item.label}
+                           {label}
                         </Link>
                      )
                   })}
@@ -95,15 +99,17 @@ const Navbar = () => {
 
                      <SheetContent side="right" className="w-64">
                         <div className="flex flex-col space-y-4 mt-8">
-                           {navigationItems.map((item, index) => (
-                              <Link
-                                 key={`nav-link-mobile-${index}`}
-                                 to={item.route}
-                                 className="text-gray-600 hover:text-gray-900 py-2 px-4 rounded-md hover:bg-gray-100"
-                              >
-                                 {item.label}
-                              </Link>
-                           ))}
+                           {Object.entries(navigationItems).map(
+                              ([label, route], index) => (
+                                 <Link
+                                    key={`nav-link-mobile-${index}`}
+                                    to={route}
+                                    className="text-gray-600 hover:text-gray-900 py-2 px-4 rounded-md hover:bg-gray-100"
+                                 >
+                                    {label}
+                                 </Link>
+                              )
+                           )}
                         </div>
                      </SheetContent>
                   </Sheet>

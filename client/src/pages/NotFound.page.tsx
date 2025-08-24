@@ -1,3 +1,4 @@
+import { routesConfig } from '@config/routesConfig'
 import { SearchX, ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Button } from '@shadcn'
@@ -16,7 +17,7 @@ const NotFound = () => {
                La ruta que buscas no existe, verificá la URL.
             </p>
             <div className="mt-6 flex items-center justify-center gap-3">
-               <Link to="/panel">
+               <Link to={routesConfig.PANEL_CLIENT}>
                   <Button
                      variant="ghost"
                      className="text-zinc-600 hover:text-zinc-700 hover:bg-zinc-100"
