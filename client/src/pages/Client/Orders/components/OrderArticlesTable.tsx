@@ -1,9 +1,10 @@
-import { Check, ChevronsUpDown, Trash2, Plus, Info, PackagePlus } from 'lucide-react'
+import { Check, ChevronsUpDown, Trash2, Plus, Info, ClipboardPlus } from 'lucide-react'
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import type { OrderArticle } from '@models/Order.model'
 import type { Article } from '@models/Article.model'
 import generateShortId from '@lib/generateShortId'
+import useOrders from '@hooks/useOrders'
 import {
    Button,
    cn,
@@ -29,7 +30,6 @@ import {
    CardContent,
    CardDescription,
 } from '@shadcn'
-import useOrders from '@hooks/useOrders'
 
 type ArticleRow = OrderArticle & { rowId: string }
 
@@ -124,7 +124,7 @@ const OrderArticlesTable: React.FC<Props> = ({
                   onClick={addArticleRow}
                   className="active:bg-blue-800/90 w-full sm:w-min z-50"
                >
-                  <Plus className="w-4 h-4 mr-2" />
+                  <Plus className="w-4 h-4" />
                   Agregar Artículo
                </Button>
             </div>
@@ -156,8 +156,7 @@ const OrderArticlesTable: React.FC<Props> = ({
                <div className="text-center py-6 sm:py-8 px-4 border-2 border-dashed border-gray-200 rounded-md">
                   <div className="flex flex-col items-center gap-2">
                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                        {/* <Plus className="w-6 h-6 text-gray-400" /> */}
-                        <PackagePlus className="w-6 h-6 text-gray-400" />
+                        <ClipboardPlus className="w-6 h-6 text-gray-400" />
                      </div>
 
                      <p className="text-gray-500 font-medium">

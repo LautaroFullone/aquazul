@@ -89,8 +89,8 @@ const ClientOrderForm = () => {
                icon={Save}
                isLoading={isPending}
                disabled={!canSave}
-               label="Crear Pedido"
-               loadingLabel="Creando Pedido..."
+               label="Guardar Pedido"
+               // loadingLabel="Guardando Pedido..."
                onClick={() => handleSaveOrder()}
                className="hidden sm:flex"
             />
@@ -208,8 +208,8 @@ const ClientOrderForm = () => {
                icon={Save}
                isLoading={isPending}
                disabled={!canSave}
-               label="Crear Pedido"
-               loadingLabel="Creando Pedido..."
+               label="Guardar Pedido"
+               // loadingLabel="Guardando Pedido..."
                onClick={() => handleSaveOrder()}
                className="sm:hidden"
             />

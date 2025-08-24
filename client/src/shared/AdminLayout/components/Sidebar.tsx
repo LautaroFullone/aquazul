@@ -4,8 +4,8 @@ import useMobile from '@hooks/useMobile'
 import { Button, cn } from '@shadcn'
 import { useState } from 'react'
 import {
-   BadgePercent,
    ChartColumn,
+   CircleDollarSign,
    ClipboardList,
    FileText,
    Home,
@@ -22,7 +22,7 @@ const navigationItems = [
    { label: 'Clientes', route: '/admin/testimonials', icon: UsersRound },
    { label: 'Pedidos', route: '/admin/posts', icon: WashingMachine },
    { label: 'Artículos', route: '/admin/testimonials', icon: ClipboardList },
-   { label: 'Precios', route: '/admin/testimonials', icon: BadgePercent },
+   { label: 'Precios', route: '/admin/testimonials', icon: CircleDollarSign },
    { label: 'Remitos', route: '/admin/testimonials', icon: FileText },
    { label: 'Órdenes de pago', route: '/admin/testimonials', icon: Receipt },
    { label: 'Estadisticas', route: '/admin/testimonials', icon: ChartColumn },

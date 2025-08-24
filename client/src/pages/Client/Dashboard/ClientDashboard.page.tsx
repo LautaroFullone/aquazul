@@ -7,13 +7,13 @@ import EmptyBanner from '@shared/EmptyBanner'
 import { Link } from 'react-router-dom'
 import { useMemo } from 'react'
 import {
-   CheckCircle,
-   ClipboardList,
-   Clock,
+   CheckCircle2,
    DollarSign,
    FilePlus,
    FileText,
+   Loader2,
    Plus,
+   WashingMachine,
 } from 'lucide-react'
 import {
    Button,
@@ -48,26 +48,26 @@ const ClientDashboard = () => {
          {
             title: 'Pedidos totales',
             value: totalOrdersCount,
-            icon: ClipboardList,
+            icon: WashingMachine,
             description: 'Total de pedidos realizados',
          },
          {
             title: 'En Proceso',
             value: ordersInProgressCount,
-            icon: Clock,
+            icon: Loader2,
             description: 'Pedidos que están siendo procesados',
          },
          {
             title: 'Completados',
             value: ordersCompletedCount,
-            icon: CheckCircle,
+            icon: CheckCircle2,
             description: 'Pedidos que ya fueron completados',
          },
          {
             title: 'Gasto Mensual',
             value: valueToCurrency(totalOrdersMonthPrice),
             icon: DollarSign,
-            description: 'De pedidos completados este mes',
+            description: 'En pedidos completados del mes',
          },
       ],
       [
