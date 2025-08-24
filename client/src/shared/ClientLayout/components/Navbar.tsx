@@ -1,6 +1,7 @@
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { LogOut, Menu, UserRound } from 'lucide-react'
-import { Link, useLocation } from 'react-router-dom'
 import { routesConfig } from '@config/routesConfig'
+import { useState } from 'react'
 import {
    Button,
    cn,
@@ -12,17 +13,21 @@ import {
    DropdownMenuTrigger,
    Sheet,
    SheetContent,
+   SheetTitle,
    SheetTrigger,
 } from '@shadcn'
 
-const navigationItems = {
-   Inicio: routesConfig.CLIENT_DASHBOARD,
-   'Nuevo Pedido': routesConfig.CLIENT_NEW_ORDER,
-   Historial: routesConfig.CLIENT_HISTORY_ORDERS,
-}
+const navigationItems = [
+   { label: 'Inicio', route: routesConfig.CLIENT_DASHBOARD },
+   { label: 'Nuevo Pedido', route: routesConfig.CLIENT_NEW_ORDER },
+   { label: 'Historial', route: routesConfig.CLIENT_HISTORY_ORDERS },
+]
 
 const Navbar = () => {
    const { pathname } = useLocation()
+   const navigate = useNavigate()
+
+   const [isSheetMobileOpen, setIsSheetMobileOpen] = useState(false)
 
    return (
       <header className="bg-white border-b border-gray-200 shadow-xs h-16 flex items-center">
@@ -37,7 +42,7 @@ const Navbar = () => {
 
                {/* Desktop Navigation */}
                <nav className="hidden md:flex items-center space-x-8">
-                  {Object.entries(navigationItems).map(([label, route], index) => {
+                  {navigationItems.map(({ label, route }, index) => {
                      const isActive = pathname === route
 
                      return (
@@ -80,7 +85,7 @@ const Navbar = () => {
                         <DropdownMenuSeparator />
 
                         <DropdownMenuItem
-                           onClick={() => window.alert('logout')}
+                           onClick={() => navigate(routesConfig.LOGIN)}
                            className="text-destructive! hover:bg-red-50 cursor-pointer"
                         >
                            <LogOut className="mr-2 h-4 w-4 text-destructive" />
@@ -90,7 +95,7 @@ const Navbar = () => {
                   </DropdownMenu>
 
                   {/* Mobile menu */}
-                  <Sheet>
+                  <Sheet open={isSheetMobileOpen} onOpenChange={setIsSheetMobileOpen}>
                      <SheetTrigger asChild>
                         <Button variant="ghost" size="icon" className="md:hidden">
                            <Menu className="h-5 w-5" />
@@ -98,18 +103,18 @@ const Navbar = () => {
                      </SheetTrigger>
 
                      <SheetContent side="right" className="w-64">
+                        <SheetTitle className="sr-only">Menu</SheetTitle>
                         <div className="flex flex-col space-y-4 mt-8">
-                           {Object.entries(navigationItems).map(
-                              ([label, route], index) => (
-                                 <Link
-                                    key={`nav-link-mobile-${index}`}
-                                    to={route}
-                                    className="text-gray-600 hover:text-gray-900 py-2 px-4 rounded-md hover:bg-gray-100"
-                                 >
-                                    {label}
-                                 </Link>
-                              )
-                           )}
+                           {navigationItems.map(({ label, route }, index) => (
+                              <Link
+                                 key={`nav-link-mobile-${index}`}
+                                 to={route}
+                                 onClick={() => setIsSheetMobileOpen(false)}
+                                 className="text-gray-600 hover:text-gray-900 py-2 px-4 rounded-md hover:bg-gray-100"
+                              >
+                                 {label}
+                              </Link>
+                           ))}
                         </div>
                      </SheetContent>
                   </Sheet>
