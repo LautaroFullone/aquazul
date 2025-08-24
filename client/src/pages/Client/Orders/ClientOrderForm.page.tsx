@@ -19,6 +19,7 @@ import {
    TooltipTrigger,
    TooltipContent,
 } from '@shadcn'
+import SaveButton from '@shared/SaveButton'
 
 const clienteLogueado = {
    id: '1',
@@ -35,7 +36,7 @@ const ClientOrderForm = () => {
    const [observation, setObservation] = useState('')
 
    const { articles } = useFetchArticles(clienteLogueado.id)
-   const { createOrderMutate } = useCreateOrder()
+   const { createOrderMutate, isPending } = useCreateOrder()
 
    const canSave = orderArticles.length > 0
    const allArticlesdAreValid = orderArticles.every((article) => article.articleId !== '')
@@ -76,15 +77,15 @@ const ClientOrderForm = () => {
                description="Completá el contenido de tu pedido"
             />
 
-            <Button
-               onClick={() => handleSaveOrder()}
+            <SaveButton
                size="lg"
+               isLoading={isPending}
                disabled={!canSave}
-               className="bg-blue-800 hover:bg-blue-800/90 text-white hidden sm:flex"
-            >
-               <Save />
-               Guardar Pedido
-            </Button>
+               label="Crear Pedido"
+               loadingLabel="Creando Pedido..."
+               onClick={() => handleSaveOrder()}
+               className=" hidden sm:flex"
+            />
          </div>
 
          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

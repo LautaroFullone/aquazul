@@ -1,12 +1,12 @@
 import { orderStatusConfig } from '@config/orderStatusConfig'
 import useFetchOrders from '@hooks/Orders/useFetchOrders'
-import { Search } from 'lucide-react'
 import type { OrderStatus } from '@models/Order.model'
 import { useEffect, useMemo, useState } from 'react'
 import { usePagination } from '@hooks/usePagination'
 import OrdersTable from './components/OrdersTable'
 import { useDebounce } from '@hooks/useDebounce'
 import PageTitle from '@shared/PageTitle'
+import { Search } from 'lucide-react'
 import {
    Button,
    Card,

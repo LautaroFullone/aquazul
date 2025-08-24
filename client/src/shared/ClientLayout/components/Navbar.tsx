@@ -1,5 +1,5 @@
-import { LogOut, Menu, UserRound, Bubbles } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
+import { LogOut, Menu, UserRound } from 'lucide-react'
 import {
    Button,
    cn,
