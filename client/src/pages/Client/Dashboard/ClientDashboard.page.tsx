@@ -1,5 +1,4 @@
-import useFetchRecentOrders from '@hooks/Orders/useFetchRecentOrders'
-import useFetchClientStats from '@hooks/Orders/useFetchOrdersStats'
+import { useFetchOrdersClientStats, useFetchRecentOrders } from '@hooks/react-query'
 import RecentOrderCard from './components/RecentOrderCard'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import ClientStatCard from './components/ClientStatCard'
@@ -35,7 +34,7 @@ const ClientDashboard = () => {
       ordersInProgressCount,
       totalOrdersMonthPrice,
       isPending: isLoadingStats,
-   } = useFetchClientStats({
+   } = useFetchOrdersClientStats({
       clientId: '1',
    })
 

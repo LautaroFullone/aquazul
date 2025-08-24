@@ -1,5 +1,5 @@
 import { Check, ChevronsUpDown, Trash2, Plus, Info, PackagePlus } from 'lucide-react'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import type { OrderArticle } from '@models/Order.model'
 import type { Article } from '@models/Article.model'
@@ -29,6 +29,7 @@ import {
    CardContent,
    CardDescription,
 } from '@shadcn'
+import useOrders from '@hooks/useOrders'
 
 type ArticleRow = OrderArticle & { rowId: string }
 
@@ -49,16 +50,7 @@ const OrderArticlesTable: React.FC<Props> = ({
    const [rows, setRows] = useState<ArticleRow[]>([])
    const [openRowId, setOpenRowId] = useState<string | null>(null)
 
-   const setRowsAndEmit = (articleRows: ArticleRow[]) => {
-      setRows(articleRows)
-      onChangeValues(
-         articleRows.map(({ articleId, quantity, clientPrice }) => ({
-            articleId,
-            quantity,
-            clientPrice,
-         }))
-      )
-   }
+   const { validateOrderArticles } = useOrders()
 
    useEffect(() => {
       setRows((prevRows) => {
@@ -75,6 +67,17 @@ const OrderArticlesTable: React.FC<Props> = ({
          return next
       })
    }, [orderArticles])
+
+   const setRowsAndEmit = (articleRows: ArticleRow[]) => {
+      setRows(articleRows)
+      onChangeValues(
+         articleRows.map(({ articleId, quantity, clientPrice }) => ({
+            articleId,
+            quantity,
+            clientPrice,
+         }))
+      )
+   }
 
    const isArticleInOrder = useCallback(
       (rowId: string, articleId: string) =>
@@ -98,15 +101,11 @@ const OrderArticlesTable: React.FC<Props> = ({
       setRowsAndEmit(rows.map((r) => (r.rowId === rowId ? { ...r, ...fields } : r)))
    }
 
-   // VALIDACIÓN (desde data limpia del padre para evitar inconsistencias)
-   const validationErrors: string[] = []
-   if (orderArticles.length === 0) {
-      validationErrors.push('Tenés que agregar al menos un artículo.')
-   }
-   const notSelectedCount = orderArticles.filter((a) => !a.articleId).length
-   if (notSelectedCount > 0) {
-      validationErrors.push(`${notSelectedCount} artículo(s) sin seleccionar.`)
-   }
+   const validationErrors = useMemo(
+      () => validateOrderArticles(orderArticles),
+      [orderArticles] // eslint-disable-line
+   )
+
    const isOrderValid = validationErrors.length === 0
 
    return (

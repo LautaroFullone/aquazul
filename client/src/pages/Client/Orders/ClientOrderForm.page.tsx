@@ -1,6 +1,5 @@
 import OrderArticlesTable from './components/OrderArticlesTable'
-import useFetchArticles from '@hooks/Articles/useFetchArticles'
-import useCreateOrder from '@hooks/Orders/useCreateOrder'
+import { useFetchArticles, useCreateOrder } from '@hooks/react-query'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import type { OrderArticle } from '@models/Order.model'
 import PrimaryButton from '@shared/PrimaryButton'
