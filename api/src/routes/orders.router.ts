@@ -1,13 +1,13 @@
 import { Router, type Request, type Response } from 'express'
 import { handleRouteError } from '../errors/handleRouteError'
-import { BadRequestError, NotFoundError } from '../errors/ApiError'
+import { NotFoundError } from '../errors/ApiError'
 import prismaClient from '../prisma/prismaClient'
+import { sleep } from '../lib/sleep'
 import {
    getOrdersSchema,
    getOrdersStatsSchema,
    orderCreateSchema,
 } from '../models/order.model'
-import { sleep } from '../lib/sleep'
 
 const ordersRouter = Router()
 
