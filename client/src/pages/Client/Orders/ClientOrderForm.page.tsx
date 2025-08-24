@@ -204,15 +204,16 @@ const ClientOrderForm = () => {
                </Card>
             </div>
 
-            <Button
-               onClick={() => handleSaveOrder()}
+            <PrimaryButton
                size="lg"
+               icon={Save}
+               isLoading={isPending}
                disabled={!canSave}
-               className="bg-blue-800 hover:bg-blue-800/90 text-white sm:hidden"
-            >
-               <Save />
-               Guardar Pedido
-            </Button>
+               label="Crear Pedido"
+               loadingLabel="Creando Pedido..."
+               onClick={() => handleSaveOrder()}
+               className="sm:hidden"
+            />
          </div>
       </>
    )

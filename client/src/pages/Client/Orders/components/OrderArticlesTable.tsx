@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import type { OrderArticle } from '@models/Order.model'
 import type { Article } from '@models/Article.model'
+import generateShortId from '@lib/generateShortId'
 import {
    Button,
    cn,
@@ -65,7 +66,7 @@ const OrderArticlesTable: React.FC<Props> = ({
             const existing = prevRows[index]
 
             return {
-               rowId: existing?.rowId ?? crypto.randomUUID(),
+               rowId: existing?.rowId ?? generateShortId(),
                articleId: article.articleId ?? '',
                quantity: article.quantity ?? 0,
                clientPrice: article.clientPrice ?? 0,
@@ -85,7 +86,7 @@ const OrderArticlesTable: React.FC<Props> = ({
       if (rows.filter((r) => r.articleId === '').length === 3) return
       setRowsAndEmit([
          ...rows,
-         { rowId: crypto.randomUUID(), articleId: '', quantity: 0, clientPrice: 0 },
+         { rowId: generateShortId(), articleId: '', quantity: 0, clientPrice: 0 },
       ])
    }
 
@@ -120,7 +121,10 @@ const OrderArticlesTable: React.FC<Props> = ({
                   </CardDescription>
                </div>
 
-               <Button onClick={addArticleRow} className="w-full sm:w-min">
+               <Button
+                  onClick={addArticleRow}
+                  className="active:bg-blue-800/90 w-full sm:w-min z-50"
+               >
                   <Plus className="w-4 h-4 mr-2" />
                   Agregar Artículo
                </Button>

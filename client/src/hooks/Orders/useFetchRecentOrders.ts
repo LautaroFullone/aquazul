@@ -15,8 +15,7 @@ const useFetchRecentOrders = (queryParams: { clientId: string; limit: number }) 
    })
 
    if (isError && error.message !== 'Network Error') {
-      //ID to avoid duplicated toasts
-      toast.error(error.message, { id: `error-${queriesKeys.RECENTS_ORDERS}` })
+      toast.error(error.message, { id: `error-${queriesKeys.RECENTS_ORDERS}` }) //Seteo un ID para evitar toast duplicados
    }
 
    return {

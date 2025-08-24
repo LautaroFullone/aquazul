@@ -15,9 +15,8 @@ const useFetchArticles = (clientId: Order['clientId']) => {
       retry: 1,
    })
 
-   if (isError) {
-      //ID to avoid duplicated toasts
-      toast.error(error.message, { id: `error-${queriesKeys.FETCH_ARTICLES}` })
+   if (isError && error.message !== 'Network Error') {
+      toast.error(error.message, { id: `error-${queriesKeys.FETCH_ARTICLES}` }) //Seteo un ID para evitar toast duplicados
    }
 
    return {

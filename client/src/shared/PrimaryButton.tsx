@@ -30,7 +30,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
    return (
       <Button
          className={cn(
-            'bg-blue-800 hover:bg-blue-800/90 text-white',
+            'bg-blue-800 active:bg-blue-800/90 hover:bg-blue-800/90 text-white',
             isMobile && 'w-full',
             className
          )}

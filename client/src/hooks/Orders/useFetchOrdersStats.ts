@@ -12,9 +12,7 @@ const useFetchOrdersClientStats = (param: { clientId: string }) => {
    })
 
    if (isError && error.message !== 'Network Error') {
-      console.log('## error: ', error)
-      //ID to avoid duplicated toasts
-      toast.error(error.message, { id: `error-${queriesKeys.ORDERS_STATS}` })
+      toast.error(error.message, { id: `error-${queriesKeys.ORDERS_STATS}` }) //Seteo un ID para evitar toast duplicados
    }
 
    return {

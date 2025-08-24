@@ -1,12 +1,12 @@
-import AuthenticationLayout from '@shared/AuthenticationLayout/AuthenticationLayout'
 import { ClientDashboard, ClientOrderForm, ClientOrdersPanel, NotFound } from './pages'
+import AuthenticationLayout from '@shared/AuthenticationLayout/AuthenticationLayout'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import AdminDashboard from '@pages/Admin/Dashboard/AdminDashboard.page'
 import ClientLayout from './shared/ClientLayout/ClientLayout'
 import Register from '@pages/Authentication/Register.page'
+import AdminLayout from '@shared/AdminLayout/AdminLayout'
 import Login from '@pages/Authentication/Login.page'
 import { routesConfig } from '@config/routesConfig'
-import AdminLayout from '@shared/AdminLayout/AdminLayout'
-import AdminDashboard from '@pages/Admin/Dashboard/AdminDashboard.page'
 
 const Router = () => {
    return (

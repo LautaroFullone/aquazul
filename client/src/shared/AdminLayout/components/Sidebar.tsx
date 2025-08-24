@@ -1,4 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { routesConfig } from '@config/routesConfig'
 import useMobile from '@hooks/useMobile'
 import { Button, cn } from '@shadcn'
 import { useState } from 'react'
@@ -14,9 +15,7 @@ import {
    Settings,
    UsersRound,
    WashingMachine,
-   X,
 } from 'lucide-react'
-import { routesConfig } from '@config/routesConfig'
 
 const navigationItems = [
    { label: 'Inicio', route: routesConfig.ADMIN_DASHBOARD, icon: Home },
