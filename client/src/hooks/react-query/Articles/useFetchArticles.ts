@@ -1,14 +1,13 @@
 import { getArticlesByClient } from '@services/articles.service'
 import { queriesKeys } from '@config/reactQueryKeys'
-import type { Order } from '@models/Order.model'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-const useFetchArticles = (clientId: Order['clientId']) => {
+const useFetchArticles = (param: { clientId: string }) => {
    const { data, isPending, error, isError } = useQuery({
       queryKey: [queriesKeys.FETCH_ARTICLES],
       queryFn: async () => {
-         const response = await getArticlesByClient(clientId)
+         const response = await getArticlesByClient(param.clientId)
          return response.articles
       },
       staleTime: 20 * 60 * 1000, //20min

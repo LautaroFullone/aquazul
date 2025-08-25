@@ -11,6 +11,8 @@ export interface Order {
    articlesCount: number
    totalPrice: number
    createdAt: string
+   paymentNotes: []
+   deliveryNotes: []
 }
 
 export interface OrderArticle {
@@ -18,3 +20,8 @@ export interface OrderArticle {
    quantity: number
    clientPrice: number
 }
+
+export type OrderSummary = Pick<
+   Order,
+   'id' | 'code' | 'status' | 'articlesCount' | 'totalPrice' | 'createdAt'
+>

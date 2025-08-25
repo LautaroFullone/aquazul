@@ -1,5 +1,5 @@
+import type { Order, OrderSummary } from '@models/Order.model'
 import type { ResponseApi } from './ResponseApi'
-import type { Order } from '@models/Order.model'
 import { api } from '@lib/axios'
 
 type CreateOrderData = Pick<Order, 'clientId' | 'articles' | 'observation'>
@@ -16,8 +16,20 @@ type GetOrdersQueryParams = {
 }
 
 export async function getOrders(queryParams?: GetOrdersQueryParams) {
-   type Response = Pick<ResponseApi, 'message' | 'orders' | 'count'>
+   type Response = {
+      message: string
+      orders: OrderSummary[]
+   }
    const { data } = await api.get<Response>(`/orders`, { params: queryParams })
+   return data
+}
+
+export async function getOrderDetails(orderId: string) {
+   type Response = {
+      message: string
+      order: Order | null
+   }
+   const { data } = await api.get<Response>(`/orders/${orderId}`)
    return data
 }
 

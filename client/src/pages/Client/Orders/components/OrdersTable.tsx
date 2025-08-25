@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight, MoreHorizontal, PackageX } from 'lucide-reac
 import { formatDateToShow } from '@utils/formatDateToShow'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import OrderStatusBadge from '@shared/OrderStatusBadge'
-import type { Order } from '@models/Order.model'
+import type { OrderSummary } from '@models/Order.model'
 import EmptyBanner from '@shared/EmptyBanner'
 import { Eye } from 'lucide-react'
 import {
@@ -15,9 +15,11 @@ import {
    TableHeader,
    TableRow,
 } from '@shadcn'
+import OrderModal from './OrderModal'
+import { useState } from 'react'
 
 interface OrdersTableProps {
-   paginatedOrders: Order[]
+   paginatedOrders: OrderSummary[]
    itemsPerPage: number
    isLoading: boolean
    currentPage: number
@@ -41,6 +43,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
    onPageChange,
    emptyMessage,
 }) => {
+   const [selectedOrder, setSelectedOrder] = useState<OrderSummary | null>(null)
+
    return (
       <>
          <div className="overflow-x-auto">
@@ -100,7 +104,13 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
                            </TableCell>
 
                            <TableCell>
-                              <Button variant="outline" size="sm">
+                              <Button
+                                 variant="outline"
+                                 size="sm"
+                                 onClick={() => {
+                                    setSelectedOrder(order)
+                                 }}
+                              >
                                  <Eye className="h-4 w-4 mr-1" />
                                  Ver
                               </Button>
@@ -165,6 +175,15 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
                   <ChevronRight className="h-4 w-4" />
                </Button>
             </div>
+         )}
+
+         {selectedOrder && (
+            <OrderModal
+               isModalOpen={!!selectedOrder}
+               onClose={() => setSelectedOrder(null)}
+               orderId={selectedOrder.id}
+               orderCode={selectedOrder.code}
+            />
          )}
       </>
    )

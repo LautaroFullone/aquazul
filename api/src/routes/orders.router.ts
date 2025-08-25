@@ -7,7 +7,7 @@ import {
    getOrdersSchema,
    getOrdersStatsSchema,
    orderCreateSchema,
-} from '../models/order.model'
+} from '../models/Order.model'
 
 const ordersRouter = Router()
 
@@ -25,6 +25,7 @@ ordersRouter.get('/', async (req, res) => {
             where,
             orderBy: { createdAt: 'desc' },
             take: limit,
+            omit: { articles: true, observation: true, updatedAt: true, clientId: true },
          })
 
          return res.send({ message: 'Pedidos obtenidos', orders })
@@ -34,11 +35,54 @@ ordersRouter.get('/', async (req, res) => {
       const orders = await prismaClient.order.findMany({
          where,
          orderBy: { createdAt: 'desc' },
+         omit: { articles: true, observation: true, updatedAt: true, clientId: true },
       })
 
       return res.send({
          message: 'Pedidos obtenidos',
          orders,
+      })
+   } catch (error) {
+      return handleRouteError(res, error)
+   }
+})
+
+ordersRouter.get('/:orderId', async (req, res) => {
+   try {
+      await sleep(2000)
+      const { orderId } = req.params
+
+      const order = await prismaClient.order.findUnique({
+         where: { id: orderId },
+      })
+
+      if (!order) {
+         throw new NotFoundError('Pedido no existente', { orderId })
+      }
+
+      //TODO: traer remitos y ordenes de pago
+
+      return res.send({
+         message: 'Pedido obtenido',
+         order: {
+            ...order,
+            deliveryNotes: [
+               { id: 'REM-000123', createdAt: order.createdAt, details: {} },
+               { id: 'REM-000124', createdAt: order.createdAt, details: {} },
+            ],
+            paymentNotes: [
+               {
+                  id: 'ODP-000123',
+                  createdAt: order.createdAt,
+                  total: order.totalPrice / 2,
+               },
+               {
+                  id: 'ODP-000124',
+                  createdAt: order.createdAt,
+                  total: order.totalPrice / 2,
+               },
+            ],
+         },
       })
    } catch (error) {
       return handleRouteError(res, error)

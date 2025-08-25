@@ -1,5 +1,5 @@
 import { orderStatusConfig } from '@config/orderStatusConfig'
-import type { OrderStatus } from '@models/Order.model'
+import type { OrderStatus, OrderSummary } from '@models/Order.model'
 import { useEffect, useMemo, useState } from 'react'
 import { usePagination } from '@hooks/usePagination'
 import { useFetchOrders } from '@hooks/react-query'
@@ -58,6 +58,7 @@ const ClientOrdersPanel = () => {
          return byId && byStatus && byDate
       })
    }, [orders, debouncedSearch, statusFilter, fromDate, toDate])
+
    const {
       currentPage,
       totalPages,

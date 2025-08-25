@@ -8,7 +8,6 @@ import { Save, Info } from 'lucide-react'
 import PageTitle from '@shared/PageTitle'
 import { useMemo, useState } from 'react'
 import {
-   Button,
    Card,
    CardContent,
    CardDescription,
@@ -34,7 +33,7 @@ const ClientOrderForm = () => {
    const [showValidation, setShowValidation] = useState(false)
    const [observation, setObservation] = useState('')
 
-   const { articles } = useFetchArticles(clienteLogueado.id)
+   const { articles } = useFetchArticles({ clientId: clienteLogueado.id })
    const { createOrderMutate, isPending } = useCreateOrder()
 
    const canSave = orderArticles.length > 0

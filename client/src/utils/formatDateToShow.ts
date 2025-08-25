@@ -2,14 +2,14 @@
  * Convierte un string/Date UTC a formato local configurable
  *
  * @param dateInput - Fecha en string o Date (UTC, ej: Supabase)
- * @param mode - "time" | "date" | "both"
+ * @param mode - "time" | "date" | "full"
  *    - "time": HH:mm (24hs)
  *    - "date": dd/MM/yyyy
- *    - "both": HH:mm - dd/MM/yyyy
+ *    - "full": HH:mm - dd/MM/yyyy
  */
 export function formatDateToShow(
-   dateInput: string | Date,
-   mode: 'time' | 'date' | 'both' = 'both'
+   dateInput: string | Date | null | undefined,
+   mode: 'time' | 'date' | 'full' = 'full'
 ) {
    if (!dateInput) return ''
 
@@ -32,8 +32,8 @@ export function formatDateToShow(
          return time
       case 'date':
          return day
-      case 'both':
+      case 'full':
       default:
-         return `${time} - ${day}`
+         return `${day} - ${time}hs`
    }
 }

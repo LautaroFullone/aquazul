@@ -6,7 +6,7 @@ import {
    articleCreateSchema,
    articlePriceByClientSchema,
    articleUpdateSchema,
-} from '../models/article.model'
+} from '../models/Article.model'
 
 const articlesRouter = Router()
 

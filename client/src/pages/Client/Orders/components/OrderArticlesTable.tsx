@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import type { OrderArticle } from '@models/Order.model'
 import type { Article } from '@models/Article.model'
-import generateShortId from '@lib/generateShortId'
+import generateShortId from '@utils/generateShortId'
 import useOrders from '@hooks/useOrders'
 import {
    Button,
