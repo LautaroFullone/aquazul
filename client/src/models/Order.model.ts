@@ -1,4 +1,4 @@
-import type { Article } from './Article.model'
+import type { OrderArticle } from './Article.model'
 
 export type OrderStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
 export interface Order {
@@ -13,12 +13,6 @@ export interface Order {
    createdAt: string
    paymentNotes: []
    deliveryNotes: []
-}
-
-export interface OrderArticle {
-   articleId: Article['id']
-   quantity: number
-   clientPrice: number
 }
 
 export type OrderSummary = Pick<

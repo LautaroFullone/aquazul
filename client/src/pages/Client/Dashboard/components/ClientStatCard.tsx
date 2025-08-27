@@ -1,16 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle, Skeleton } from '@shadcn'
 import type { LucideIcon } from 'lucide-react'
 
+type ClientStatCardType = React.FC<ClientStatCardProps> & {
+   Skeleton: React.FC
+}
+
 interface ClientStatCardProps {
    title: string
    value: string | number
    description: string
    icon: LucideIcon
    className?: string
-}
-
-type ClientStatCardType = React.FC<ClientStatCardProps> & {
-   Skeleton: React.FC
 }
 
 const ClientStatCard = (({ title, value, description, icon: Icon }) => (

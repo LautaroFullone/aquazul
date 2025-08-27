@@ -1,8 +1,8 @@
-import type { OrderArticleRowType } from '../ClientOrderForm.page'
+import type { ArticleRow, OrderArticle } from '@models/Article.model'
 import { Check, ChevronsUpDown, Trash2 } from 'lucide-react'
 import { valueToCurrency } from '@utils/valueToCurrency'
-import type { OrderArticle } from '@models/Order.model'
 import type { Article } from '@models/Article.model'
+import React from 'react'
 import {
    Button,
    cn,
@@ -18,47 +18,56 @@ import {
    Popover,
    PopoverContent,
    PopoverTrigger,
+   Skeleton,
 } from '@shadcn'
 
 interface OrderArticleRowProps {
+   row: ArticleRow
    articlesList: Article[]
-   orderArticleRow: OrderArticleRowType
-   orderArticleRows: OrderArticleRowType[]
-   onUpdateRow: (rowId: string, fields: Partial<OrderArticle>) => void
+   openRowId: string | null
+   setOpenRowId: (id: string | null) => void
+
+   showValidation?: boolean
+   idArticlesInOrder: Set<string> // para deshabilitar artículos ya seleccionados
+
+   onSelectArticleOption: (rowId: string, fields: Partial<OrderArticle>) => void
    onDeleteRow: (rowId: string) => void
-   isPopoverOpen: boolean
-   onPopoverOpenChange: (open: boolean) => void
 }
 
-const OrderArticleRow: React.FC<OrderArticleRowProps> = ({
+const OrderArticleRow = ({
+   row,
    articlesList,
-   orderArticleRow: { rowId, articleId, quantity, clientPrice },
-   orderArticleRows,
-   onUpdateRow,
+   openRowId,
+   setOpenRowId,
+   showValidation,
+   onSelectArticleOption,
    onDeleteRow,
-   isPopoverOpen,
-   onPopoverOpenChange,
-}) => {
-   const isArticleInOrder = (articleId: string) =>
-      orderArticleRows.some(
-         (orderArticle) =>
-            orderArticle.articleId === articleId && orderArticle.rowId !== rowId
-      )
+   idArticlesInOrder,
+}: OrderArticleRowProps) => {
+   const { rowId, articleId, quantity, clientPrice } = row
 
    return (
       <TableRow>
+         {/* Selector de artículo */}
          <TableCell>
-            <Popover open={isPopoverOpen} onOpenChange={onPopoverOpenChange}>
+            <Popover
+               open={openRowId === rowId}
+               onOpenChange={(open) => setOpenRowId(open ? rowId : null)}
+            >
                <PopoverTrigger asChild>
                   <Button
                      variant="outline"
                      role="combobox"
-                     className="w-full justify-between hover:bg-white font-normal te"
+                     className={cn(
+                        'w-full justify-between hover:bg-white font-normal',
+                        showValidation &&
+                           !articleId &&
+                           'border-blue-300 ring-1 ring-blue-200'
+                     )}
                   >
                      {articleId
-                        ? articlesList.find((articulo) => articulo.id === articleId)?.name
+                        ? articlesList.find((a) => a.id === articleId)?.name
                         : 'Seleccionar artículo...'}
-
                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                   </Button>
                </PopoverTrigger>
@@ -72,14 +81,11 @@ const OrderArticleRow: React.FC<OrderArticleRowProps> = ({
 
                         <CommandGroup>
                            {articlesList.map((avaliableArticle) => {
-                              // si el artículo ya fue agregado al pedido o es el mismo que está editando, lo deshabilito
-                              const isDisabled =
+                              const disabled =
                                  avaliableArticle.id === articleId ||
-                                 isArticleInOrder(avaliableArticle.id)
-
-                              // si el artículo no tiene precio de cliente, muestro el precio base
+                                 idArticlesInOrder.has(avaliableArticle.id)
                               const priceToShow =
-                                 avaliableArticle.clientPrice ||
+                                 avaliableArticle.clientPrice ??
                                  avaliableArticle.basePrice
 
                               return (
@@ -87,13 +93,14 @@ const OrderArticleRow: React.FC<OrderArticleRowProps> = ({
                                     key={avaliableArticle.id}
                                     value={avaliableArticle.name}
                                     className="cursor-pointer"
-                                    disabled={isDisabled}
+                                    disabled={disabled}
                                     onSelect={() => {
-                                       onUpdateRow(rowId, {
+                                       onSelectArticleOption(rowId, {
                                           articleId: avaliableArticle.id,
                                           clientPrice: priceToShow,
+                                          quantity: quantity || 1,
                                        })
-                                       onPopoverOpenChange(false)
+                                       setOpenRowId(null)
                                     }}
                                  >
                                     <Check
@@ -105,7 +112,7 @@ const OrderArticleRow: React.FC<OrderArticleRowProps> = ({
                                        )}
                                     />
                                     <div>
-                                       <div className="">{avaliableArticle.name}</div>
+                                       <div>{avaliableArticle.name}</div>
                                        <div className="text-sm text-gray-500">
                                           {valueToCurrency(priceToShow)}
                                        </div>
@@ -120,33 +127,84 @@ const OrderArticleRow: React.FC<OrderArticleRowProps> = ({
             </Popover>
          </TableCell>
 
+         {/* Cantidad */}
          <TableCell>
             <Input
                type="number"
                value={quantity}
-               onChange={(e) => onUpdateRow(rowId, { quantity: Number(e.target.value) })}
-               className="w-20"
-               min="1"
+               onChange={(e) =>
+                  onSelectArticleOption(rowId, { quantity: Number(e.target.value) })
+               }
+               onBlur={() => {
+                  const min = articleId ? 1 : 0
+                  if ((quantity ?? 0) < min)
+                     onSelectArticleOption(rowId, { quantity: min })
+               }}
+               className="w-20 bg-white"
+               min={articleId ? 1 : 0}
+               disabled={!articleId}
             />
          </TableCell>
 
-         <TableCell>{valueToCurrency(clientPrice)}</TableCell>
+         {/* Precio unitario */}
+         <TableCell>{valueToCurrency(Number(clientPrice) || 0)}</TableCell>
 
+         {/* Subtotal */}
          <TableCell className="font-medium">
-            {valueToCurrency(Number(clientPrice) * quantity)}
+            {valueToCurrency((Number(clientPrice) || 0) * (Number(quantity) || 0))}
          </TableCell>
 
+         {/* Eliminar fila */}
          <TableCell>
-            <Button
-               variant="outline"
-               size="icon"
-               className=""
-               onClick={() => onDeleteRow(rowId)}
-            >
+            <Button variant="outline" size="icon" onClick={() => onDeleteRow(rowId)}>
                <Trash2 className="w-4 h-4 text-destructive" />
             </Button>
          </TableCell>
       </TableRow>
    )
 }
+
+OrderArticleRow.Skeleton = function OrderArticleRowSkeleton() {
+   return (
+      <TableRow>
+         <TableCell>
+            <Skeleton className=" h-4 w-28" />
+         </TableCell>
+         <TableCell>
+            <Skeleton className=" h-4 w-20" />
+         </TableCell>
+         <TableCell>
+            <Skeleton className="h-4 w-24" />
+         </TableCell>
+         <TableCell>
+            <Skeleton className=" h-4 w-26" />
+         </TableCell>
+      </TableRow>
+   )
+}
+
+OrderArticleRow.Simple = function OrderArticleRowSimple({
+   articleName,
+   clientPrice,
+   quantity,
+}: {
+   articleName: string
+   clientPrice: number
+   quantity: number
+}) {
+   return (
+      <TableRow>
+         <TableCell>{articleName}</TableCell>
+
+         <TableCell>{quantity}</TableCell>
+
+         <TableCell>{valueToCurrency(clientPrice)}</TableCell>
+
+         <TableCell className="font-medium">
+            {valueToCurrency(Number(clientPrice) * Number(quantity))}
+         </TableCell>
+      </TableRow>
+   )
+}
+
 export default OrderArticleRow

@@ -1,5 +1,5 @@
 import { orderStatusConfig } from '@config/orderStatusConfig'
-import type { OrderStatus, OrderSummary } from '@models/Order.model'
+import type { OrderStatus } from '@models/Order.model'
 import { useEffect, useMemo, useState } from 'react'
 import { usePagination } from '@hooks/usePagination'
 import { useFetchOrders } from '@hooks/react-query'
@@ -35,7 +35,7 @@ const ClientOrdersPanel = () => {
 
    useEffect(() => {
       if (currentPage !== 1) goToPage(1)
-   }, [debouncedSearch, fromDate, toDate]) // eslint-disable-line
+   }, [debouncedSearch, statusFilter, fromDate, toDate]) // eslint-disable-line
 
    const filteredOrders = useMemo(() => {
       return orders.filter((order) => {

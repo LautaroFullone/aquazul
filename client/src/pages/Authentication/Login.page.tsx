@@ -1,7 +1,7 @@
-import { Link, useNavigate } from 'react-router-dom'
 import { routesConfig } from '@config/routesConfig'
 import PrimaryButton from '@shared/PrimaryButton'
 import { Lock, LogIn, User } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import {
    Card,
@@ -28,7 +28,7 @@ const Login = () => {
                </CardTitle>
 
                <CardDescription className="text-center">
-                  Accedé al panel de administración o al panel de cliente
+                  Bienvenido a la web de AQUAZUL
                </CardDescription>
             </CardHeader>
 
@@ -84,7 +84,7 @@ const Login = () => {
                   />
                </div>
 
-               <div className="flex place-content-between pt-4 border-t">
+               {/* <div className="flex place-content-between pt-4 border-t">
                   <p className="text-sm text-gray-600 mb-2">¿No tenés cuenta?</p>
 
                   <Link
@@ -97,7 +97,7 @@ const Login = () => {
 
                <p className="text-xs text-gray-500 text-center">
                   Por ahora no es necesario completar los campos para ingresar.
-               </p>
+               </p> */}
             </CardContent>
          </Card>
       </div>

@@ -1,10 +1,12 @@
 import { useFetchArticles, useFetchOrderDetails } from '@hooks/react-query'
+import { ClipboardMinus, Download, WashingMachine } from 'lucide-react'
 import type { Order, OrderSummary } from '@models/Order.model'
 import { formatDateToShow } from '@utils/formatDateToShow'
 import { valueToCurrency } from '@utils/valueToCurrency'
-import { Download, WashingMachine } from 'lucide-react'
 import OrderStatusBadge from '@shared/OrderStatusBadge'
 import type { Article } from '@models/Article.model'
+import OrderArticleRow from './OrderArticleRow'
+import EmptyBanner from '@shared/EmptyBanner'
 import {
    Button,
    Card,
@@ -19,7 +21,6 @@ import {
    Skeleton,
    Table,
    TableBody,
-   TableCell,
    TableHead,
    TableHeader,
    TableRow,
@@ -118,18 +119,7 @@ const InfoGrid: React.FC<ContentProps> = ({ isPending, order }) => {
 
 const Observations: React.FC<ContentProps> = ({ isPending, order }) => {
    if (isPending) {
-      return (
-         <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
-            <div className="flex items-start gap-3">
-               <Skeleton className="h-6 w-6 rounded-full" />
-               <div className="flex-1 space-y-2">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
-               </div>
-            </div>
-         </div>
-      )
+      return <Skeleton className="p-4 h-12" />
    }
 
    return (
@@ -153,33 +143,12 @@ const ArticlesTable: React.FC<ContentProps> = ({ isPending, order, articles = []
          </CardHeader>
 
          <CardContent>
-            {isPending ? (
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                     <Skeleton className="h-5 w-32 mb-2" />
-                     <div className="space-y-2">
-                        <div className="flex items-center justify-between p-2 border rounded">
-                           <div className="space-y-1">
-                              <Skeleton className="h-4 w-16" />
-                              <Skeleton className="h-3 w-24" />
-                           </div>
-                           <Skeleton className="h-8 w-16" />
-                        </div>
-                     </div>
-                  </div>
-                  <div>
-                     <Skeleton className="h-5 w-20 mb-2" />
-                     <div className="space-y-2">
-                        <div className="flex items-center justify-between p-2 border rounded">
-                           <div className="space-y-1">
-                              <Skeleton className="h-4 w-20" />
-                              <Skeleton className="h-3 w-20" />
-                           </div>
-                           <Skeleton className="h-8 w-16" />
-                        </div>
-                     </div>
-                  </div>
-               </div>
+            {!isPending && order?.articles.length === 0 ? (
+               <EmptyBanner
+                  icon={ClipboardMinus}
+                  title="No hay artículos registrados"
+                  description="El pedido actual no contiene artículos."
+               />
             ) : (
                <Table>
                   <TableHeader>
@@ -192,21 +161,21 @@ const ArticlesTable: React.FC<ContentProps> = ({ isPending, order, articles = []
                   </TableHeader>
 
                   <TableBody>
-                     {order?.articles.map(({ articleId, clientPrice, quantity }) => (
-                        <TableRow key={`row-${articleId}`} className="group">
-                           <TableCell>
-                              {articles.find((article) => article.id === articleId)?.name}
-                           </TableCell>
-
-                           <TableCell>{quantity}</TableCell>
-
-                           <TableCell>{valueToCurrency(clientPrice)}</TableCell>
-
-                           <TableCell className="font-medium">
-                              {valueToCurrency(Number(clientPrice) * Number(quantity))}
-                           </TableCell>
-                        </TableRow>
-                     ))}
+                     {isPending
+                        ? Array.from({ length: 3 }).map((_, i) => (
+                             <OrderArticleRow.Skeleton key={`skeleton-order-${i}`} />
+                          ))
+                        : order?.articles.map(({ articleId, clientPrice, quantity }) => (
+                             <OrderArticleRow.Simple
+                                key={`row-${articleId}`}
+                                articleName={
+                                   articles.find((article) => article.id === articleId)
+                                      ?.name || 'Articulo inexistente'
+                                }
+                                clientPrice={clientPrice}
+                                quantity={quantity}
+                             />
+                          ))}
                   </TableBody>
                </Table>
             )}
@@ -250,7 +219,7 @@ const RelatedDocuments: React.FC<ContentProps> = ({ isPending, order }) => {
                               <Skeleton className="h-4 w-20" />
                               <Skeleton className="h-3 w-20" />
                            </div>
-                           <Skeleton className="h-8 w-16" />
+                           <Skeleton className="h-6 w-24" />
                         </div>
                      </div>
                   </div>
@@ -271,6 +240,7 @@ const RelatedDocuments: React.FC<ContentProps> = ({ isPending, order }) => {
                                     {formatDateToShow(deliveryNote.createdAt, 'full')}
                                  </p>
                               </div>
+
                               <Button size="sm" variant="outline">
                                  <Download className="h-4 w-4 mr-1" />
                                  Descargar PDF
@@ -294,6 +264,7 @@ const RelatedDocuments: React.FC<ContentProps> = ({ isPending, order }) => {
                                     {formatDateToShow(paymentNote.createdAt, 'full')}
                                  </p>
                               </div>
+
                               <Button size="sm" variant="outline">
                                  <Download className="h-4 w-4 mr-1" />
                                  Descargar PDF

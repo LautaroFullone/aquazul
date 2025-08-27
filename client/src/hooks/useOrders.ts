@@ -1,8 +1,8 @@
-import type { OrderArticle } from '@models/Order.model'
+import type { OrderArticle } from '@models/Article.model'
 
 const useOrders = () => {
    /**
-    * Valida los artículos de un pedido antes de guardarlo.
+    * Valida los artículos de un pedido antes de guardarlo y genera un array de errores.
     * @param orderArticles Lista de artículos del pedido.
     * @returns Lista de mensajes de error de validación.
     */
@@ -18,6 +18,7 @@ const useOrders = () => {
       }
       return errors
    }
+
    return { validateOrderArticles }
 }
 
