@@ -80,7 +80,7 @@ const ClientOrderForm = () => {
             <PageTitle
                title="Crear Nuevo Pedido"
                hasGoBack
-               goBackRoute="/panel"
+               goBackRoute="CLIENT_DASHBOARD"
                description="Completá el contenido de tu pedido"
             />
 

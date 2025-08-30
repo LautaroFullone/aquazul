@@ -70,7 +70,7 @@ const Login = () => {
                      label="Entrar al Panel Admin"
                      loadingLabel="Entrando..."
                      className="w-full bg-primary hover:bg-primary/90"
-                     onClick={() => navigate(routesConfig.ADMIN)}
+                     onClick={() => navigate(routesConfig.ADMIN_DASHBOARD)}
                   />
 
                   <PrimaryButton
@@ -80,7 +80,7 @@ const Login = () => {
                      label="Entrar al Panel Cliente"
                      loadingLabel="Entrando..."
                      className="w-full"
-                     onClick={() => navigate(routesConfig.CLIENT)}
+                     onClick={() => navigate(routesConfig.CLIENT_DASHBOARD)}
                   />
                </div>
 

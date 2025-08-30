@@ -56,7 +56,7 @@ const Sidebar = () => {
                      <img src="/aquazul-logo.png" alt="Logo" className="h-7" />
 
                      <span className="px-2 bg-blue-800 text-white text-sm font-light rounded-sm">
-                        ADMIN
+                        ADMIN_DASHBOARD
                      </span>
                   </div>
                </div>
@@ -81,7 +81,7 @@ const Sidebar = () => {
                      {/* <h1 className="text-primary text-4xl">AQUA</h1> */}
                      <img src="/aquazul-logo.png" alt="Logo" className="h-8" />
                      <span className="px-2 bg-blue-800 text-white text-sm font-light rounded-sm">
-                        ADMIN
+                        ADMIN_DASHBOARD
                      </span>
                   </div>
                </Link>

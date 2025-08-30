@@ -25,7 +25,7 @@ const Router = () => {
             </Route>
 
             {/* Client Routes */}
-            <Route path={routesConfig.CLIENT} element={<ClientLayout />}>
+            <Route path={routesConfig.CLIENT_DASHBOARD} element={<ClientLayout />}>
                <Route index element={<ClientDashboard />} />
                <Route
                   path={routesConfig.CLIENT_HISTORY_ORDERS}
@@ -40,7 +40,7 @@ const Router = () => {
             </Route>
 
             {/* Admin Routes */}
-            <Route path={routesConfig.ADMIN} element={<AdminLayout />}>
+            <Route path={routesConfig.ADMIN_DASHBOARD} element={<AdminLayout />}>
                <Route index element={<AdminDashboard />} />
                <Route
                   path={routesConfig.ADMIN_ARTICLES}

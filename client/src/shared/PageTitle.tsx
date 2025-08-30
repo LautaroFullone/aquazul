@@ -1,3 +1,4 @@
+import { routesConfig } from '@config/routesConfig'
 import { useNavigate } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 
@@ -5,7 +6,7 @@ interface PageTitleProps {
    title: string
    description: string
    hasGoBack?: boolean
-   goBackRoute?: string
+   goBackRoute?: keyof typeof routesConfig
 }
 
 const PageTitle: React.FC<PageTitleProps> = ({
@@ -22,7 +23,9 @@ const PageTitle: React.FC<PageTitleProps> = ({
             <ArrowLeft
                className="h-6 w-6 cursor-pointer hover:scale-105"
                aria-label="Volver para atrás"
-               onClick={() => (goBackRoute ? navigate(goBackRoute) : navigate(-1))}
+               onClick={() =>
+                  goBackRoute ? navigate(routesConfig[goBackRoute]) : navigate(-1)
+               }
             />
          )}
 
