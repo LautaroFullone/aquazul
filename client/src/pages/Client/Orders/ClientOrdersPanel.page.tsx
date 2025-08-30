@@ -150,6 +150,7 @@ const ClientOrdersPanel = () => {
                         id="fromDate"
                         value={fromDate}
                         disabled={isPending}
+                        max={toDate || undefined}
                         type="date"
                         className="bg-white mt-1"
                         onChange={(e) => setFromDate(e.target.value)}
@@ -163,6 +164,7 @@ const ClientOrdersPanel = () => {
                         id="toDate"
                         value={toDate}
                         disabled={isPending}
+                        min={fromDate || undefined}
                         type="date"
                         className="bg-white mt-1"
                         onChange={(e) => setToDate(e.target.value)}
