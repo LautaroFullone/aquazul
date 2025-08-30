@@ -18,7 +18,7 @@ import {
 } from '@shadcn'
 
 const navigationItems = [
-   { label: 'Inicio', route: routesConfig.CLIENT_DASHBOARD },
+   { label: 'Inicio', route: routesConfig.CLIENT },
    { label: 'Nuevo Pedido', route: routesConfig.CLIENT_NEW_ORDER },
    { label: 'Historial', route: routesConfig.CLIENT_HISTORY_ORDERS },
 ]
@@ -33,10 +33,7 @@ const Navbar = () => {
       <header className="bg-white border-b border-gray-200 shadow-xs h-16 flex items-center">
          <div className="container mx-auto px-4">
             <div className="flex justify-between ">
-               <Link
-                  to={routesConfig.CLIENT_DASHBOARD}
-                  className="flex items-center space-x-2"
-               >
+               <Link to={routesConfig.CLIENT} className="flex items-center space-x-2">
                   <img src="/aquazul-logo.png" className="h-8" alt="AQUAZUL Logo" />
                </Link>
 
