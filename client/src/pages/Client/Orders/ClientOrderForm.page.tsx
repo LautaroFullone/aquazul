@@ -70,6 +70,7 @@ const ClientOrderForm = () => {
       }).then(() => {
          setObservation('')
          setOrderArticles([])
+         setShowValidation(false)
       })
    }
 

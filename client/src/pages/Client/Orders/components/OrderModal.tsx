@@ -1,5 +1,5 @@
 import { useFetchArticles, useFetchOrderDetails } from '@hooks/react-query'
-import { ClipboardMinus, Download, WashingMachine } from 'lucide-react'
+import { ClipboardMinus, ClipboardX, Download, WashingMachine } from 'lucide-react'
 import type { Order, OrderSummary } from '@models/Order.model'
 import { formatDateToShow } from '@utils/formatDateToShow'
 import { valueToCurrency } from '@utils/valueToCurrency'
@@ -145,9 +145,9 @@ const ArticlesTable: React.FC<ContentProps> = ({ isPending, order, articles = []
          <CardContent>
             {!isPending && order?.articles.length === 0 ? (
                <EmptyBanner
-                  icon={ClipboardMinus}
+                  icon={ClipboardX}
                   title="No hay artículos registrados"
-                  description="El pedido actual no contiene artículos."
+                  description="El pedido actual no contiene artículos"
                />
             ) : (
                <Table>
@@ -229,48 +229,66 @@ const RelatedDocuments: React.FC<ContentProps> = ({ isPending, order }) => {
                   <div>
                      <h4 className="font-medium mb-2">Remitos</h4>
                      <div className="space-y-2">
-                        {order?.deliveryNotes.map((deliveryNote, i) => (
-                           <div
-                              key={i}
-                              className="flex items-center justify-between p-2 border rounded"
-                           >
-                              <div>
-                                 <p className="font-medium text-sm">{deliveryNote.id}</p>
-                                 <p className="text-xs text-gray-500">
-                                    {formatDateToShow(deliveryNote.createdAt, 'full')}
-                                 </p>
-                              </div>
+                        {order?.deliveryNotes.length ? (
+                           order.deliveryNotes.map((deliveryNote, i) => (
+                              <div
+                                 key={i}
+                                 className="flex items-center justify-between p-2 border rounded"
+                              >
+                                 <div>
+                                    <p className="font-medium text-sm">
+                                       {deliveryNote.id}
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                       {formatDateToShow(deliveryNote.createdAt, 'full')}
+                                    </p>
+                                 </div>
 
-                              <Button size="sm" variant="outline">
-                                 <Download className="h-4 w-4 mr-1" />
-                                 Descargar PDF
-                              </Button>
-                           </div>
-                        ))}
+                                 <Button size="sm" variant="outline">
+                                    <Download className="h-4 w-4 mr-1" />
+                                    Descargar PDF
+                                 </Button>
+                              </div>
+                           ))
+                        ) : (
+                           <EmptyBanner
+                              title="Todavía no hay remitos"
+                              description="El pedido actual no tiene remitos"
+                           />
+                        )}
                      </div>
                   </div>
 
                   <div>
                      <h4 className="font-medium mb-2">Órdenes de Pago</h4>
                      <div className="space-y-2">
-                        {order?.paymentNotes.map((paymentNote, i) => (
-                           <div
-                              key={i}
-                              className="flex items-center justify-between p-2 border rounded"
-                           >
-                              <div>
-                                 <p className="font-medium text-sm">{paymentNote.id}</p>
-                                 <p className="text-xs text-gray-500">
-                                    {formatDateToShow(paymentNote.createdAt, 'full')}
-                                 </p>
-                              </div>
+                        {order?.paymentNotes.length ? (
+                           order?.paymentNotes.map((paymentNote, i) => (
+                              <div
+                                 key={i}
+                                 className="flex items-center justify-between p-2 border rounded"
+                              >
+                                 <div>
+                                    <p className="font-medium text-sm">
+                                       {paymentNote.id}
+                                    </p>
+                                    <p className="text-xs text-gray-500">
+                                       {formatDateToShow(paymentNote.createdAt, 'full')}
+                                    </p>
+                                 </div>
 
-                              <Button size="sm" variant="outline">
-                                 <Download className="h-4 w-4 mr-1" />
-                                 Descargar PDF
-                              </Button>
-                           </div>
-                        ))}
+                                 <Button size="sm" variant="outline">
+                                    <Download className="h-4 w-4 mr-1" />
+                                    Descargar PDF
+                                 </Button>
+                              </div>
+                           ))
+                        ) : (
+                           <EmptyBanner
+                              title="Todavía no hay órdenes"
+                              description="El pedido actual no tiene órdenes de pago"
+                           />
+                        )}
                      </div>
                   </div>
                </div>

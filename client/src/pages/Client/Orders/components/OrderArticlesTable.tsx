@@ -3,6 +3,7 @@ import { Plus, Info, ClipboardPlus } from 'lucide-react'
 import type { Article } from '@models/Article.model'
 import generateShortId from '@utils/generateShortId'
 import OrderArticleRow from './OrderArticleRow'
+import EmptyBanner from '@shared/EmptyBanner'
 import { useEffect, useState } from 'react'
 import useOrders from '@hooks/useOrders'
 import {
@@ -18,7 +19,6 @@ import {
    CardContent,
    CardDescription,
 } from '@shadcn'
-import EmptyBanner from '@shared/EmptyBanner'
 
 interface OrderArticlesTable {
    articlesList: Article[]

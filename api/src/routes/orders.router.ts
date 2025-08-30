@@ -67,20 +67,20 @@ ordersRouter.get('/:orderId', async (req, res) => {
          order: {
             ...order,
             deliveryNotes: [
-               { id: 'REM-000123', createdAt: order.createdAt, details: {} },
-               { id: 'REM-000124', createdAt: order.createdAt, details: {} },
+               // { id: 'REM-000123', createdAt: order.createdAt, details: {} },
+               // { id: 'REM-000124', createdAt: order.createdAt, details: {} },
             ],
             paymentNotes: [
-               {
-                  id: 'ODP-000123',
-                  createdAt: order.createdAt,
-                  total: order.totalPrice / 2,
-               },
-               {
-                  id: 'ODP-000124',
-                  createdAt: order.createdAt,
-                  total: order.totalPrice / 2,
-               },
+               // {
+               //    id: 'ODP-000123',
+               //    createdAt: order.createdAt,
+               //    total: order.totalPrice / 2,
+               // },
+               // {
+               //    id: 'ODP-000124',
+               //    createdAt: order.createdAt,
+               //    total: order.totalPrice / 2,
+               // },
             ],
          },
       })

@@ -166,9 +166,9 @@ const ClientDashboard = () => {
                   </div>
                ) : (
                   <EmptyBanner
+                     icon={FilePlus}
                      title="Todavía no tenés pedidos"
                      description='Hacé click en "Nuevo Pedido" para crear el primero'
-                     icon={FilePlus}
                   />
                )}
 
