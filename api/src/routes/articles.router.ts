@@ -39,7 +39,7 @@ articlesRouter.get('/client/:id', async (req: Request, res: Response) => {
       // 2) traigo todos los articulos
       const articlesList = await prismaClient.article.findMany({
          orderBy: { name: 'asc' },
-         select: { id: true, name: true, basePrice: true },
+         select: { id: true, name: true, basePrice: true, code: true, category: true },
       })
 
       // 3) traigo todos los precios de articulos del cliente

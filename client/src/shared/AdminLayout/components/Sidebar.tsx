@@ -21,7 +21,7 @@ const navigationItems = [
    { label: 'Inicio', route: routesConfig.ADMIN_DASHBOARD, icon: Home },
    { label: 'Clientes', route: '/admin/testimonials', icon: UsersRound },
    { label: 'Pedidos', route: '/admin/posts', icon: WashingMachine },
-   { label: 'Artículos', route: '/admin/testimonials', icon: ClipboardList },
+   { label: 'Artículos', route: routesConfig.ADMIN_ARTICLES, icon: ClipboardList },
    { label: 'Precios', route: '/admin/testimonials', icon: CircleDollarSign },
    { label: 'Remitos', route: '/admin/testimonials', icon: FileText },
    { label: 'Órdenes de pago', route: '/admin/testimonials', icon: Receipt },
@@ -40,7 +40,7 @@ const Sidebar = () => {
       <>
          {/* Header mobile */}
          {isMobile && (
-            <div className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-sm h-16 px-4 py-3">
+            <div className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-xs h-16 px-4 py-3">
                <div className="flex items-center space-x-1">
                   <Button
                      variant="ghost"
@@ -56,7 +56,7 @@ const Sidebar = () => {
                      <img src="/aquazul-logo.png" alt="Logo" className="h-7" />
 
                      <span className="px-2 bg-blue-800 text-white text-sm font-light rounded-sm">
-                        ADMIN_DASHBOARD
+                        ADMIN
                      </span>
                   </div>
                </div>
@@ -66,6 +66,7 @@ const Sidebar = () => {
          {/* Sidebar (siempre presente, oculto con translate en mobile) */}
          <aside
             className={cn(
+               'shadow-sm',
                'fixed top-0 left-0 z-50 h-full w-64 bg-white border-r border-gray-200 text-gray-700 flex flex-col transform transition-transform duration-300',
                isMobile
                   ? mobileMenuOpen
@@ -81,7 +82,7 @@ const Sidebar = () => {
                      {/* <h1 className="text-primary text-4xl">AQUA</h1> */}
                      <img src="/aquazul-logo.png" alt="Logo" className="h-8" />
                      <span className="px-2 bg-blue-800 text-white text-sm font-light rounded-sm">
-                        ADMIN_DASHBOARD
+                        ADMIN
                      </span>
                   </div>
                </Link>
@@ -128,7 +129,11 @@ const Sidebar = () => {
                <Button
                   variant="ghost"
                   className="w-full justify-start text-destructive hover:text-red-700 hover:bg-red-50!"
-                  onClick={isMobile ? () => setMobileMenuOpen(false) : undefined}
+                  onClick={
+                     isMobile
+                        ? () => setMobileMenuOpen(false)
+                        : () => navigate(routesConfig.CLIENT_DASHBOARD)
+                  }
                >
                   <LogOut className="mr-2 h-4 w-4" />
                   Cerrar Sesión

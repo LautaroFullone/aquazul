@@ -2,7 +2,6 @@ import type { ArticleRow, OrderArticle } from '@models/Article.model'
 import { Check, ChevronsUpDown, Trash2 } from 'lucide-react'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import type { Article } from '@models/Article.model'
-import React from 'react'
 import {
    Button,
    cn,
@@ -168,6 +167,9 @@ OrderArticleRow.Skeleton = function OrderArticleRowSkeleton() {
    return (
       <TableRow>
          <TableCell>
+            <Skeleton className="h-4 w-20" />
+         </TableCell>
+         <TableCell>
             <Skeleton className=" h-4 w-28" />
          </TableCell>
          <TableCell>
@@ -184,16 +186,20 @@ OrderArticleRow.Skeleton = function OrderArticleRowSkeleton() {
 }
 
 OrderArticleRow.Simple = function OrderArticleRowSimple({
+   articleCode,
    articleName,
    clientPrice,
    quantity,
 }: {
+   articleCode: string
    articleName: string
    clientPrice: number
    quantity: number
 }) {
    return (
       <TableRow>
+         <TableCell>{articleCode}</TableCell>
+
          <TableCell>{articleName}</TableCell>
 
          <TableCell>{quantity}</TableCell>

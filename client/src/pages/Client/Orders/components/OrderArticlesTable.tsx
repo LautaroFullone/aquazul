@@ -136,7 +136,7 @@ const OrderArticlesTable: React.FC<OrderArticlesTable> = ({
             {rows.length === 0 ? (
                <EmptyBanner
                   icon={ClipboardPlus}
-                  title=" Comenzá agregando artículos"
+                  title="Comenzá agregando artículos"
                   description='Hacé clic en "Agregar Artículo" para empezar tu pedido'
                />
             ) : (

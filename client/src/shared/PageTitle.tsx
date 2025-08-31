@@ -4,7 +4,7 @@ import { ArrowLeft } from 'lucide-react'
 
 interface PageTitleProps {
    title: string
-   description: string
+   description?: string
    hasGoBack?: boolean
    goBackRoute?: keyof typeof routesConfig
 }
@@ -31,7 +31,9 @@ const PageTitle: React.FC<PageTitleProps> = ({
 
          <div>
             <h1 className="text-gray-900 font-bold text-3xl mb-2">{title}</h1>
-            <p className="text-sm sm:text-base text-muted-foreground">{description}</p>
+            {description && (
+               <p className="text-sm sm:text-base text-muted-foreground">{description}</p>
+            )}
          </div>
       </div>
    )

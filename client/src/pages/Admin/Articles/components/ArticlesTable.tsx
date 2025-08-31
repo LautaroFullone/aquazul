@@ -1,8 +1,7 @@
 import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react'
-import type { OrderSummary } from '@models/Order.model'
+import type { Article } from '@models/Article.model'
 import EmptyBanner from '@shared/EmptyBanner'
-import OrderModal from './OrderModal'
-import OrderRow from './OrderRow'
+import ArticleRow from './ArticleRow'
 import { useState } from 'react'
 import {
    Button,
@@ -14,8 +13,8 @@ import {
    TableRow,
 } from '@shadcn'
 
-interface OrdersTableProps {
-   paginatedOrders: OrderSummary[]
+interface ArticlesTableProps {
+   paginatedArticles: Article[]
    itemsPerPage: number
    isLoading: boolean
    currentPage: number
@@ -27,8 +26,8 @@ interface OrdersTableProps {
    emptyMessage: string
 }
 
-const OrdersTable: React.FC<OrdersTableProps> = ({
-   paginatedOrders,
+const ArticlesTable: React.FC<ArticlesTableProps> = ({
+   paginatedArticles,
    itemsPerPage,
    isLoading,
    currentPage,
@@ -39,7 +38,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
    onPageChange,
    emptyMessage,
 }) => {
-   const [selectedOrder, setSelectedOrder] = useState<OrderSummary | null>(null)
+   const [, setSelectedArticle] = useState<Article | null>(null)
 
    return (
       <>
@@ -48,32 +47,35 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
                <TableHeader>
                   <TableRow>
                      <TableHead>ID</TableHead>
-                     <TableHead>Fecha</TableHead>
-                     <TableHead>Estado</TableHead>
-                     <TableHead>Cant. Artículos</TableHead>
-                     <TableHead>Total</TableHead>
-                     <TableHead>Acciones</TableHead>
+                     <TableHead>Nombre</TableHead>
+                     <TableHead>Categoria</TableHead>
+                     <TableHead>Precio Unit.</TableHead>
+                     <TableHead></TableHead>
                   </TableRow>
                </TableHeader>
 
                <TableBody>
                   {isLoading ? (
                      Array.from({ length: itemsPerPage }).map((_, i) => (
-                        <OrderRow.Skeleton key={`skeleton-order-${i}`} />
+                        <ArticleRow.Skeleton key={`skeleton-article-${i}`} />
                      ))
-                  ) : paginatedOrders.length ? (
-                     paginatedOrders.map((order) => (
-                        <OrderRow
-                           key={order.id}
-                           order={order}
-                           onSelect={(order) => setSelectedOrder(order)}
+                  ) : paginatedArticles.length ? (
+                     paginatedArticles.map((article) => (
+                        <ArticleRow
+                           key={article.id}
+                           article={article}
+                           onSelect={(article) => setSelectedArticle(article)}
+                           onDelete={(article) => {
+                              // Handle delete action
+                              console.log('Deleting article:', article)
+                           }}
                         />
                      ))
                   ) : (
                      <TableRow className="hover:bg-background ">
                         <TableCell colSpan={6} className="px-0">
                            <EmptyBanner
-                              title="No hay pedidos registrados"
+                              title="No hay artículos registrados"
                               description={emptyMessage}
                            />
                         </TableCell>
@@ -128,15 +130,15 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
             </div>
          )}
 
-         {selectedOrder && (
-            <OrderModal
-               isModalOpen={!!selectedOrder}
-               onClose={() => setSelectedOrder(null)}
-               orderId={selectedOrder.id}
-               orderCode={selectedOrder.code}
+         {/* {selectedArticle && (
+            <ArticleModal
+               isModalOpen={!!selectedArticle}
+               onClose={() => setSelectedArticle(null)}
+               articleId={selectedArticle.id}
+               articleName={selectedArticle.name}
             />
-         )}
+         )} */}
       </>
    )
 }
-export default OrdersTable
+export default ArticlesTable

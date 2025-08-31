@@ -24,7 +24,7 @@ import {
 } from '@shadcn'
 
 const ClientOrdersPanel = () => {
-   const [statusFilter, setStatusFilter] = useState<'todos' | OrderStatus>('todos')
+   const [statusFilter, setStatusFilter] = useState<'all' | OrderStatus>('all')
    const [searchTerm, setSearchTerm] = useState('')
    const [fromDate, setFromDate] = useState('')
    const [toDate, setToDate] = useState('')
@@ -40,7 +40,7 @@ const ClientOrdersPanel = () => {
    const filteredOrders = useMemo(() => {
       return orders.filter((order) => {
          const byId = order.code.toLowerCase().includes(debouncedSearch.toLowerCase())
-         const byStatus = statusFilter === 'todos' || order.status === statusFilter
+         const byStatus = statusFilter === 'all' || order.status === statusFilter
 
          let byDate = true
          const orderDate = new Date(order.createdAt)
@@ -92,7 +92,7 @@ const ClientOrdersPanel = () => {
                <CardTitle className="flex items-center gap-2">Mis Pedidos</CardTitle>
 
                <CardDescription>
-                  Buscá por ID, filtrá por estado y rango de fechas
+                  Filtrá por ID, estado y/o rango de fechas
                </CardDescription>
             </CardHeader>
 
@@ -119,14 +119,14 @@ const ClientOrdersPanel = () => {
                      <Select
                         value={statusFilter}
                         disabled={isPending}
-                        onValueChange={(v: OrderStatus | 'todos') => setStatusFilter(v)}
+                        onValueChange={(v: OrderStatus | 'all') => setStatusFilter(v)}
                      >
                         <SelectTrigger id="estado" className="mt-1 bg-white w-full">
                            <SelectValue placeholder="Todos" />
                         </SelectTrigger>
 
                         <SelectContent>
-                           <SelectItem value="todos">Todos</SelectItem>
+                           <SelectItem value="all">Todos</SelectItem>
                            {(Object.keys(orderStatusConfig) as OrderStatus[]).map(
                               (status) => {
                                  const { label, icon: Icon } = orderStatusConfig[status]
@@ -211,7 +211,7 @@ const ClientOrdersPanel = () => {
                            variant="outline"
                            onClick={() => {
                               setSearchTerm('')
-                              setStatusFilter('todos')
+                              setStatusFilter('all')
                               setFromDate('')
                               setToDate('')
                            }}
@@ -233,7 +233,7 @@ const ClientOrdersPanel = () => {
                   visiblePages={visiblePages}
                   onPageChange={goToPage}
                   emptyMessage={
-                     debouncedSearch || statusFilter !== 'todos' || fromDate || toDate
+                     debouncedSearch || statusFilter !== 'all' || fromDate || toDate
                         ? `No hay pedidos que coincidan con los filtros, probá limpiarlos o intentá con otros términos de búsqueda`
                         : 'Podés navegar hasta "Nuevo Pedido" para crear el primero'
                   }

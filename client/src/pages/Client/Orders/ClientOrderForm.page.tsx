@@ -135,7 +135,7 @@ const ClientOrderForm = () => {
             <div className="space-y-6">
                {/* Información del Cliente */}
                <Card>
-                  <CardHeader className="flex  gap-1">
+                  <CardHeader className="flex gap-1">
                      <CardTitle>Tu Información</CardTitle>
 
                      <Tooltip>

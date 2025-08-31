@@ -1,8 +1,8 @@
 import { useFetchArticles, useFetchOrderDetails } from '@hooks/react-query'
-import { ClipboardMinus, ClipboardX, Download, WashingMachine } from 'lucide-react'
 import type { Order, OrderSummary } from '@models/Order.model'
 import { formatDateToShow } from '@utils/formatDateToShow'
 import { valueToCurrency } from '@utils/valueToCurrency'
+import { Download, WashingMachine } from 'lucide-react'
 import OrderStatusBadge from '@shared/OrderStatusBadge'
 import type { Article } from '@models/Article.model'
 import OrderArticleRow from './OrderArticleRow'
@@ -145,7 +145,6 @@ const ArticlesTable: React.FC<ContentProps> = ({ isPending, order, articles = []
          <CardContent>
             {!isPending && order?.articles.length === 0 ? (
                <EmptyBanner
-                  icon={ClipboardX}
                   title="No hay artículos registrados"
                   description="El pedido actual no contiene artículos"
                />
@@ -153,7 +152,8 @@ const ArticlesTable: React.FC<ContentProps> = ({ isPending, order, articles = []
                <Table>
                   <TableHeader>
                      <TableRow>
-                        <TableHead>Artículo</TableHead>
+                        <TableHead>ID</TableHead>
+                        <TableHead>Nombre</TableHead>
                         <TableHead>Cantidad</TableHead>
                         <TableHead>Precio Unit.</TableHead>
                         <TableHead>Subtotal</TableHead>
@@ -168,6 +168,10 @@ const ArticlesTable: React.FC<ContentProps> = ({ isPending, order, articles = []
                         : order?.articles.map(({ articleId, clientPrice, quantity }) => (
                              <OrderArticleRow.Simple
                                 key={`row-${articleId}`}
+                                articleCode={
+                                   articles.find((article) => article.id === articleId)
+                                      ?.code || 'ART-XXXX'
+                                }
                                 articleName={
                                    articles.find((article) => article.id === articleId)
                                       ?.name || 'Articulo inexistente'
