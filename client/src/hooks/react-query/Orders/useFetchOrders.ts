@@ -1,17 +1,14 @@
+import { getClientOrders, getOrders } from '@services/orders.service'
 import { queriesKeys } from '@config/reactQueryKeys'
-import { getOrders } from '@services/orders.service'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-const useFetchOrders = (queryParams: { clientId?: string }) => {
+const useFetchOrders = (params?: { clientId?: string }) => {
    const { data, isPending, error, isError } = useQuery({
-      queryKey: queryParams?.clientId
-         ? [queriesKeys.FETCH_ORDERS, queryParams.clientId]
+      queryKey: params?.clientId
+         ? [queriesKeys.FETCH_ORDERS, params.clientId]
          : [queriesKeys.FETCH_ORDERS],
-      queryFn: async () => {
-         const response = await getOrders(queryParams)
-         return response.orders
-      },
+      queryFn: () => (params?.clientId ? getClientOrders(params.clientId) : getOrders()),
       staleTime: 20 * 60 * 1000, // 20 min
       retry: 1,
    })
@@ -21,7 +18,7 @@ const useFetchOrders = (queryParams: { clientId?: string }) => {
    }
 
    return {
-      orders: data || [],
+      orders: data?.ordersSummary || [],
       isPending,
       isError,
       error,

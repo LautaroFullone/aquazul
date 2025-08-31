@@ -31,7 +31,7 @@ const AdminArticlesPanel = () => {
 
    const debouncedSearch = useDebounce(searchTerm, 400)
 
-   const { articles, isPending } = useFetchArticles({ clientId: '1' })
+   const { articles, isPending } = useFetchArticles()
 
    useEffect(() => {
       if (currentPage !== 1) goToPage(1)

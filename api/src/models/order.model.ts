@@ -9,7 +9,6 @@ export const orderStatusSchema = z.enum([
 
 export const getOrdersSchema = z.object({
    limit: z.coerce.number().int().positive().max(100).optional(),
-   clientId: z.string().optional(),
 })
 
 const orderArticleSchema = z.object({

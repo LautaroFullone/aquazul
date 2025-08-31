@@ -10,16 +10,25 @@ import {
 
 const articlesRouter = Router()
 
-// GET /articles - listar artículos
+// GET /articles - listar artículos y categorías
 articlesRouter.get('/', async (req: Request, res: Response) => {
    try {
       const articlesList = await prismaClient.article.findMany({
          orderBy: { name: 'asc' },
       })
 
+      const categories =
+         Array.from(
+            new Set(
+               articlesList
+                  .map((a) => a.category?.trim() ?? '')
+                  .filter((c) => c.length > 0)
+            )
+         ).sort((a, b) => a.localeCompare(b, 'es')) || []
+
       return res.status(200).send({
-         message: 'Artículos obtenidos',
          articles: articlesList,
+         categories,
       })
    } catch (error) {
       return handleRouteError(res, error)
@@ -60,7 +69,6 @@ articlesRouter.get('/client/:id', async (req: Request, res: Response) => {
       })
 
       return res.status(200).send({
-         message: 'Artículos obtenidos',
          articles: listFormated,
       })
    } catch (error) {

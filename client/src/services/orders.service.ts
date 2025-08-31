@@ -1,4 +1,4 @@
-import type { Order, OrderSummary } from '@models/Order.model'
+import type { Order } from '@models/Order.model'
 import type { ResponseApi } from './ResponseApi'
 import { api } from '@lib/axios'
 
@@ -10,25 +10,30 @@ export async function createOrder(orderData: CreateOrderData) {
    return data
 }
 
-type GetOrdersQueryParams = {
-   clientId?: string
-   limit?: number
+export async function getOrders() {
+   type Response = Pick<ResponseApi, 'ordersSummary'>
+
+   const { data } = await api.get<Response>(`/orders`)
+   return data
 }
 
-export async function getOrders(queryParams?: GetOrdersQueryParams) {
-   type Response = {
-      message: string
-      orders: OrderSummary[]
+export async function getClientOrders(
+   clientId: string,
+   queryParams?: {
+      limit: number
    }
-   const { data } = await api.get<Response>(`/orders`, { params: queryParams })
+) {
+   type Response = Pick<ResponseApi, 'ordersSummary'>
+
+   const { data } = await api.get<Response>(`/orders/client/${clientId}`, {
+      params: queryParams,
+   })
    return data
 }
 
 export async function getOrderDetails(orderId: string) {
-   type Response = {
-      message: string
-      order: Order | null
-   }
+   type Response = Pick<ResponseApi, 'order'>
+
    const { data } = await api.get<Response>(`/orders/${orderId}`)
    return data
 }

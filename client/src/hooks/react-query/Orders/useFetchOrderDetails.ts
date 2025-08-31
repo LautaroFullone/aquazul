@@ -6,10 +6,7 @@ import { toast } from 'sonner'
 const useFetchOrderDetails = (param: { orderId: string }) => {
    const { data, isPending, error, isError } = useQuery({
       queryKey: [queriesKeys.ORDER_DETAILS, param.orderId],
-      queryFn: async () => {
-         const response = await getOrderDetails(param.orderId)
-         return response.order
-      },
+      queryFn: () => getOrderDetails(param.orderId),
       enabled: Boolean(param.orderId),
       staleTime: 20 * 60 * 1000, // 20 min
       retry: 1,
@@ -20,7 +17,7 @@ const useFetchOrderDetails = (param: { orderId: string }) => {
    }
 
    return {
-      order: data || null,
+      order: data?.order || null,
       isPending,
       isError,
       error,

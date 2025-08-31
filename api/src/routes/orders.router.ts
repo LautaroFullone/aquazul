@@ -14,33 +14,40 @@ const ordersRouter = Router()
 ordersRouter.get('/', async (req, res) => {
    try {
       await sleep(2000)
-      const { limit, clientId } = getOrdersSchema.parse(req.query)
 
-      const where: any = {}
-      if (clientId) where.clientId = clientId
-
-      // A) Si viene `limit` ignoro el get all
-      if (limit) {
-         const orders = await prismaClient.order.findMany({
-            where,
-            orderBy: { createdAt: 'desc' },
-            take: limit,
-            omit: { articles: true, observation: true, updatedAt: true, clientId: true },
-         })
-
-         return res.send({ message: 'Pedidos obtenidos', orders })
-      }
-
-      // B) get all
-      const orders = await prismaClient.order.findMany({
-         where,
+      const ordersSummary = await prismaClient.order.findMany({
          orderBy: { createdAt: 'desc' },
          omit: { articles: true, observation: true, updatedAt: true, clientId: true },
       })
 
       return res.send({
-         message: 'Pedidos obtenidos',
-         orders,
+         ordersSummary,
+      })
+   } catch (error) {
+      return handleRouteError(res, error)
+   }
+})
+
+ordersRouter.get('/client/:clientId', async (req, res) => {
+   try {
+      await sleep(2000)
+      const { limit } = getOrdersSchema.parse(req.query)
+
+      const { clientId } = req.params
+
+      await prismaClient.client.findUniqueOrThrow({
+         where: { id: clientId },
+      })
+
+      const ordersSummary = await prismaClient.order.findMany({
+         where: { clientId },
+         orderBy: { createdAt: 'desc' },
+         take: limit || undefined,
+         omit: { articles: true, observation: true, updatedAt: true, clientId: true },
+      })
+
+      return res.send({
+         ordersSummary,
       })
    } catch (error) {
       return handleRouteError(res, error)
@@ -52,13 +59,9 @@ ordersRouter.get('/:orderId', async (req, res) => {
       await sleep(2000)
       const { orderId } = req.params
 
-      const order = await prismaClient.order.findUnique({
+      const order = await prismaClient.order.findFirstOrThrow({
          where: { id: orderId },
       })
-
-      if (!order) {
-         throw new NotFoundError('Pedido no existente', { orderId })
-      }
 
       //TODO: traer remitos y ordenes de pago
 

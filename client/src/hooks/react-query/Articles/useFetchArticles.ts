@@ -1,15 +1,15 @@
-import { getArticlesByClient } from '@services/articles.service'
+import { getArticles, getArticlesByClient } from '@services/articles.service'
 import { queriesKeys } from '@config/reactQueryKeys'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-const useFetchArticles = (param: { clientId: string }) => {
+const useFetchArticles = (params?: { clientId?: string }) => {
    const { data, isPending, error, isError } = useQuery({
-      queryKey: [queriesKeys.FETCH_ARTICLES],
-      queryFn: async () => {
-         const response = await getArticlesByClient(param.clientId)
-         return response.articles
-      },
+      queryKey: params?.clientId
+         ? [queriesKeys.FETCH_ARTICLES, params.clientId]
+         : [queriesKeys.FETCH_ARTICLES],
+      queryFn: () =>
+         params?.clientId ? getArticlesByClient(params.clientId) : getArticles(),
       staleTime: 20 * 60 * 1000, //20min
       retry: 1,
    })
@@ -19,7 +19,7 @@ const useFetchArticles = (param: { clientId: string }) => {
    }
 
    return {
-      articles: data || [],
+      articles: data?.articles || [],
       isPending,
       isError,
       error,

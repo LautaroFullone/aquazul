@@ -3,10 +3,10 @@ import { queriesKeys } from '@config/reactQueryKeys'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-const useFetchOrdersClientStats = (param: { clientId: string }) => {
+const useFetchOrdersClientStats = (params: { clientId: string }) => {
    const { data, isPending, error, isError } = useQuery({
-      queryKey: [queriesKeys.ORDERS_STATS, param.clientId],
-      queryFn: () => getOrdersClientStats(param.clientId),
+      queryKey: [queriesKeys.ORDERS_STATS, params.clientId],
+      queryFn: () => getOrdersClientStats(params.clientId),
       staleTime: 20 * 60 * 1000, // 20 min
       retry: 1,
    })
