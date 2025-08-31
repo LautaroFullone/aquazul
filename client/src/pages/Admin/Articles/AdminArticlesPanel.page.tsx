@@ -5,8 +5,9 @@ import { useFetchArticles } from '@hooks/react-query'
 import { usePagination } from '@hooks/usePagination'
 import normalizeString from '@utils/normalizeString'
 import { useEffect, useMemo, useState } from 'react'
+import PrimaryButton from '@shared/PrimaryButton'
+import { Info, Plus, Search } from 'lucide-react'
 import { useDebounce } from '@hooks/useDebounce'
-import { Info, Search } from 'lucide-react'
 import PageTitle from '@shared/PageTitle'
 import {
    Button,
@@ -72,12 +73,23 @@ const AdminArticlesPanel = () => {
 
    return (
       <>
-         <PageTitle
-            title="Gestión de Artículos"
-            hasGoBack
-            goBackRoute="ADMIN_DASHBOARD"
-            description="Administrá los artículos de tu inventario"
-         />
+         <div className="flex justify-between articles-center">
+            <PageTitle
+               title="Gestión de Artículos"
+               hasGoBack
+               goBackRoute="ADMIN_DASHBOARD"
+               description="Administrá los artículos del inventario"
+            />
+            <PrimaryButton
+               size="lg"
+               icon={Plus}
+               isLoading={isPending}
+               label="Nuevo Artículo"
+               // loadingLabel="Guardando Pedido..."
+               onClick={() => console.log('nuevo artículo')}
+               className="hidden md:flex"
+            />
+         </div>
 
          <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-r-lg">
             <div className="flex items-start gap-3">
@@ -95,6 +107,15 @@ const AdminArticlesPanel = () => {
                </div>
             </div>
          </div>
+
+         <PrimaryButton
+            size="lg"
+            icon={Plus}
+            isLoading={isPending}
+            label="Nuevo Artículo"
+            onClick={() => console.log('nuevo artículo')}
+            className="md:hidden"
+         />
          <Card>
             <CardHeader>
                <CardTitle className="flex items-center gap-2">
@@ -105,7 +126,7 @@ const AdminArticlesPanel = () => {
 
             <CardContent className="space-y-4">
                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="col-span-2">
+                  <div className="sm:col-span-2">
                      <Label htmlFor="id-v3">Buscar por ID o Nombre</Label>
                      <div className="relative mt-1">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
