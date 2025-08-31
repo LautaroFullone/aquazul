@@ -30,6 +30,8 @@ model Article {
    id        String @id @default(cuid())
    name      String @unique @db.Citext //case-insensitive text (guarda el casing original)
    basePrice Int    @default(0)
+   code      String @unique @default("")
+   category  String @default("")
 
    createdAt DateTime @default(now())
    updatedAt DateTime @updatedAt
@@ -48,9 +50,9 @@ model Order {
    id   String @id @default(cuid())
    code String @unique
 
-   clientId      String
+   clientId      String      @default("")
    status        OrderStatus @default(PENDING)
-   observation   String?
+   observation   String?     @default("")
    articles      Json[] // { articleId, quantity, clientPrice }
    articlesCount Int         @default(0)
    totalPrice    Int         @default(0)
