@@ -1,3 +1,9 @@
+/**
+ * Convierte un valor a formato de moneda argentina.
+ *
+ * @param value - El valor a convertir (string o number).
+ * @returns El valor formateado como moneda.
+ */
 export const valueToCurrency = (value: string | number): string => {
    const num = typeof value === 'string' ? Number(value) : value
 
