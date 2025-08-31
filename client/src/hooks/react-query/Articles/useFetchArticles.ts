@@ -20,6 +20,7 @@ const useFetchArticles = (params?: { clientId?: string }) => {
 
    return {
       articles: data?.articles || [],
+      categories: data?.categories || [],
       isPending,
       isError,
       error,

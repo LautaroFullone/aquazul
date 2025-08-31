@@ -14,7 +14,7 @@ const articlesRouter = Router()
 articlesRouter.get('/', async (req: Request, res: Response) => {
    try {
       const articlesList = await prismaClient.article.findMany({
-         orderBy: { name: 'asc' },
+         orderBy: { createdAt: 'desc' },
       })
 
       const categories =
@@ -47,7 +47,7 @@ articlesRouter.get('/client/:id', async (req: Request, res: Response) => {
 
       // 2) traigo todos los articulos
       const articlesList = await prismaClient.article.findMany({
-         orderBy: { name: 'asc' },
+         orderBy: { createdAt: 'desc' },
          select: { id: true, name: true, basePrice: true, code: true, category: true },
       })
 
@@ -68,8 +68,18 @@ articlesRouter.get('/client/:id', async (req: Request, res: Response) => {
          }
       })
 
+      const categories =
+         Array.from(
+            new Set(
+               articlesList
+                  .map((a) => a.category?.trim() ?? '')
+                  .filter((c) => c.length > 0)
+            )
+         ).sort((a, b) => a.localeCompare(b, 'es')) || []
+
       return res.status(200).send({
          articles: listFormated,
+         categories,
       })
    } catch (error) {
       return handleRouteError(res, error)

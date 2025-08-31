@@ -31,7 +31,7 @@ const AdminArticlesPanel = () => {
 
    const debouncedSearch = useDebounce(searchTerm, 400)
 
-   const { articles, isPending } = useFetchArticles()
+   const { articles, categories, isPending } = useFetchArticles()
 
    useEffect(() => {
       if (currentPage !== 1) goToPage(1)
@@ -128,6 +128,7 @@ const AdminArticlesPanel = () => {
                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div className="sm:col-span-2">
                      <Label htmlFor="id-v3">Buscar por ID o Nombre</Label>
+
                      <div className="relative mt-1">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
@@ -155,19 +156,14 @@ const AdminArticlesPanel = () => {
 
                         <SelectContent>
                            <SelectItem value="all">Todos</SelectItem>
-                           {(Object.keys(orderStatusConfig) as OrderStatus[]).map(
-                              (status) => {
-                                 const { label, icon: Icon } = orderStatusConfig[status]
-                                 return (
-                                    <SelectItem key={status} value={status}>
-                                       <div className="flex items-center gap-2">
-                                          <Icon className="size-4" />
-                                          {label}
-                                       </div>
-                                    </SelectItem>
-                                 )
-                              }
-                           )}
+                           {categories.map((category) => (
+                              <SelectItem
+                                 key={`select-category-${category}`}
+                                 value={category}
+                              >
+                                 <div className="flex items-center gap-2">{category}</div>
+                              </SelectItem>
+                           ))}
                         </SelectContent>
                      </Select>
                   </div>
