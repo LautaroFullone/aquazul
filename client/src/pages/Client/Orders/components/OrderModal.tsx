@@ -231,7 +231,7 @@ const RelatedDocuments: React.FC<ContentProps> = ({ isPending, order }) => {
             ) : (
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                     <h4 className="font-medium mb-2">Remitos</h4>
+                     <h4 className="font-medium mb-1">Remitos</h4>
                      <div className="space-y-2">
                         {order?.deliveryNotes.length ? (
                            order.deliveryNotes.map((deliveryNote, i) => (
@@ -264,7 +264,7 @@ const RelatedDocuments: React.FC<ContentProps> = ({ isPending, order }) => {
                   </div>
 
                   <div>
-                     <h4 className="font-medium mb-2">Órdenes de Pago</h4>
+                     <h4 className="font-medium mb-1">Órdenes de Pago</h4>
                      <div className="space-y-2">
                         {order?.paymentNotes.length ? (
                            order?.paymentNotes.map((paymentNote, i) => (

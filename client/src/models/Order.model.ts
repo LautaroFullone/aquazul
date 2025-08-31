@@ -11,11 +11,23 @@ export interface Order {
    articlesCount: number
    totalPrice: number
    createdAt: string
-   paymentNotes: []
-   deliveryNotes: []
+   paymentNotes: PaymentNote[]
+   deliveryNotes: DeliveryNote[]
 }
 
 export type OrderSummary = Pick<
    Order,
    'id' | 'code' | 'status' | 'articlesCount' | 'totalPrice' | 'createdAt'
 >
+
+interface PaymentNote {
+   id: string
+   createdAt: string
+   updatedAt: string
+}
+
+interface DeliveryNote {
+   id: string
+   createdAt: string
+   updatedAt: string
+}
