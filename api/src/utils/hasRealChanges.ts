@@ -1,3 +1,10 @@
+/**
+ * Verifica si hay cambios reales entre dos objetos.
+ *
+ * @param current - Objeto actual
+ * @param next - Objeto con los cambios propuestos
+ * @returns true si hay cambios reales, false en caso contrario
+ */
 export function hasRealChanges<T extends Record<string, any>>(
    current: T,
    next: Partial<T>
