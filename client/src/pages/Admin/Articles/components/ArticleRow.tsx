@@ -16,7 +16,7 @@ const ArticleRow = ({ article, onSelect, onDelete }: ArticleRowProps) => (
       <TableCell>{article.name}</TableCell>
 
       <TableCell>
-         <Badge className="bg-amber-200 text-amber-600">{article.category}</Badge>
+         <Badge className="bg-indigo-100 text-indigo-800">{article.category.name}</Badge>
       </TableCell>
 
       <TableCell className="font-medium">

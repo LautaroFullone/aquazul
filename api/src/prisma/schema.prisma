@@ -27,14 +27,27 @@ model Client {
 }
 
 model Article {
-   id        String @id @default(cuid())
-   name      String @unique @db.Citext //case-insensitive text (guarda el casing original)
-   basePrice Int    @default(0)
-   code      String @unique @default("")
-   category  String @default("")
+   id         String @id @default(cuid())
+   name       String @unique @db.Citext //case-insensitive text (guarda el casing original)
+   basePrice  Int    @default(0)
+   code       String @unique
+   categoryId String
 
    createdAt DateTime @default(now())
    updatedAt DateTime @updatedAt
+
+   category ArticleCategory @relation(fields: [categoryId], references: [id])
+
+   @@index([categoryId])
+}
+
+model ArticleCategory {
+   id        String   @id @default(cuid())
+   name      String   @unique @db.Citext
+   createdAt DateTime @default(now())
+   updatedAt DateTime @updatedAt
+
+   articles Article[]
 }
 
 model ClientArticlePrice {
@@ -50,7 +63,7 @@ model Order {
    id   String @id @default(cuid())
    code String @unique
 
-   clientId      String      @default("")
+   clientId      String
    status        OrderStatus @default(PENDING)
    observation   String?     @default("")
    articles      Json[] // { articleId, quantity, clientPrice }

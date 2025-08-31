@@ -1,9 +1,9 @@
 export interface Article {
    id: string
-   code: string
-   category: string
    name: string
    basePrice: number
+   code: string
+   category: { id: string; name: string }
    clientPrice: number
 }
 

@@ -6,7 +6,7 @@ export interface ResponseApi {
    page: number
    pageSize: number
    count: number
-   categories: string[]
+   categories: Record<string, string>
 
    article: Article
    articles: Article[]

@@ -1,8 +1,9 @@
 import { Router, type Request, type Response } from 'express'
 import { handleRouteError } from '../errors/handleRouteError'
 import { NotFoundError } from '../errors/ApiError'
+import { nextOrderCode } from '../utils/nextCode'
 import prismaClient from '../prisma/prismaClient'
-import { sleep } from '../lib/sleep'
+import { sleep } from '../utils/sleep'
 import {
    getOrdersSchema,
    getOrdersStatsSchema,
@@ -132,12 +133,7 @@ ordersRouter.post('/', async (req: Request, res: Response) => {
             orderBy: { createdAt: 'desc' },
          })
 
-         let nextNumber = 1
-         if (lastOrder?.code) {
-            const lastNumber = Number(lastOrder.code.replace('PED-', ''))
-            nextNumber = lastNumber + 1
-         }
-         const newCode = `PED-${String(nextNumber).padStart(6, '0')}`
+         const newCode = nextOrderCode(lastOrder?.code)
 
          return tx.order.create({
             data: {
@@ -152,9 +148,7 @@ ordersRouter.post('/', async (req: Request, res: Response) => {
          })
       })
 
-      return res
-         .status(201)
-         .send({ message: 'Pedido creado correctamente', order: newOrder })
+      return res.status(201).send({ message: 'Pedido creado', order: newOrder })
    } catch (error) {
       return handleRouteError(res, error)
    }
@@ -199,28 +193,6 @@ ordersRouter.get('/client/:clientId/stats', async (req, res) => {
       return handleRouteError(res, error)
    }
 })
-
-// GET /orders/:id - detalle
-// ordersRouter.get('/:id', async (req: Request, res: Response) => {
-//    try {
-//       const { id } = req.params
-//       const order = await prisma.order.findUnique({
-//          where: { id },
-//          include: { items: { include: { article: true } } },
-//       })
-//       if (!order) throw new ApiError('Pedido no encontrado', { id }, 404)
-
-//       return res.status(200).send({ message: 'Pedido obtenido', order })
-//    } catch (error) {
-//       console.log(error)
-//       if (error instanceof ApiError) {
-//          return res
-//             .status(error.statusCode)
-//             .send({ message: error.message, ...error.data })
-//       }
-//       return res.status(500).send({ message: 'Ocurrió un error inesperado del servidor' })
-//    }
-// })
 
 // PUT /orders/:id - actualizar (status/observation)
 // ordersRouter.put('/:id', async (req: Request, res: Response<ResponseEntity>) => {

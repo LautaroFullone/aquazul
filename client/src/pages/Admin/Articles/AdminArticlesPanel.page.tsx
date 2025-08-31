@@ -1,13 +1,12 @@
-import { orderStatusConfig } from '@config/orderStatusConfig'
-import type { OrderStatus } from '@models/Order.model'
+import InfoNotification from '@shared/InfoNotification'
 import ArticlesTable from './components/ArticlesTable'
 import { useFetchArticles } from '@hooks/react-query'
+import { useEffect, useMemo, useState } from 'react'
 import { usePagination } from '@hooks/usePagination'
 import normalizeString from '@utils/normalizeString'
-import { useEffect, useMemo, useState } from 'react'
 import PrimaryButton from '@shared/PrimaryButton'
-import { Info, Plus, Search } from 'lucide-react'
 import { useDebounce } from '@hooks/useDebounce'
+import { Plus, Search } from 'lucide-react'
 import PageTitle from '@shared/PageTitle'
 import {
    Button,
@@ -42,7 +41,7 @@ const AdminArticlesPanel = () => {
          const normalizedSearch = normalizeString(debouncedSearch)
 
          const byCategory =
-            categoryFilter === 'all' || article.category === categoryFilter
+            categoryFilter === 'all' || article.category.id === categoryFilter
 
          const byCode = normalizeString(article.code).includes(normalizedSearch)
          const byName = normalizeString(article.name).includes(normalizedSearch)
@@ -80,6 +79,7 @@ const AdminArticlesPanel = () => {
                goBackRoute="ADMIN_DASHBOARD"
                description="Administrá los artículos del inventario"
             />
+
             <PrimaryButton
                size="lg"
                icon={Plus}
@@ -91,22 +91,13 @@ const AdminArticlesPanel = () => {
             />
          </div>
 
-         <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 rounded-r-lg">
-            <div className="flex items-start gap-3">
-               <Info className="h-5 w-5 text-blue-800 mt-0.5 flex-shrink-0" />
-               <div>
-                  <h4 className="font-medium text-blue-900 mb-1">
-                     Información importante
-                  </h4>
-                  <p className="text-blue-800 text-sm leading-relaxed">
-                     Los cambios realizados sobre los artículos (actualizaciones o
-                     eliminaciones) no afectarán los pedidos existentes que contengan
-                     estos artículos, ya que cada pedido almacena una copia de la
-                     información del artículo al momento de su creación.
-                  </p>
-               </div>
-            </div>
-         </div>
+         <InfoNotification
+            title="Información importante"
+            description="Los cambios realizados sobre los artículos (actualizaciones o
+               eliminaciones) no afectarán los pedidos existentes que contengan
+               estos artículos, ya que cada pedido almacena una copia de la
+               información del artículo al momento de su creación."
+         />
 
          <PrimaryButton
             size="lg"
@@ -116,6 +107,7 @@ const AdminArticlesPanel = () => {
             onClick={() => console.log('nuevo artículo')}
             className="md:hidden"
          />
+
          <Card>
             <CardHeader>
                <CardTitle className="flex items-center gap-2">
@@ -155,15 +147,19 @@ const AdminArticlesPanel = () => {
                         </SelectTrigger>
 
                         <SelectContent>
-                           <SelectItem value="all">Todos</SelectItem>
-                           {categories.map((category) => (
-                              <SelectItem
-                                 key={`select-category-${category}`}
-                                 value={category}
-                              >
-                                 <div className="flex items-center gap-2">{category}</div>
-                              </SelectItem>
-                           ))}
+                           <SelectItem value="all">Todas</SelectItem>
+                           {Object.entries(categories).map(
+                              ([categoryName, categoryId]) => (
+                                 <SelectItem
+                                    key={`select-category-${categoryName}`}
+                                    value={categoryId}
+                                 >
+                                    <div className="flex items-center gap-2">
+                                       {categoryName}
+                                    </div>
+                                 </SelectItem>
+                              )
+                           )}
                         </SelectContent>
                      </Select>
                   </div>

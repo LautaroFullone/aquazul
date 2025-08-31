@@ -1,33 +1,36 @@
 import { Router, type Request, type Response } from 'express'
 import { handleRouteError } from '../errors/handleRouteError'
-import { hasRealChanges } from '../lib/hasRealChanges'
+import { hasRealChanges } from '../utils/hasRealChanges'
+import { nextArticleCode } from '../utils/nextCode'
 import prismaClient from '../prisma/prismaClient'
 import {
    articleCreateSchema,
    articlePriceByClientSchema,
    articleUpdateSchema,
 } from '../models/Article.model'
+import { Article } from '@prisma/client'
+import { generateCategoriesMap } from '../utils/generateMap'
 
 const articlesRouter = Router()
 
 // GET /articles - listar artículos y categorías
 articlesRouter.get('/', async (req: Request, res: Response) => {
    try {
-      const articlesList = await prismaClient.article.findMany({
+      const articles = await prismaClient.article.findMany({
          orderBy: { createdAt: 'desc' },
+         select: {
+            id: true,
+            name: true,
+            basePrice: true,
+            code: true,
+            category: { select: { id: true, name: true } },
+         },
       })
 
-      const categories =
-         Array.from(
-            new Set(
-               articlesList
-                  .map((a) => a.category?.trim() ?? '')
-                  .filter((c) => c.length > 0)
-            )
-         ).sort((a, b) => a.localeCompare(b, 'es')) || []
+      const categories = generateCategoriesMap(articles)
 
       return res.status(200).send({
-         articles: articlesList,
+         articles,
          categories,
       })
    } catch (error) {
@@ -46,9 +49,15 @@ articlesRouter.get('/client/:id', async (req: Request, res: Response) => {
       })
 
       // 2) traigo todos los articulos
-      const articlesList = await prismaClient.article.findMany({
+      const articles = await prismaClient.article.findMany({
          orderBy: { createdAt: 'desc' },
-         select: { id: true, name: true, basePrice: true, code: true, category: true },
+         select: {
+            id: true,
+            name: true,
+            basePrice: true,
+            code: true,
+            category: { select: { id: true, name: true } },
+         },
       })
 
       // 3) traigo todos los precios de articulos del cliente
@@ -57,7 +66,7 @@ articlesRouter.get('/client/:id', async (req: Request, res: Response) => {
       })
 
       // 4) formateo la lista de articulos con el precio del cliente
-      const listFormated = articlesList.map((article) => {
+      const listFormated = articles.map((article) => {
          const clientPriceArticle = clientArticlesPrices.find(
             (price) => price.articleId === article.id
          )
@@ -68,14 +77,7 @@ articlesRouter.get('/client/:id', async (req: Request, res: Response) => {
          }
       })
 
-      const categories =
-         Array.from(
-            new Set(
-               articlesList
-                  .map((a) => a.category?.trim() ?? '')
-                  .filter((c) => c.length > 0)
-            )
-         ).sort((a, b) => a.localeCompare(b, 'es')) || []
+      const categories = generateCategoriesMap(articles)
 
       return res.status(200).send({
          articles: listFormated,
@@ -124,14 +126,37 @@ articlesRouter.put('/:id/client/:clientId/price', async (req: Request, res: Resp
    }
 })
 
-// POST /articles - crear artículo
+// POST /articles - crear artículo y asignar categoria
 articlesRouter.post('/', async (req: Request, res: Response) => {
    try {
-      const body = articleCreateSchema.parse(req.body)
+      const { basePrice, categoryName, name } = articleCreateSchema.parse(req.body)
 
-      //CHEQUEO DE DUPLICADOS AUTOMATICO (name es @unique y case insensitive)
-      const createdArticle = await prismaClient.article.create({
-         data: body,
+      // Crear articulo con transacción para generar code único
+      const createdArticle = await prismaClient.$transaction(async (tx) => {
+         const lastArticle = await tx.article.findFirst({
+            orderBy: { createdAt: 'desc' },
+         })
+
+         const newCode = nextArticleCode(lastArticle?.code)
+
+         //CHEQUEO DE DUPLICADOS AUTOMATICO (name es @unique y case insensitive)
+         return tx.article.create({
+            data: {
+               name,
+               basePrice,
+               code: newCode,
+               category: {
+                  //si la categoria existe, asigna el ID, sino existe la crea
+                  connectOrCreate: {
+                     where: { name: categoryName }, // requiere @unique en name
+                     create: { name: categoryName },
+                  },
+               },
+            },
+            include: {
+               category: true,
+            },
+         })
       })
 
       return res.status(201).send({
@@ -143,7 +168,8 @@ articlesRouter.post('/', async (req: Request, res: Response) => {
    }
 })
 
-// PUT /articles/:id - actualizar artículo
+//TODO: agregar category
+// PATCH /articles/:id - actualizar artículo
 articlesRouter.patch('/:id', async (req: Request, res: Response) => {
    const { id: articleId } = req.params
 
@@ -179,6 +205,7 @@ articlesRouter.patch('/:id', async (req: Request, res: Response) => {
    }
 })
 
+//TODO: eliminar category si no tiene mas articulos
 // DELETE /articles/:id - eliminar artículo
 articlesRouter.delete('/:id', async (req: Request, res: Response) => {
    try {
