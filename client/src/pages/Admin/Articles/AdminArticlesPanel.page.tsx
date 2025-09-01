@@ -1,4 +1,3 @@
-import InfoNotification from '@shared/InfoNotification'
 import ArticlesTable from './components/ArticlesTable'
 import { useFetchArticles } from '@hooks/react-query'
 import { useEffect, useMemo, useState } from 'react'
@@ -7,6 +6,7 @@ import normalizeString from '@utils/normalizeString'
 import PrimaryButton from '@shared/PrimaryButton'
 import { useDebounce } from '@hooks/useDebounce'
 import { Plus, Search } from 'lucide-react'
+import InfoBanner from '@shared/InfoBanner'
 import PageTitle from '@shared/PageTitle'
 import {
    Button,
@@ -29,7 +29,6 @@ const AdminArticlesPanel = () => {
    const [searchTerm, setSearchTerm] = useState('')
 
    const debouncedSearch = useDebounce(searchTerm, 400)
-
    const { articles, categories, isPending } = useFetchArticles()
 
    useEffect(() => {
@@ -56,7 +55,6 @@ const AdminArticlesPanel = () => {
       totalPages,
       startIndex,
       endIndex,
-      visiblePages,
       goToPage,
       canGoNext,
       canGoPrevious,
@@ -65,7 +63,6 @@ const AdminArticlesPanel = () => {
    } = usePagination({
       totalItems: filteredArticles.length,
       itemsPerPage: 10,
-      maxVisiblePages: 4,
    })
 
    const paginatedArticles = filteredArticles.slice(startIndex, endIndex)
@@ -83,26 +80,25 @@ const AdminArticlesPanel = () => {
             <PrimaryButton
                size="lg"
                icon={Plus}
-               isLoading={isPending}
+               isLoading={false}
                label="Nuevo Artículo"
-               // loadingLabel="Guardando Pedido..."
                onClick={() => console.log('nuevo artículo')}
                className="hidden md:flex"
             />
          </div>
 
-         <InfoNotification
+         <InfoBanner
             title="Información importante"
-            description="Los cambios realizados sobre los artículos (actualizaciones o
-               eliminaciones) no afectarán los pedidos existentes que contengan
-               estos artículos, ya que cada pedido almacena una copia de la
-               información del artículo al momento de su creación."
+            description={[
+               'Los cambios en los artículos (actualizaciones o eliminaciones) no modificarán pedidos ya existentes. Cada pedido guarda una copia del artículo en el momento de su creación.',
+               'Las categorías se generan automáticamente a partir de los artículos. Si se crea un artículo nuevo con una categoría distinta, ésta se añadirá. Si se elimina el único artículo de una categoría, esa categoría también será eliminada.',
+            ]}
          />
 
          <PrimaryButton
             size="lg"
             icon={Plus}
-            isLoading={isPending}
+            isLoading={false}
             label="Nuevo Artículo"
             onClick={() => console.log('nuevo artículo')}
             className="md:hidden"
@@ -128,7 +124,7 @@ const AdminArticlesPanel = () => {
                            value={searchTerm}
                            disabled={isPending}
                            className="pl-8 bg-white"
-                           placeholder="Ej: PED-000001"
+                           placeholder="Ej: ART-0004"
                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
                      </div>
@@ -148,6 +144,7 @@ const AdminArticlesPanel = () => {
 
                         <SelectContent>
                            <SelectItem value="all">Todas</SelectItem>
+
                            {Object.entries(categories).map(
                               ([categoryName, categoryId]) => (
                                  <SelectItem
@@ -191,6 +188,7 @@ const AdminArticlesPanel = () => {
                               <SelectTrigger id="items-per-page">
                                  <SelectValue />
                               </SelectTrigger>
+
                               <SelectContent>
                                  <SelectItem value="5">5</SelectItem>
                                  <SelectItem value="10">10</SelectItem>
@@ -201,7 +199,7 @@ const AdminArticlesPanel = () => {
                         </div>
 
                         <Button
-                           variant="outline"
+                           variant="default"
                            onClick={() => {
                               setSearchTerm('')
                               setCategoryFilter('all')
@@ -221,7 +219,6 @@ const AdminArticlesPanel = () => {
                   totalPages={totalPages}
                   canGoNext={canGoNext}
                   canGoPrevious={canGoPrevious}
-                  visiblePages={visiblePages}
                   onPageChange={goToPage}
                   emptyMessage={
                      debouncedSearch || categoryFilter !== 'all'
