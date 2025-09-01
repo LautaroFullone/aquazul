@@ -66,8 +66,7 @@ const Sidebar = () => {
          {/* Sidebar (siempre presente, oculto con translate en mobile) */}
          <aside
             className={cn(
-               'shadow-sm',
-               'fixed top-0 left-0 z-50 h-full w-64 bg-white border-r border-gray-200 text-gray-700 flex flex-col transform transition-transform duration-300',
+               'fixed top-0 left-0 h-full z-50 w-64 bg-white border-r border-gray-200 text-gray-700 shadow-sm flex flex-col transform transition-transform duration-300',
                isMobile
                   ? mobileMenuOpen
                      ? 'translate-x-0'
@@ -86,17 +85,6 @@ const Sidebar = () => {
                      </span>
                   </div>
                </Link>
-
-               {/* {isMobile && (
-                  <Button
-                     size="icon"
-                     variant="ghost"
-                     className="hover:bg-gray-100"
-                     onClick={() => setMobileMenuOpen(false)}
-                  >
-                     <X className="h-5 w-5" />
-                  </Button>
-               )} */}
             </div>
 
             <nav className="flex-1 p-2 space-y-1">
