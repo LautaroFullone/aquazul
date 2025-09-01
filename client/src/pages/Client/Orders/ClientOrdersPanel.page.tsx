@@ -64,7 +64,6 @@ const ClientOrdersPanel = () => {
       totalPages,
       startIndex,
       endIndex,
-      visiblePages,
       goToPage,
       canGoNext,
       canGoPrevious,
@@ -73,7 +72,6 @@ const ClientOrdersPanel = () => {
    } = usePagination({
       totalItems: filteredOrders.length,
       itemsPerPage: 10,
-      maxVisiblePages: 4,
    })
 
    const paginatedOrders = filteredOrders.slice(startIndex, endIndex)
@@ -107,7 +105,7 @@ const ClientOrdersPanel = () => {
                            value={searchTerm}
                            disabled={isPending}
                            className="pl-8 bg-white"
-                           placeholder="Ej: PED-000001"
+                           placeholder="Ej: PED-000004"
                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
                      </div>
@@ -198,6 +196,7 @@ const ClientOrdersPanel = () => {
                               <SelectTrigger id="items-per-page">
                                  <SelectValue />
                               </SelectTrigger>
+
                               <SelectContent>
                                  <SelectItem value="5">5</SelectItem>
                                  <SelectItem value="10">10</SelectItem>
@@ -208,7 +207,7 @@ const ClientOrdersPanel = () => {
                         </div>
 
                         <Button
-                           variant="outline"
+                           variant="default"
                            onClick={() => {
                               setSearchTerm('')
                               setStatusFilter('all')
@@ -230,7 +229,6 @@ const ClientOrdersPanel = () => {
                   totalPages={totalPages}
                   canGoNext={canGoNext}
                   canGoPrevious={canGoPrevious}
-                  visiblePages={visiblePages}
                   onPageChange={goToPage}
                   emptyMessage={
                      debouncedSearch || statusFilter !== 'all' || fromDate || toDate
