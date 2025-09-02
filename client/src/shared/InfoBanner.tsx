@@ -31,7 +31,7 @@ const InfoBanner = ({ title, description }: InfoBannerProps) => {
 
          <div
             className={`overflow-hidden transition-all duration-300 ${
-               showBanner ? 'max-h-96 ' : 'max-h-0'
+               showBanner ? 'max-h-[500px]' : 'max-h-0'
             }`}
          >
             <ul className="text-sm px-8 list-disc list-inside space-y-1 mt-2">
