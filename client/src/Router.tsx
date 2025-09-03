@@ -1,7 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
-import AuthLayout from '@shared/AuthLayout/AuthenticationLayout'
-import ClientLayout from '@shared/ClientLayout/ClientLayout'
-import AdminLayout from '@shared/AdminLayout/AdminLayout'
+import { AdminLayout, AuthLayout, ClientLayout } from './layouts'
 import { routesConfig } from '@config/routesConfig'
 import {
    AdminArticlesPanel,

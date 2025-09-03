@@ -7,7 +7,7 @@ interface InfoBannerProps {
 }
 
 const InfoBanner = ({ title, description }: InfoBannerProps) => {
-   const [showBanner, setShowBanner] = useState(true)
+   const [showBanner, setShowBanner] = useState(false)
 
    return (
       <div
