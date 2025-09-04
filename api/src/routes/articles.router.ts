@@ -8,13 +8,14 @@ import {
    articlePriceByClientSchema,
    articleUpdateSchema,
 } from '../models/Article.model'
-import { Article } from '@prisma/client'
 import { generateCategoriesMap } from '../utils/generateMap'
+import { sleep } from '../utils/sleep'
 
 const articlesRouter = Router()
 
-// GET /articles - listar artículos y categorías
+// GET -> listar artículos y categorías
 articlesRouter.get('/', async (req: Request, res: Response) => {
+   await sleep(3000)
    try {
       const articles = await prismaClient.article.findMany({
          orderBy: { createdAt: 'desc' },
@@ -38,9 +39,9 @@ articlesRouter.get('/', async (req: Request, res: Response) => {
    }
 })
 
-// GET /articles/client/:clientId - listar artículos por cliente
-articlesRouter.get('/client/:id', async (req: Request, res: Response) => {
-   const { id: clientId } = req.params
+// GET -> listar artículos por cliente
+articlesRouter.get('/client/:clientId', async (req: Request, res: Response) => {
+   const { clientId } = req.params
 
    try {
       // 1) chequeo que exista el cliente
@@ -88,45 +89,48 @@ articlesRouter.get('/client/:id', async (req: Request, res: Response) => {
    }
 })
 
-// POST /articles/:id/client/:clientId/price - setear precio de artículo por cliente
-articlesRouter.put('/:id/client/:clientId/price', async (req: Request, res: Response) => {
-   const { id: articleId, clientId } = req.params
+// POST -> setear precio de artículo por cliente
+articlesRouter.put(
+   '/:articleId/client/:clientId/price',
+   async (req: Request, res: Response) => {
+      const { articleId, clientId } = req.params
 
-   try {
-      const body = articlePriceByClientSchema.parse(req.body)
+      try {
+         const body = articlePriceByClientSchema.parse(req.body)
 
-      await Promise.all([
-         prismaClient.article.findUniqueOrThrow({ where: { id: articleId } }),
-         prismaClient.client.findUniqueOrThrow({ where: { id: clientId } }),
-      ])
+         await Promise.all([
+            prismaClient.article.findUniqueOrThrow({ where: { id: articleId } }),
+            prismaClient.client.findUniqueOrThrow({ where: { id: clientId } }),
+         ])
 
-      const existing = await prismaClient.clientArticlePrice.findUnique({
-         where: { clientId_articleId: { clientId, articleId } },
-      })
-
-      if (existing && existing.price === body.price) {
-         return res.status(200).send({
-            message: 'Sin cambios: el precio es el mismo',
-            article: existing,
+         const existing = await prismaClient.clientArticlePrice.findUnique({
+            where: { clientId_articleId: { clientId, articleId } },
          })
+
+         if (existing && existing.price === body.price) {
+            return res.status(200).send({
+               message: 'Sin cambios: el precio es el mismo',
+               article: existing,
+            })
+         }
+
+         const createdPrice = await prismaClient.clientArticlePrice.upsert({
+            where: { clientId_articleId: { clientId, articleId } },
+            create: { clientId, articleId, price: body.price },
+            update: { price: body.price },
+         })
+
+         return res.status(201).send({
+            message: 'Precio de artículo guardado',
+            article: createdPrice,
+         })
+      } catch (error) {
+         return handleRouteError(res, error)
       }
-
-      const createdPrice = await prismaClient.clientArticlePrice.upsert({
-         where: { clientId_articleId: { clientId, articleId } },
-         create: { clientId, articleId, price: body.price },
-         update: { price: body.price },
-      })
-
-      return res.status(201).send({
-         message: 'Precio de artículo guardado',
-         article: createdPrice,
-      })
-   } catch (error) {
-      return handleRouteError(res, error)
    }
-})
+)
 
-// POST /articles - crear artículo y asignar categoria
+// POST -> crear artículo y asignar categoria
 articlesRouter.post('/', async (req: Request, res: Response) => {
    try {
       const { basePrice, categoryName, name } = articleCreateSchema.parse(req.body)
@@ -169,9 +173,9 @@ articlesRouter.post('/', async (req: Request, res: Response) => {
 })
 
 //TODO: agregar category
-// PATCH /articles/:id - actualizar artículo
-articlesRouter.patch('/:id', async (req: Request, res: Response) => {
-   const { id: articleId } = req.params
+// PATCH -> actualizar artículo
+articlesRouter.patch('/:articleId', async (req: Request, res: Response) => {
+   const { articleId } = req.params
 
    try {
       // 1) validar payload
@@ -206,10 +210,10 @@ articlesRouter.patch('/:id', async (req: Request, res: Response) => {
 })
 
 //TODO: eliminar category si no tiene mas articulos
-// DELETE /articles/:id - eliminar artículo
-articlesRouter.delete('/:id', async (req: Request, res: Response) => {
+// DELETE -> eliminar artículo
+articlesRouter.delete('/:articleId', async (req: Request, res: Response) => {
    try {
-      const { id: articleId } = req.params
+      const { articleId } = req.params
 
       const articleDeleted = await prismaClient.article.delete({
          where: { id: articleId },

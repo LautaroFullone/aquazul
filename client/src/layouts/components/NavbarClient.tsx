@@ -19,8 +19,8 @@ import {
 
 const navigationItems = [
    { label: 'Inicio', route: routesConfig.CLIENT_DASHBOARD },
-   { label: 'Nuevo Pedido', route: routesConfig.CLIENT_NEW_ORDER },
-   { label: 'Historial', route: routesConfig.CLIENT_HISTORY_ORDERS },
+   { label: 'Nuevo Pedido', route: routesConfig.CLIENT_ORDER_NEW },
+   { label: 'Historial', route: routesConfig.CLIENT_ORDER_HISTORY },
 ]
 
 const Navbar = () => {

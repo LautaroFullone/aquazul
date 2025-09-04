@@ -14,3 +14,5 @@ export interface OrderArticle {
 }
 
 export type ArticleRow = OrderArticle & { rowId: string }
+
+export type ArticleFormData = Pick<Article, 'name' | 'basePrice'> & { category: string }

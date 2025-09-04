@@ -2,6 +2,7 @@ import { ArticleSummary } from '../models/Article.model'
 
 /**
  * Genera un mapa de categorías a partir de una lista de artículos.
+ * [key: nombre de la categoría] => [value: su ID].
  *
  * @param articles - Lista de artículos
  * @returns Mapa de categorías

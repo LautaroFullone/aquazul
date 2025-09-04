@@ -7,6 +7,7 @@ import PrimaryButton from '@shared/PrimaryButton'
 import { useDebounce } from '@hooks/useDebounce'
 import { Plus, Search } from 'lucide-react'
 import InfoBanner from '@shared/InfoBanner'
+import { useNavigate } from 'react-router'
 import PageTitle from '@shared/PageTitle'
 import {
    Button,
@@ -23,11 +24,13 @@ import {
    SelectTrigger,
    SelectValue,
 } from '@shadcn'
+import { routesConfig } from '@config/routesConfig'
 
 const AdminArticlesPanel = () => {
    const [categoryFilter, setCategoryFilter] = useState<string>('all')
    const [searchTerm, setSearchTerm] = useState('')
 
+   const navigate = useNavigate()
    const debouncedSearch = useDebounce(searchTerm, 400)
    const { articles, categories, isPending } = useFetchArticles()
 
@@ -82,7 +85,7 @@ const AdminArticlesPanel = () => {
                icon={Plus}
                isLoading={false}
                label="Nuevo Artículo"
-               onClick={() => console.log('nuevo artículo')}
+               onClick={() => navigate(routesConfig.ADMIN_ARTICLE_NEW)}
                className="hidden md:flex"
             />
          </div>

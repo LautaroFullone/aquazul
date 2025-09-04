@@ -11,38 +11,43 @@ import {
    NotFound,
    Register,
 } from './pages'
+import AdminArticleForm from '@pages/Admin/Articles/AdminArticleForm.page'
 
 const Router = () => {
    return (
       <BrowserRouter>
          <Routes>
-            {/* Auth Routes */}
+            {/* AUTH Routes */}
             <Route element={<AuthLayout />}>
                <Route path={routesConfig.LOGIN} element={<Login />} />
                <Route path={routesConfig.REGISTER} element={<Register />} />
             </Route>
 
-            {/* Client Routes */}
+            {/* CLIENT Routes */}
             <Route path={routesConfig.CLIENT_DASHBOARD} element={<ClientLayout />}>
                <Route index element={<ClientDashboard />} />
                <Route
-                  path={routesConfig.CLIENT_HISTORY_ORDERS}
+                  path={routesConfig.CLIENT_ORDER_HISTORY}
                   element={<ClientOrdersPanel />}
                />
                <Route
-                  path={routesConfig.CLIENT_NEW_ORDER}
+                  path={routesConfig.CLIENT_ORDER_NEW}
                   element={<ClientOrderForm />}
                />
 
                <Route path="*" element={<NotFound />} />
             </Route>
 
-            {/* Admin Routes */}
+            {/* ADMIN Routes */}
             <Route path={routesConfig.ADMIN_DASHBOARD} element={<AdminLayout />}>
                <Route index element={<AdminDashboard />} />
                <Route
-                  path={routesConfig.ADMIN_ARTICLES}
+                  path={routesConfig.ADMIN_ARTICLE_LIST}
                   element={<AdminArticlesPanel />}
+               />
+               <Route
+                  path={routesConfig.ADMIN_ARTICLE_NEW}
+                  element={<AdminArticleForm />}
                />
 
                <Route path="*" element={<NotFound />} />

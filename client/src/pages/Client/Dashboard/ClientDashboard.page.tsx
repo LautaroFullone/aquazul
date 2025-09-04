@@ -109,7 +109,7 @@ const ClientDashboard = () => {
 
          {/* Quick Actions */}
          <div className="grid gap-6 md:grid-cols-2">
-            <Link to={routesConfig.CLIENT_NEW_ORDER}>
+            <Link to={routesConfig.CLIENT_ORDER_NEW}>
                <Card className="hover:shadow-md transition-shadow cursor-pointer border-2 border-blue-200 hover:border-blue-300 text-center">
                   <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-2">
                      <Plus className="h-6 w-6 text-blue-600" />
@@ -121,7 +121,7 @@ const ClientDashboard = () => {
                </Card>
             </Link>
 
-            <Link to={routesConfig.CLIENT_HISTORY_ORDERS}>
+            <Link to={routesConfig.CLIENT_ORDER_HISTORY}>
                <Card className="hover:shadow-md transition-shadow cursor-pointer text-center">
                   <div className="mx-auto w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-2">
                      <FileText className="h-6 w-6 text-purple-600" />
@@ -173,7 +173,7 @@ const ClientDashboard = () => {
                )}
 
                <div className="pt-4 sm:col-span-2">
-                  <Link to={routesConfig.CLIENT_HISTORY_ORDERS}>
+                  <Link to={routesConfig.CLIENT_ORDER_HISTORY}>
                      <Button variant="outline" className="w-full bg-transparent">
                         Ver todos tus Pedidos
                      </Button>

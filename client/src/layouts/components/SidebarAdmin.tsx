@@ -21,7 +21,7 @@ const navigationItems = [
    { label: 'Inicio', route: routesConfig.ADMIN_DASHBOARD, icon: Home },
    { label: 'Clientes', route: '/admin/testimonials', icon: UsersRound },
    { label: 'Pedidos', route: '/admin/posts', icon: WashingMachine },
-   { label: 'Artículos', route: routesConfig.ADMIN_ARTICLES, icon: ClipboardList },
+   { label: 'Artículos', route: routesConfig.ADMIN_ARTICLE_LIST, icon: ClipboardList },
    { label: 'Precios', route: '/admin/testimonials', icon: CircleDollarSign },
    { label: 'Remitos', route: '/admin/testimonials', icon: FileText },
    { label: 'Órdenes de pago', route: '/admin/testimonials', icon: Receipt },
@@ -89,7 +89,11 @@ const Sidebar = () => {
 
             <nav className="flex-1 p-2 space-y-1">
                {navigationItems.map(({ label, route, icon: Icon }) => {
-                  const isActive = pathname === route
+                  const isActive =
+                     pathname === route ||
+                     (route !== routesConfig.ADMIN_DASHBOARD &&
+                        pathname.startsWith(route) &&
+                        pathname.charAt(route.length) === '/')
 
                   return (
                      <Button
