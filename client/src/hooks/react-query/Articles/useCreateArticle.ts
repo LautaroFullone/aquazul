@@ -17,8 +17,12 @@ const useCreateArticle = () => {
          })
       },
       onError: (error) => {
+         if (error?.message === 'Network Error') return
+
          const { message } = extractErrorData(error)
-         toast.error(message)
+         toast.error(message, {
+            id: `error-${queriesKeys.CREATE_ARTICLE}`,
+         })
       },
    })
 

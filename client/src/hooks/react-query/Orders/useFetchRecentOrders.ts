@@ -1,3 +1,4 @@
+import { extractErrorData } from '@utils/extractErrorDetails'
 import { getClientOrders } from '@services/orders.service'
 import { queriesKeys } from '@config/reactQueryKeys'
 import { useQuery } from '@tanstack/react-query'
@@ -12,7 +13,8 @@ const useFetchRecentOrders = (params: { clientId: string; limit: number }) => {
    })
 
    if (isError && error.message !== 'Network Error') {
-      toast.error(error.message, { id: `error-${queriesKeys.RECENTS_ORDERS}` }) //Seteo un ID para evitar toast duplicados
+      const { message } = extractErrorData(error)
+      toast.error(message, { id: `error-${queriesKeys.RECENTS_ORDERS}` }) //Seteo un ID para evitar toast duplicados
    }
 
    return {

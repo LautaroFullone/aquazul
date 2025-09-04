@@ -1,4 +1,5 @@
 import { getOrdersClientStats } from '@services/orders.service'
+import { extractErrorData } from '@utils/extractErrorDetails'
 import { queriesKeys } from '@config/reactQueryKeys'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -12,7 +13,9 @@ const useFetchOrdersClientStats = (params: { clientId: string }) => {
    })
 
    if (isError && error.message !== 'Network Error') {
-      toast.error(error.message, { id: `error-${queriesKeys.ORDERS_STATS}` }) //Seteo un ID para evitar toast duplicados
+      const { message } = extractErrorData(error)
+
+      toast.error(message, { id: `error-${queriesKeys.ORDERS_STATS}` }) //Seteo un ID para evitar toast duplicados
    }
 
    return {

@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { extractErrorData } from '@utils/extractErrorDetails'
 import { createOrder } from '@services/orders.service'
 import { queriesKeys } from '@config/reactQueryKeys'
 import { toast } from 'sonner'
@@ -19,8 +20,12 @@ const useCreateOrder = () => {
          })
       },
       onError: (error) => {
-         console.log(error)
-         toast.error(error.message)
+         if (error?.message === 'Network Error') return
+
+         const { message } = extractErrorData(error)
+         toast.error(message, {
+            id: `error-${queriesKeys.CREATE_ORDER}`,
+         })
       },
    })
 

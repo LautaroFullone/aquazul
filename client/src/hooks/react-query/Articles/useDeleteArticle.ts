@@ -15,6 +15,8 @@ function useDeleteArticle() {
          )
       },
       onError: (error) => {
+         if (error?.message === 'Network Error') return
+
          const { message } = extractErrorData(error)
          toast.error(message)
       },

@@ -1,3 +1,4 @@
+import { extractErrorData } from '@utils/extractErrorDetails'
 import { getOrderDetails } from '@services/orders.service'
 import { queriesKeys } from '@config/reactQueryKeys'
 import { useQuery } from '@tanstack/react-query'
@@ -13,7 +14,9 @@ const useFetchOrderDetails = (param: { orderId: string }) => {
    })
 
    if (isError && error.message !== 'Network Error') {
-      toast.error(error.message, { id: `error-${queriesKeys.ORDER_DETAILS}` })
+      const { message } = extractErrorData(error)
+
+      toast.error(message, { id: `error-${queriesKeys.ORDER_DETAILS}` })
    }
 
    return {

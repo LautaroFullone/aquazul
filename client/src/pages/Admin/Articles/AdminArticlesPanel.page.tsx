@@ -83,7 +83,6 @@ const AdminArticlesPanel = () => {
             <PrimaryButton
                size="lg"
                icon={Plus}
-               isLoading={false}
                label="Nuevo Artículo"
                onClick={() => navigate(routesConfig.ADMIN_ARTICLE_NEW)}
                className="hidden md:flex"
@@ -101,9 +100,8 @@ const AdminArticlesPanel = () => {
          <PrimaryButton
             size="lg"
             icon={Plus}
-            isLoading={false}
             label="Nuevo Artículo"
-            onClick={() => console.log('nuevo artículo')}
+            onClick={() => navigate(routesConfig.ADMIN_ARTICLE_NEW)}
             className="md:hidden"
          />
 
