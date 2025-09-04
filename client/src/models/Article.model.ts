@@ -1,9 +1,16 @@
+export interface ArticleCategory {
+   id: string
+   name: string
+   createdAt: Date
+   updatedAt: Date
+}
+
 export interface Article {
    id: string
    name: string
    basePrice: number
    code: string
-   category: { id: string; name: string }
+   category: Pick<ArticleCategory, 'id' | 'name'>
    clientPrice: number
 }
 

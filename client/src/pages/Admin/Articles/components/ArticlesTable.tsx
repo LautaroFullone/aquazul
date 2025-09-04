@@ -1,9 +1,9 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@shadcn'
 import type { Article } from '@models/Article.model'
-import EmptyBanner from '@shared/EmptyBanner'
-import Pagination from '@shared/Pagination'
+import { EmptyBanner, Pagination } from '@shared'
 import ArticleRow from './ArticleRow'
 import { useState } from 'react'
+import ConfirmDeleteModal from './ConfirmDeleteModal'
 
 interface ArticlesTableProps {
    paginatedArticles: Article[]
@@ -28,7 +28,7 @@ const ArticlesTable: React.FC<ArticlesTableProps> = ({
    onPageChange,
    emptyMessage,
 }) => {
-   const [, setSelectedArticle] = useState<Article | null>(null)
+   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null)
 
    return (
       <>
@@ -54,10 +54,11 @@ const ArticlesTable: React.FC<ArticlesTableProps> = ({
                         <ArticleRow
                            key={article.id}
                            article={article}
-                           onSelect={(article) => setSelectedArticle(article)}
+                           onEdit={setSelectedArticle}
                            onDelete={(article) => {
                               // Handle delete action
                               console.log('Deleting article:', article)
+                              setSelectedArticle(article)
                            }}
                         />
                      ))
@@ -85,14 +86,11 @@ const ArticlesTable: React.FC<ArticlesTableProps> = ({
             />
          )}
 
-         {/* {selectedArticle && (
-            <ArticleModal
-               isModalOpen={!!selectedArticle}
-               onClose={() => setSelectedArticle(null)}
-               articleId={selectedArticle.id}
-               articleName={selectedArticle.name}
-            />
-         )} */}
+         <ConfirmDeleteModal
+            isModalOpen={!!selectedArticle}
+            onClose={() => setSelectedArticle(null)}
+            selectedArticle={selectedArticle}
+         />
       </>
    )
 }

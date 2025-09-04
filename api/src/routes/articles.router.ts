@@ -1,15 +1,15 @@
 import { Router, type Request, type Response } from 'express'
 import { handleRouteError } from '../errors/handleRouteError'
+import { generateCategoriesMap } from '../utils/generateMap'
 import { hasRealChanges } from '../utils/hasRealChanges'
 import { nextArticleCode } from '../utils/nextCode'
 import prismaClient from '../prisma/prismaClient'
+import { sleep } from '../utils/sleep'
 import {
    articleCreateSchema,
    articlePriceByClientSchema,
    articleUpdateSchema,
 } from '../models/Article.model'
-import { generateCategoriesMap } from '../utils/generateMap'
-import { sleep } from '../utils/sleep'
 
 const articlesRouter = Router()
 
@@ -209,19 +209,47 @@ articlesRouter.patch('/:articleId', async (req: Request, res: Response) => {
    }
 })
 
-//TODO: eliminar category si no tiene mas articulos
 // DELETE -> eliminar artículo
 articlesRouter.delete('/:articleId', async (req: Request, res: Response) => {
    try {
       const { articleId } = req.params
 
-      const articleDeleted = await prismaClient.article.delete({
-         where: { id: articleId },
+      const result = await prismaClient.$transaction(async (tx) => {
+         // 1) Eliminar el artículo
+         const articleDeleted = await tx.article.delete({
+            where: { id: articleId },
+            include: { category: { select: { id: true } } },
+         })
+
+         // Verificar si la categoría tiene más artículos
+         const categoryHasMoreArticles = await tx.article.findFirst({
+            where: {
+               categoryId: articleDeleted.category.id,
+               id: { not: articleDeleted.id }, // Excluir el que acabamos de eliminar
+            },
+         })
+
+         // 3) Solo eliminar la categoría si no tiene más artículos
+         let categoryDeleted = null
+
+         if (!categoryHasMoreArticles) {
+            categoryDeleted = await tx.articleCategory.delete({
+               where: { id: articleDeleted.category.id },
+            })
+         }
+
+         return {
+            articleDeleted,
+            categoryDeleted,
+         } as const
       })
 
       return res.status(200).send({
-         message: 'Artículo eliminado',
-         article: articleDeleted,
+         message: result.categoryDeleted
+            ? 'Artículo y categoría eliminados'
+            : 'Artículo eliminado',
+         article: result.articleDeleted,
+         category: result.categoryDeleted, //category solo se envía si se eliminó la categoría
       })
    } catch (error) {
       return handleRouteError(res, error)
