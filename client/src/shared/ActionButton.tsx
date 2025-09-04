@@ -4,7 +4,7 @@ import { Button, buttonVariants, cn } from '@shadcn'
 import useMobile from '@hooks/useMobile'
 
 //types from shadcn
-interface PrimaryButtonProps
+interface ActionButtonProps
    extends Omit<React.ComponentProps<'button'>, 'children'>,
       VariantProps<typeof buttonVariants> {
    icon: LucideIcon
@@ -13,7 +13,7 @@ interface PrimaryButtonProps
    loadingLabel?: string
 }
 
-const PrimaryButton: React.FC<PrimaryButtonProps> = ({
+const ActionButton: React.FC<ActionButtonProps> = ({
    icon,
    isLoading,
    label = 'Guardar',
@@ -25,20 +25,19 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
 
    const message = isLoading ? loadingLabel : label
    const Icon = icon
-   const iconToShow = isLoading ? <Loader2 className="animate-spin" /> : <Icon />
 
    return (
       <Button
          className={cn(
-            'bg-blue-800 active:bg-blue-800/90 hover:bg-blue-800/90 text-white',
+            // 'bg-blue-800 active:bg-blue-800/90 hover:bg-blue-800/90 text-white',
             isMobile && 'w-full',
             className
          )}
          {...props}
       >
-         {iconToShow}
+         {isLoading ? <Loader2 className="animate-spin" /> : <Icon />}
          {message}
       </Button>
    )
 }
-export default PrimaryButton
+export default ActionButton

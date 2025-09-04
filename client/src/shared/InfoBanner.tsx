@@ -11,7 +11,7 @@ const InfoBanner = ({ title, description }: InfoBannerProps) => {
 
    return (
       <div
-         className="text-blue-800 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-600 rounded-r-md cursor-pointer transition-all duration-300"
+         className="text-blue-800 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-600 rounded-r-md"
          onMouseEnter={() => setShowBanner(true)}
          onMouseLeave={() => setShowBanner(false)}
          onClick={() => setShowBanner(!showBanner)}
@@ -30,7 +30,7 @@ const InfoBanner = ({ title, description }: InfoBannerProps) => {
          </div>
 
          <div
-            className={`overflow-hidden transition-all duration-300 ${
+            className={`overflow-hidden transition-all duration-600! ${
                showBanner ? 'max-h-[500px]' : 'max-h-0'
             }`}
          >

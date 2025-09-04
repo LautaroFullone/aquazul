@@ -1,6 +1,6 @@
 import { routesConfig } from '@config/routesConfig'
-import PrimaryButton from '@shared/PrimaryButton'
 import { Lock, LogIn, User } from 'lucide-react'
+import ActionButton from '@shared/ActionButton'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import {
@@ -63,23 +63,22 @@ const Login = () => {
                </div>
 
                <div className="space-y-2 pt-2">
-                  <PrimaryButton
-                     size={'lg'}
+                  <ActionButton
+                     size="lg"
                      icon={LogIn}
-                     isLoading={false}
+                     className="w-full"
                      label="Entrar al Panel Admin"
                      loadingLabel="Entrando..."
-                     className="w-full bg-primary hover:bg-primary/90"
                      onClick={() => navigate(routesConfig.ADMIN_DASHBOARD)}
                   />
 
-                  <PrimaryButton
-                     size={'lg'}
+                  <ActionButton
+                     size="lg"
                      icon={LogIn}
-                     isLoading={false}
+                     variant="primary"
+                     className="w-full"
                      label="Entrar al Panel Cliente"
                      loadingLabel="Entrando..."
-                     className="w-full"
                      onClick={() => navigate(routesConfig.CLIENT_DASHBOARD)}
                   />
                </div>

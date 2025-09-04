@@ -1,11 +1,9 @@
 import { useFetchArticles, useCreateOrder } from '@hooks/react-query'
 import OrderArticlesTable from './components/OrderArticlesTable'
+import { ActionButton, TextAreaForm, PageTitle } from '@shared'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import type { OrderArticle } from '@models/Article.model'
-import PrimaryButton from '@shared/PrimaryButton'
-import TextAreaForm from '@shared/TextAreaForm'
 import { Save, Info } from 'lucide-react'
-import PageTitle from '@shared/PageTitle'
 import { useMemo, useState } from 'react'
 import {
    Card,
@@ -84,14 +82,14 @@ const ClientOrderForm = () => {
                description="Completá el contenido de tu pedido"
             />
 
-            <PrimaryButton
+            <ActionButton
                size="lg"
                icon={Save}
+               variant="primary"
+               label="Guardar Pedido"
+               onClick={() => handleSaveOrder()}
                isLoading={isPending}
                disabled={!canSave}
-               label="Guardar Pedido"
-               // loadingLabel="Guardando Pedido..."
-               onClick={() => handleSaveOrder()}
                className="hidden sm:flex"
             />
          </div>
@@ -203,14 +201,14 @@ const ClientOrderForm = () => {
                </Card>
             </div>
 
-            <PrimaryButton
+            <ActionButton
                size="lg"
                icon={Save}
+               variant="primary"
+               label="Guardar Pedido"
+               onClick={() => handleSaveOrder()}
                isLoading={isPending}
                disabled={!canSave}
-               label="Guardar Pedido"
-               // loadingLabel="Guardando Pedido..."
-               onClick={() => handleSaveOrder()}
                className="sm:hidden"
             />
          </div>

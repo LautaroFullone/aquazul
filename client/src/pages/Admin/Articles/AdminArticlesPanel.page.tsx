@@ -1,4 +1,4 @@
-import { PrimaryButton, InfoBanner, PageTitle } from '@shared'
+import { ActionButton, InfoBanner, PageTitle } from '@shared'
 import ArticlesTable from './components/ArticlesTable'
 import { useFetchArticles } from '@hooks/react-query'
 import { useEffect, useMemo, useState } from 'react'
@@ -78,9 +78,10 @@ const AdminArticlesPanel = () => {
                description="Administrá los artículos del inventario"
             />
 
-            <PrimaryButton
+            <ActionButton
                size="lg"
                icon={Plus}
+               variant="primary"
                label="Nuevo Artículo"
                onClick={() => navigate(routesConfig.ADMIN_ARTICLE_NEW)}
                className="hidden md:flex"
@@ -95,7 +96,7 @@ const AdminArticlesPanel = () => {
             ]}
          />
 
-         <PrimaryButton
+         <ActionButton
             size="lg"
             icon={Plus}
             label="Nuevo Artículo"

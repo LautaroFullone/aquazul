@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@shadcn'
-import { InputForm, CommandForm, PageTitle, PrimaryButton } from '@shared'
+import { InputForm, CommandForm, PageTitle, ActionButton } from '@shared'
 import { useFetchArticles, useCreateArticle } from '@hooks/react-query'
 import useArticleValidation from '@hooks/useArticleValidate'
 import type { ArticleFormData } from '@models/Article.model'
@@ -51,9 +51,10 @@ const AdminArticleForm = () => {
                description="Completá el contenido del artículo"
             />
 
-            <PrimaryButton
+            <ActionButton
                size="lg"
                icon={Save}
+               variant="primary"
                label="Guardar Artículo"
                className="hidden sm:flex"
                isLoading={isCreateArticlePending}
@@ -162,7 +163,7 @@ const AdminArticleForm = () => {
                </Card>
             </div>
 
-            <PrimaryButton
+            <ActionButton
                size="lg"
                icon={Save}
                label="Guardar Artículo"
