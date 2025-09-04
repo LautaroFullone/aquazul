@@ -16,7 +16,7 @@ import {
 import normalizeString from '@utils/normalizeString'
 
 interface CommandOption {
-   id: string | number
+   id: string
    label: string
 }
 
@@ -27,7 +27,7 @@ interface CommandFormProps {
    placeholder?: string
    searchPlaceholder?: string
    optionsHeader?: string
-   options: CommandOption[] | Record<string, string | number>
+   options: CommandOption[] | Record<string, string>
    onSelect: (value: string) => void
    onCreate?: (value: string) => void
    hasError?: boolean
@@ -37,7 +37,7 @@ interface CommandFormProps {
    newItemPrefix?: string
    noResultsMessage?: string
    loadingMessage?: string
-   disableCreation?: boolean
+   disabled?: boolean
 }
 
 const CommandForm = ({
@@ -57,6 +57,7 @@ const CommandForm = ({
    newItemPrefix = 'Nueva:',
    noResultsMessage = 'No se encontraron resultados.',
    loadingMessage = 'Cargando opciones...',
+   disabled = false,
 }: CommandFormProps) => {
    const [isOpen, setIsOpen] = useState(false)
    const [searchTerm, setSearchTerm] = useState('')
@@ -64,7 +65,7 @@ const CommandForm = ({
    // Convertir opciones a formato normalizado si es un objeto
    const normalizedOptions: CommandOption[] = Array.isArray(options)
       ? options
-      : Object.entries(options).map(([label, id]) => ({ label, id }))
+      : Object.entries(options).map(([id, label]) => ({ id, label }))
 
    // Verificar si el valor seleccionado es nuevo (no existe en las opciones)
    const isNewItem = Boolean(
@@ -116,6 +117,7 @@ const CommandForm = ({
                   variant="outline"
                   role="combobox"
                   aria-expanded={isOpen}
+                  disabled={disabled}
                   className={cn(
                      'w-full justify-between hover:bg-white font-normal border-input',
                      'focus:border-ring focus:ring-ring/50 focus:ring-[3px]',
@@ -161,7 +163,7 @@ const CommandForm = ({
                         </CommandGroup>
                      )}
 
-                     {filteredOptions.length > 0 && (
+                     {!isLoading && filteredOptions.length > 0 && (
                         <CommandGroup heading={optionsHeader}>
                            {filteredOptions.map((option) => (
                               <CommandItem

@@ -146,7 +146,7 @@ const AdminArticlesPanel = () => {
                            <SelectItem value="all">Todas</SelectItem>
 
                            {Object.entries(categories).map(
-                              ([categoryName, categoryId]) => (
+                              ([categoryId, categoryName]) => (
                                  <SelectItem
                                     key={`select-category-${categoryName}`}
                                     value={categoryId}

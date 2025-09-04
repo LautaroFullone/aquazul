@@ -5,11 +5,11 @@ import { SquarePen, Trash2 } from 'lucide-react'
 
 interface ArticleRowProps {
    article: Article
-   onSelect: (article: Article) => void
+   onEdit: (article: Article) => void
    onDelete: (article: Article) => void
 }
 
-const ArticleRow = ({ article, onSelect, onDelete }: ArticleRowProps) => (
+const ArticleRow = ({ article, onEdit, onDelete }: ArticleRowProps) => (
    <TableRow>
       <TableCell className="font-medium">{article.code}</TableCell>
 
@@ -24,7 +24,7 @@ const ArticleRow = ({ article, onSelect, onDelete }: ArticleRowProps) => (
       </TableCell>
 
       <TableCell align="right" className="space-x-2">
-         <Button variant="outline" size="sm" onClick={() => onSelect(article)}>
+         <Button variant="outline" size="sm" onClick={() => onEdit(article)}>
             <SquarePen className="h-4 w-4 mr-1" />
             Editar
          </Button>

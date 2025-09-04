@@ -86,6 +86,7 @@ const AdminArticleForm = () => {
                         onChange={(e) => updateField('name', e.target.value)}
                         hasError={showValidation && hasFieldError('name')}
                         errorMessages={validationErrors.name}
+                        disabled={isCreateArticlePending}
                      />
 
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -106,6 +107,7 @@ const AdminArticleForm = () => {
                            newItemPrefix="Nueva:"
                            loadingMessage="Cargando categorías..."
                            noResultsMessage="No se encontraron categorías."
+                           disabled={isCreateArticlePending}
                         />
 
                         {/* Precio Base */}
