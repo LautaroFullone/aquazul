@@ -1,14 +1,13 @@
+import { PrimaryButton, InfoBanner, PageTitle } from '@shared'
 import ArticlesTable from './components/ArticlesTable'
 import { useFetchArticles } from '@hooks/react-query'
 import { useEffect, useMemo, useState } from 'react'
 import { usePagination } from '@hooks/usePagination'
 import normalizeString from '@utils/normalizeString'
-import PrimaryButton from '@shared/PrimaryButton'
+import { routesConfig } from '@config/routesConfig'
 import { useDebounce } from '@hooks/useDebounce'
 import { Plus, Search } from 'lucide-react'
-import InfoBanner from '@shared/InfoBanner'
 import { useNavigate } from 'react-router'
-import PageTitle from '@shared/PageTitle'
 import {
    Button,
    Card,
@@ -24,7 +23,6 @@ import {
    SelectTrigger,
    SelectValue,
 } from '@shadcn'
-import { routesConfig } from '@config/routesConfig'
 
 const AdminArticlesPanel = () => {
    const [categoryFilter, setCategoryFilter] = useState<string>('all')

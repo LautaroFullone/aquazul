@@ -36,7 +36,7 @@ const useArticleValidation = (formData: ArticleFormData) => {
       }
 
       // Validación del precio base
-      if (article.basePrice === null || article.basePrice === undefined) {
+      if (!article.basePrice) {
          fieldErrors.basePrice.push('El precio base es requerido')
       } else {
          const price = Number(article.basePrice)
@@ -61,7 +61,8 @@ const useArticleValidation = (formData: ArticleFormData) => {
    return {
       validateArticle,
       hasFieldError,
-      validationErrors: allErrors || [],
+      validationErrors,
+      validationErrorsList: allErrors || [],
       isValid: allErrors.length === 0,
    }
 }
