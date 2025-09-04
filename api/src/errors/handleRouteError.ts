@@ -1,4 +1,4 @@
-import { NOT_FOUND_MESSAGES } from './errorLabels'
+import { NOT_FOUND_MESSAGES, UNIQUE_CONSTRAINT_MESSAGES } from './errorLabels'
 import { Prisma } from '@prisma/client'
 import { ApiError } from './ApiError'
 import { Response } from 'express'
@@ -30,8 +30,13 @@ export function handleRouteError(res: Response, caughtError: unknown) {
    // 3) Prisma comunes
    if (caughtError instanceof Prisma.PrismaClientKnownRequestError) {
       if (caughtError.code === 'P2002') {
+         const model = (caughtError.meta?.modelName as string) || ''
+         const uniqueMessage =
+            UNIQUE_CONSTRAINT_MESSAGES[model] ||
+            'Ya existe un recurso con el mismo dato único'
+
          return res.status(409).send({
-            message: 'Ya existe un recurso con el mismo dato único',
+            message: uniqueMessage,
             code: 'UNIQUE_CONSTRAINT',
             details: caughtError.meta,
          })

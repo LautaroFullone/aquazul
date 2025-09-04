@@ -1,8 +1,9 @@
 import { Check, ChevronsUpDown, Info, Loader2, Plus, Save } from 'lucide-react'
+import { useFetchArticles, useCreateArticle } from '@hooks/react-query'
 import useArticleValidation from '@hooks/useArticleValidate'
 import type { ArticleFormData } from '@models/Article.model'
 import { valueToCurrency } from '@utils/valueToCurrency'
-import { useFetchArticles } from '@hooks/react-query'
+import normalizeString from '@utils/normalizeString'
 import PrimaryButton from '@shared/PrimaryButton'
 import PageTitle from '@shared/PageTitle'
 import { useMemo, useState } from 'react'
@@ -15,7 +16,6 @@ import {
    CardTitle,
    cn,
    Command,
-   CommandEmpty,
    CommandGroup,
    CommandInput,
    CommandItem,
@@ -26,18 +26,20 @@ import {
    PopoverContent,
    PopoverTrigger,
 } from '@shadcn'
-import normalizeString from '@utils/normalizeString'
+
+const articleInitialState: ArticleFormData = {
+   name: '',
+   categoryName: '',
+   basePrice: 0,
+}
 
 const AdminArticleForm = () => {
    const [isPopoverOpen, setIsPopoverOpen] = useState(false)
    const [showValidation, setShowValidation] = useState(false)
    const [searchTerm, setSearchTerm] = useState('')
-   const [formData, setFormData] = useState<ArticleFormData>({
-      name: '',
-      category: '',
-      basePrice: 0,
-   })
+   const [formData, setFormData] = useState<ArticleFormData>(articleInitialState)
 
+   const { createArticleMutate, isPending: isCreateArticlePending } = useCreateArticle()
    const { categories, isPending: isFetchCategoriesPending } = useFetchArticles()
    const { validationErrors, isValid, hasFieldError } = useArticleValidation(formData)
 
@@ -49,18 +51,18 @@ const AdminArticleForm = () => {
    }
 
    const handleSelectCategory = (selectedCategory: string) => {
-      updateField('category', selectedCategory)
+      updateField('categoryName', selectedCategory)
       setSearchTerm('')
       setIsPopoverOpen(false)
    }
 
    const handleCreateNewCategory = () => {
-      updateField('category', searchTerm)
+      updateField('categoryName', searchTerm)
       setSearchTerm('')
       setIsPopoverOpen(false)
    }
 
-   const handleSaveArticle = () => {
+   const handleSaveArticle = async () => {
       setShowValidation(true)
 
       if (!isValid) {
@@ -69,35 +71,29 @@ const AdminArticleForm = () => {
 
       console.log('Guardando artículo:', {
          ...formData,
-         isNewCategory,
       })
 
-      // createOrderMutate({
-      //    clientId: clienteLogueado.id,
-      //    articles: orderArticles,
-      //    observation,
-      // }).then(() => {
-      //    setObservation('')
-      //    setOrderArticles([])
-      //    setShowValidation(false)
-      // })
+      await createArticleMutate(formData)
+
+      setSearchTerm('')
+      setFormData(articleInitialState)
+      setShowValidation(false)
    }
 
    const isNewCategory = useMemo(() => {
       return (
-         formData.category &&
+         formData.categoryName &&
          !Object.keys(categories).some(
-            (cat) => cat.toLowerCase() === formData.category.toLowerCase()
+            (cat) => cat.toLowerCase() === formData.categoryName.toLowerCase()
          )
       )
-   }, [formData.category, categories])
+   }, [formData.categoryName, categories])
 
-   const categoriesEntries = Object.entries(categories)
-   const filteredCategories = categoriesEntries.filter(([name]) =>
+   const filteredCategories = Object.entries(categories).filter(([name]) =>
       normalizeString(name).includes(normalizeString(searchTerm))
    )
 
-   const hasExactMatch = categoriesEntries.some(
+   const hasExactMatch = Object.entries(categories).some(
       ([name]) => normalizeString(name) === normalizeString(searchTerm)
    )
    const showCreate = Boolean(searchTerm.trim()) && !hasExactMatch
@@ -117,7 +113,7 @@ const AdminArticleForm = () => {
             <PrimaryButton
                size="lg"
                icon={Save}
-               isLoading={false}
+               isLoading={isCreateArticlePending}
                label="Guardar Artículo"
                onClick={() => handleSaveArticle()}
                className="hidden sm:flex"
@@ -195,14 +191,14 @@ const AdminArticleForm = () => {
                                        'w-full justify-between hover:bg-white font-normal border-input',
                                        'focus:border-ring focus:ring-ring/50 focus:ring-[3px]',
                                        showValidation &&
-                                          hasFieldError('category') &&
+                                          hasFieldError('categoryName') &&
                                           'border-blue-300 ring-1 ring-blue-200'
                                     )}
                                  >
-                                    {formData.category
+                                    {formData.categoryName
                                        ? isNewCategory
-                                          ? `Nueva: ${formData.category}`
-                                          : formData.category
+                                          ? `Nueva: ${formData.categoryName}`
+                                          : formData.categoryName
                                        : 'Seleccionar categoría...'}
                                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                                  </Button>
@@ -257,7 +253,7 @@ const AdminArticleForm = () => {
                                                       <Check
                                                          className={cn(
                                                             'mr-2 h-4 w-4',
-                                                            formData.category ===
+                                                            formData.categoryName ===
                                                                categoryName
                                                                ? 'opacity-100'
                                                                : 'opacity-0'
@@ -294,11 +290,14 @@ const AdminArticleForm = () => {
                               <Input
                                  id="basePrice"
                                  type="number"
-                                 value={formData.basePrice}
-                                 onChange={(e) =>
-                                    updateField('basePrice', e.target.value)
+                                 value={
+                                    formData.basePrice === 0 ? '' : formData.basePrice
                                  }
-                                 min="0"
+                                 placeholder="Ej: 1000"
+                                 min={0}
+                                 onChange={(e) =>
+                                    updateField('basePrice', Number(e.target.value))
+                                 }
                                  className={cn(
                                     'pl-8',
                                     showValidation &&
@@ -343,7 +342,7 @@ const AdminArticleForm = () => {
                               {isNewCategory && <span> (nueva)</span>}:
                            </span>
                            <span className="font-medium">
-                              {formData.category ? formData.category : 'Sin definir'}
+                              {formData.categoryName || 'Sin definir'}
                            </span>
                         </div>
                      </div>
@@ -354,7 +353,7 @@ const AdminArticleForm = () => {
             <PrimaryButton
                size="lg"
                icon={Save}
-               isLoading={false}
+               isLoading={isCreateArticlePending}
                label="Guardar Artículo"
                onClick={() => handleSaveArticle()}
                className="sm:hidden"

@@ -89,6 +89,48 @@ articlesRouter.get('/client/:clientId', async (req: Request, res: Response) => {
    }
 })
 
+// POST -> crear artículo y asignar categoria
+articlesRouter.post('/', async (req: Request, res: Response) => {
+   try {
+      const { name, basePrice, categoryName } = articleCreateSchema.parse(req.body)
+
+      // Crear articulo con transacción para generar code único
+      const createdArticle = await prismaClient.$transaction(async (tx) => {
+         const lastArticle = await tx.article.findFirst({
+            orderBy: { createdAt: 'desc' },
+         })
+
+         const newCode = nextArticleCode(lastArticle?.code)
+
+         //CHEQUEO DE DUPLICADOS AUTOMATICO (name es @unique y case insensitive)
+         return tx.article.create({
+            data: {
+               name,
+               basePrice,
+               code: newCode,
+               category: {
+                  //si la categoria existe, asigna el ID, sino existe la crea
+                  connectOrCreate: {
+                     where: { name: categoryName }, // requiere @unique en name
+                     create: { name: categoryName },
+                  },
+               },
+            },
+            include: {
+               category: true,
+            },
+         })
+      })
+
+      return res.status(201).send({
+         message: 'Artículo creado',
+         article: createdArticle,
+      })
+   } catch (error) {
+      return handleRouteError(res, error)
+   }
+})
+
 // POST -> setear precio de artículo por cliente
 articlesRouter.put(
    '/:articleId/client/:clientId/price',
@@ -129,48 +171,6 @@ articlesRouter.put(
       }
    }
 )
-
-// POST -> crear artículo y asignar categoria
-articlesRouter.post('/', async (req: Request, res: Response) => {
-   try {
-      const { basePrice, categoryName, name } = articleCreateSchema.parse(req.body)
-
-      // Crear articulo con transacción para generar code único
-      const createdArticle = await prismaClient.$transaction(async (tx) => {
-         const lastArticle = await tx.article.findFirst({
-            orderBy: { createdAt: 'desc' },
-         })
-
-         const newCode = nextArticleCode(lastArticle?.code)
-
-         //CHEQUEO DE DUPLICADOS AUTOMATICO (name es @unique y case insensitive)
-         return tx.article.create({
-            data: {
-               name,
-               basePrice,
-               code: newCode,
-               category: {
-                  //si la categoria existe, asigna el ID, sino existe la crea
-                  connectOrCreate: {
-                     where: { name: categoryName }, // requiere @unique en name
-                     create: { name: categoryName },
-                  },
-               },
-            },
-            include: {
-               category: true,
-            },
-         })
-      })
-
-      return res.status(201).send({
-         message: 'Artículo creado',
-         article: createdArticle,
-      })
-   } catch (error) {
-      return handleRouteError(res, error)
-   }
-})
 
 //TODO: agregar category
 // PATCH -> actualizar artículo

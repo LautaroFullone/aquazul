@@ -6,7 +6,7 @@ type ArticleMapType = Record<keyof ArticleFormData, string[]>
 const useArticleValidation = (formData: ArticleFormData) => {
    const [validationErrors, setValidationErrors] = useState<ArticleMapType>({
       name: [],
-      category: [],
+      categoryName: [],
       basePrice: [],
    })
 
@@ -17,7 +17,7 @@ const useArticleValidation = (formData: ArticleFormData) => {
    const validateArticle = useCallback((article: ArticleFormData) => {
       const fieldErrors: ArticleMapType = {
          name: [],
-         category: [],
+         categoryName: [],
          basePrice: [],
       }
 
@@ -29,15 +29,24 @@ const useArticleValidation = (formData: ArticleFormData) => {
       }
 
       // Validación de la categoría
-      if (!article.category?.trim()) {
-         fieldErrors.category.push('Debe seleccionar o crear una categoría')
+      if (!article.categoryName?.trim()) {
+         fieldErrors.categoryName.push('La categoría es requerida')
+      } else if (article.categoryName.length > 30) {
+         fieldErrors.categoryName.push('La categoría no puede tener más de 30 caracteres')
       }
 
       // Validación del precio base
-      if (!article.basePrice) {
+      if (article.basePrice === null || article.basePrice === undefined) {
          fieldErrors.basePrice.push('El precio base es requerido')
-      } else if (Number(article.basePrice) <= 0) {
-         fieldErrors.basePrice.push('El precio base debe ser mayor a 0')
+      } else {
+         const price = Number(article.basePrice)
+         if (isNaN(price)) {
+            fieldErrors.basePrice.push('El precio debe ser un número')
+         } else if (!Number.isInteger(price)) {
+            fieldErrors.basePrice.push('El precio debe ser un número entero')
+         } else if (price <= 0) {
+            fieldErrors.basePrice.push('El precio debe ser mayor a 0')
+         }
       }
 
       setValidationErrors(fieldErrors)

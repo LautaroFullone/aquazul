@@ -1,4 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { extractErrorData } from '@utils/extractErrorDetails'
 import { toast } from 'sonner'
 
 function useDeleteArticle() {
@@ -14,8 +15,8 @@ function useDeleteArticle() {
          )
       },
       onError: (error) => {
-         console.log(error)
-         toast.error(error.message)
+         const { message } = extractErrorData(error)
+         toast.error(message)
       },
    })
 

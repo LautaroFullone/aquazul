@@ -1,7 +1,7 @@
 import { getArticles, getArticlesByClient } from '@services/articles.service'
+import { extractErrorData } from '@utils/extractErrorDetails'
 import { queriesKeys } from '@config/reactQueryKeys'
 import { useQuery } from '@tanstack/react-query'
-import type { AxiosError } from 'axios'
 import { toast } from 'sonner'
 
 const useFetchArticles = (params?: { clientId?: string }) => {
@@ -16,13 +16,7 @@ const useFetchArticles = (params?: { clientId?: string }) => {
    })
 
    if (isError && error.message !== 'Network Error') {
-      const axiosError = error as AxiosError<{
-         message: string
-         code: string
-         details: { modelName: string; cause: string }
-      }>
-
-      const message = axiosError.response?.data.message || 'Error desconocido'
+      const { message } = extractErrorData(error)
 
       toast.error(message, {
          id: `error-${queriesKeys.FETCH_ARTICLES}`,

@@ -13,7 +13,7 @@ export interface ArticleSummary {
 
 export const articleCreateSchema = z.object({
    name: z.string().trim().min(1, 'El nombre es requerido'),
-   basePrice: z.number().int().nonnegative('El precio debe ser un entero ≥ 0'),
+   basePrice: z.coerce.number().int().nonnegative('El precio debe ser un entero ≥ 0'),
    categoryName: z.string().trim().min(1, 'La categoria es requerida'),
 })
 

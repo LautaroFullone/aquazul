@@ -57,21 +57,21 @@ const ClientOrderForm = () => {
       [orderArticles]
    )
 
-   const handleSaveOrder = () => {
+   const handleSaveOrder = async () => {
       if (!allArticlesdAreValid) {
          setShowValidation(true)
          return
       }
 
-      createOrderMutate({
+      await createOrderMutate({
          clientId: clienteLogueado.id,
          articles: orderArticles,
          observation,
-      }).then(() => {
-         setObservation('')
-         setOrderArticles([])
-         setShowValidation(false)
       })
+
+      setObservation('')
+      setOrderArticles([])
+      setShowValidation(false)
    }
 
    return (

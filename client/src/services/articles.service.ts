@@ -1,15 +1,8 @@
+import type { ArticleFormData } from '@models/Article.model'
 import type { ResponseApi } from './ResponseApi'
 import { api } from '@lib/axios'
 
-type CreateArticleData = {
-   name: string
-   basePrice: number
-   categoryId?: string
-   categoryName?: string
-   description: string
-}
-
-export async function createArticle(articleData: CreateArticleData) {
+export async function createArticle(articleData: ArticleFormData) {
    type Response = Pick<ResponseApi, 'message' | 'article'>
    const { data } = await api.post<Response>(`/articles`, articleData)
    return data
