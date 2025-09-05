@@ -38,6 +38,9 @@ interface CommandFormProps {
    noResultsMessage?: string
    loadingMessage?: string
    disabled?: boolean
+   isFilterMode?: boolean
+   showAllOption?: boolean
+   allOptionLabel?: string
 }
 
 const CommandForm = ({
@@ -58,6 +61,9 @@ const CommandForm = ({
    noResultsMessage = 'No se encontraron resultados.',
    loadingMessage = 'Cargando opciones...',
    disabled = false,
+   isFilterMode = false,
+   showAllOption = false,
+   allOptionLabel = 'Todas',
 }: CommandFormProps) => {
    const [isOpen, setIsOpen] = useState(false)
    const [searchTerm, setSearchTerm] = useState('')
@@ -67,12 +73,18 @@ const CommandForm = ({
       ? options
       : Object.entries(options).map(([id, label]) => ({ id, label }))
 
+   // Find the selected option by id (for filter mode) or by label (for regular mode)
+   const selectedOption = value
+      ? normalizedOptions.find((option) =>
+           isFilterMode
+              ? option.id === value
+              : normalizeString(option.label) === normalizeString(value)
+        )
+      : undefined
+
    // Verificar si el valor seleccionado es nuevo (no existe en las opciones)
    const isNewItem = Boolean(
-      value &&
-         !normalizedOptions.some(
-            (option) => normalizeString(option.label) === normalizeString(value)
-         )
+      value && !selectedOption && !isFilterMode // Only applicable in non-filter mode
    )
 
    // Filtrar opciones basadas en el término de búsqueda
@@ -88,8 +100,9 @@ const CommandForm = ({
    const showCreate = Boolean(searchTerm.trim()) && !hasExactMatch && onCreate
    const showEmpty = !isLoading && filteredOptions.length === 0 && !showCreate
 
-   const handleSelectItem = (selectedValue: string) => {
-      onSelect(selectedValue)
+   const handleSelectItem = (selectedOption: CommandOption) => {
+      // In filter mode, send the ID instead of the label
+      onSelect(isFilterMode ? selectedOption.id : selectedOption.label)
       setSearchTerm('')
       setIsOpen(false)
    }
@@ -101,6 +114,9 @@ const CommandForm = ({
          setIsOpen(false)
       }
    }
+
+   // Add a special check for the "all" option
+   const isAllOptionSelected = value === 'all'
 
    return (
       <div className="space-y-1">
@@ -127,9 +143,11 @@ const CommandForm = ({
                   )}
                >
                   {value
-                     ? isNewItem
+                     ? isAllOptionSelected
+                        ? allOptionLabel
+                        : isNewItem && !isFilterMode
                         ? `${newItemPrefix} ${value}`
-                        : `${value}`
+                        : selectedOption?.label || value
                      : placeholder}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                </Button>
@@ -154,6 +172,30 @@ const CommandForm = ({
                         </div>
                      )}
 
+                     {!isLoading && (
+                        <CommandGroup>
+                           {/* Add the "All" option */}
+                           {showAllOption && (
+                              <CommandItem
+                                 value={allOptionLabel}
+                                 onSelect={() => {
+                                    onSelect('all')
+                                    setSearchTerm('')
+                                    setIsOpen(false)
+                                 }}
+                              >
+                                 <Check
+                                    className={cn(
+                                       'mr-2 h-4 w-4',
+                                       isAllOptionSelected ? 'opacity-100' : 'opacity-0'
+                                    )}
+                                 />
+                                 {allOptionLabel}
+                              </CommandItem>
+                           )}
+                        </CommandGroup>
+                     )}
+
                      {showCreate && (
                         <CommandGroup>
                            <CommandItem value={searchTerm} onSelect={handleCreateItem}>
@@ -169,12 +211,16 @@ const CommandForm = ({
                               <CommandItem
                                  key={option.id}
                                  value={option.label}
-                                 onSelect={() => handleSelectItem(option.label)}
+                                 onSelect={() => handleSelectItem(option)}
                               >
                                  <Check
                                     className={cn(
                                        'mr-2 h-4 w-4',
-                                       value === option.label
+                                       (
+                                          isFilterMode
+                                             ? value === option.id
+                                             : value === option.label
+                                       )
                                           ? 'opacity-100'
                                           : 'opacity-0'
                                     )}

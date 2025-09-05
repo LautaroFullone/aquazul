@@ -1,4 +1,4 @@
-import { ActionButton, InfoBanner, PageTitle } from '@shared'
+import { ActionButton, CommandForm, InfoBanner, PageTitle } from '@shared'
 import ArticlesTable from './components/ArticlesTable'
 import { useFetchArticles } from '@hooks/react-query'
 import { useEffect, useMemo, useState } from 'react'
@@ -130,36 +130,19 @@ const AdminArticlesPanel = () => {
                      </div>
                   </div>
 
-                  <div>
-                     <Label htmlFor="estado">Categoria</Label>
-
-                     <Select
-                        value={categoryFilter}
-                        disabled={isPending}
-                        onValueChange={(v: string | 'all') => setCategoryFilter(v)}
-                     >
-                        <SelectTrigger id="estado" className="mt-1 bg-white w-full">
-                           <SelectValue placeholder="Todos" />
-                        </SelectTrigger>
-
-                        <SelectContent>
-                           <SelectItem value="all">Todas</SelectItem>
-
-                           {Object.entries(categories).map(
-                              ([categoryId, categoryName]) => (
-                                 <SelectItem
-                                    key={`select-category-${categoryName}`}
-                                    value={categoryId}
-                                 >
-                                    <div className="flex items-center gap-2">
-                                       {categoryName}
-                                    </div>
-                                 </SelectItem>
-                              )
-                           )}
-                        </SelectContent>
-                     </Select>
-                  </div>
+                  <CommandForm
+                     isFilterMode
+                     showAllOption
+                     id="category"
+                     label="Categoría"
+                     value={categoryFilter}
+                     options={categories}
+                     optionsHeader="Categorías existentes"
+                     onSelect={(value) => setCategoryFilter(value)}
+                     loadingMessage="Cargando categorías..."
+                     noResultsMessage="No se encontraron categorías."
+                     disabled={isPending}
+                  />
 
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between col-span-full gap-4">
                      <div className="text-sm text-gray-600">

@@ -39,7 +39,7 @@ articlesRouter.get('/', async (req: Request, res: Response) => {
    }
 })
 
-// GET -> listar artículos por cliente
+// GET -> listar artículos por cliente con sus precios especiales
 articlesRouter.get('/client/:clientId', async (req: Request, res: Response) => {
    const { clientId } = req.params
 
@@ -89,7 +89,7 @@ articlesRouter.get('/client/:clientId', async (req: Request, res: Response) => {
    }
 })
 
-// POST -> crear artículo y asignar categoria
+// POST -> crear artículo y asignar o crear la categoría
 articlesRouter.post('/', async (req: Request, res: Response) => {
    try {
       const { name, basePrice, categoryName } = articleCreateSchema.parse(req.body)
