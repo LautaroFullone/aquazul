@@ -1,6 +1,13 @@
 import type { OrderArticle } from './Article.model'
 
-export type OrderStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED'
+export type OrderStatus =
+   | 'PENDING'
+   | 'IN_PROGRESS'
+   | 'READY'
+   | 'DELIVERED'
+   | 'CLAIMED'
+   | 'COMPLETED'
+   | 'CANCELLED'
 export interface Order {
    id: string
    code: string

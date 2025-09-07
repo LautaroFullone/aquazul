@@ -11,6 +11,9 @@ datasource db {
 enum OrderStatus {
    PENDING
    IN_PROGRESS
+   READY
+   DELIVERED
+   CLAIMED
    COMPLETED
    CANCELLED
 }

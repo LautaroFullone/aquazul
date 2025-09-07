@@ -101,7 +101,7 @@ const CommandForm = ({
    const showEmpty = !isLoading && filteredOptions.length === 0 && !showCreate
 
    const handleSelectItem = (selectedOption: CommandOption) => {
-      // In filter mode, send the ID instead of the label
+      //Cuando esta activado el filter mode, se envia el id en vez del label de la opcion
       onSelect(isFilterMode ? selectedOption.id : selectedOption.label)
       setSearchTerm('')
       setIsOpen(false)

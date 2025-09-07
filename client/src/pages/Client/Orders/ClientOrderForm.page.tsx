@@ -74,7 +74,7 @@ const ClientOrderForm = () => {
 
    return (
       <>
-         <div className="flex justify-between articles-center">
+         <div className="flex justify-between">
             <PageTitle
                title="Crear Nuevo Pedido"
                hasGoBack

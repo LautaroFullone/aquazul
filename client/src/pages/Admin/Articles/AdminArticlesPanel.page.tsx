@@ -70,7 +70,7 @@ const AdminArticlesPanel = () => {
 
    return (
       <>
-         <div className="flex justify-between articles-center">
+         <div className="flex justify-between">
             <PageTitle
                title="Gestión de Artículos"
                hasGoBack
@@ -138,7 +138,7 @@ const AdminArticlesPanel = () => {
                      value={categoryFilter}
                      options={categories}
                      optionsHeader="Categorías existentes"
-                     onSelect={(value) => setCategoryFilter(value)}
+                     onSelect={setCategoryFilter}
                      loadingMessage="Cargando categorías..."
                      noResultsMessage="No se encontraron categorías."
                      disabled={isPending}

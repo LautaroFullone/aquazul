@@ -4,10 +4,18 @@ import { queriesKeys } from '@config/reactQueryKeys'
 import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
-const useFetchRecentOrders = (params: { clientId: string; limit: number }) => {
+const useFetchRecentOrders = (params: {
+   clientId: string
+   limit: number
+   orderBy: 'createdAt' | 'updatedAt'
+}) => {
    const { data, isPending, error, isError } = useQuery({
       queryKey: [queriesKeys.RECENTS_ORDERS, params.clientId],
-      queryFn: () => getClientOrders(params.clientId, { limit: params.limit }),
+      queryFn: () =>
+         getClientOrders(params.clientId, {
+            limit: params.limit,
+            orderBy: params.orderBy,
+         }),
       staleTime: 20 * 60 * 1000, // 20 min
       retry: 1,
    })
