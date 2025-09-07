@@ -17,20 +17,29 @@ const OrderStatusBadge: React.FC<OrderStatusBadgeProps> = ({
 }) => {
    const { label, description, color, icon: Icon } = orderStatusConfig[status]
 
+   // Si el tooltip está deshabilitado, solo mostrar el badge
+   if (disableTooltip) {
+      return (
+         <Badge className={color}>
+            <Icon className="size-4!" />
+            {label}
+         </Badge>
+      )
+   }
+
+   // Si el tooltip está habilitado, envolver badge con Tooltip
    return (
       <Tooltip>
-         <TooltipTrigger>
+         <TooltipTrigger asChild>
             <Badge className={color}>
                <Icon className="size-4!" />
                {label}
             </Badge>
          </TooltipTrigger>
 
-         {!disableTooltip && (
-            <TooltipContent side={tooltipSide} align={tooltipAlign}>
-               <p className="text-sm">{description}</p>
-            </TooltipContent>
-         )}
+         <TooltipContent side={tooltipSide} align={tooltipAlign}>
+            <p className="text-sm">{description}</p>
+         </TooltipContent>
       </Tooltip>
    )
 }
