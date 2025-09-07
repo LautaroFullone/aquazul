@@ -21,6 +21,7 @@ export async function getClientOrders(
    clientId: string,
    queryParams?: {
       limit: number
+      orderBy?: 'createdAt' | 'updatedAt'
    }
 ) {
    type Response = Pick<ResponseApi, 'ordersSummary'>

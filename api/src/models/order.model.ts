@@ -3,12 +3,16 @@ import { z } from 'zod'
 export const orderStatusSchema = z.enum([
    'PENDING',
    'IN_PROGRESS',
+   'READY',
+   'DELIVERED',
+   'CLAIMED',
    'COMPLETED',
    'CANCELLED',
 ])
 
 export const getOrdersSchema = z.object({
    limit: z.coerce.number().int().positive().max(100).optional(),
+   orderBy: z.enum(['createdAt', 'updatedAt']).optional(),
 })
 
 const orderArticleSchema = z.object({

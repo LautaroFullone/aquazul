@@ -32,7 +32,7 @@ ordersRouter.get('/', async (req, res) => {
 ordersRouter.get('/client/:clientId', async (req, res) => {
    try {
       await sleep(2000)
-      const { limit } = getOrdersSchema.parse(req.query)
+      const { limit, orderBy } = getOrdersSchema.parse(req.query)
 
       const { clientId } = req.params
 
@@ -42,7 +42,7 @@ ordersRouter.get('/client/:clientId', async (req, res) => {
 
       const ordersSummary = await prismaClient.order.findMany({
          where: { clientId },
-         orderBy: { createdAt: 'desc' },
+         orderBy: orderBy == 'updatedAt' ? { updatedAt: 'desc' } : { createdAt: 'desc' },
          take: limit || undefined,
          omit: { articles: true, observation: true, updatedAt: true, clientId: true },
       })

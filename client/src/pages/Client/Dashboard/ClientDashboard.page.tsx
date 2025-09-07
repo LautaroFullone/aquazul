@@ -2,10 +2,12 @@ import { useFetchOrdersClientStats, useFetchRecentOrders } from '@hooks/react-qu
 import RecentOrderCard from './components/RecentOrderCard'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import ClientStatCard from './components/ClientStatCard'
+import OrderModal from '../Orders/components/OrderModal'
+import type { OrderSummary } from '@models/Order.model'
 import { routesConfig } from '@config/routesConfig'
-import EmptyBanner from '@shared/EmptyBanner'
+import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useMemo } from 'react'
+import { EmptyBanner } from '@shared'
 import {
    CheckCircle2,
    DollarSign,
@@ -28,6 +30,8 @@ const ORDERS_LIMIT = 6
 const STATS_COUNT = 4
 
 const ClientDashboard = () => {
+   const [selectedOrder, setSelectedOrder] = useState<OrderSummary | null>(null)
+
    const {
       totalOrdersCount,
       ordersCompletedCount,
@@ -41,6 +45,7 @@ const ClientDashboard = () => {
    const { orders, isPending: isLoadingOrders } = useFetchRecentOrders({
       clientId: '1',
       limit: ORDERS_LIMIT,
+      orderBy: 'updatedAt',
    })
 
    const stats = useMemo(
@@ -139,9 +144,7 @@ const ClientDashboard = () => {
             <CardHeader>
                <div className="flex flex-col">
                   <CardTitle>Pedidos Recientes</CardTitle>
-                  <CardDescription>
-                     Tus últimos pedidos y su estado actual
-                  </CardDescription>
+                  <CardDescription>Tus pedidos últimamente actualizados</CardDescription>
                </div>
             </CardHeader>
 
@@ -159,8 +162,10 @@ const ClientDashboard = () => {
                            key={`client-order-${index}`}
                            title={order.code}
                            articlesCount={order.articlesCount}
+                           totalPrice={order.totalPrice}
                            status={order.status}
                            createdAt={order.createdAt}
+                           onSelect={() => setSelectedOrder(order)}
                         />
                      ))}
                   </div>
@@ -181,6 +186,15 @@ const ClientDashboard = () => {
                </div>
             </CardContent>
          </Card>
+
+         {selectedOrder && (
+            <OrderModal
+               isModalOpen={!!selectedOrder}
+               onClose={() => setSelectedOrder(null)}
+               orderId={selectedOrder.id}
+               orderCode={selectedOrder.code}
+            />
+         )}
       </>
    )
 }
