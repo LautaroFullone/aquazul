@@ -1,11 +1,12 @@
 import type { ArticleRow, OrderArticle } from '@models/Article.model'
-import { Plus, Info, ClipboardPlus } from 'lucide-react'
 import type { Article } from '@models/Article.model'
 import generateShortId from '@utils/generateShortId'
+import { Plus, ClipboardPlus } from 'lucide-react'
 import OrderArticleRow from './OrderArticleRow'
 import EmptyBanner from '@shared/EmptyBanner'
 import { useEffect, useState } from 'react'
 import useOrders from '@hooks/useOrders'
+import { InfoBanner } from '@shared'
 import {
    Button,
    Table,
@@ -25,6 +26,7 @@ interface OrderArticlesTable {
    orderArticles: OrderArticle[]
    onChangeValues: (cleanArticles: OrderArticle[]) => void
    showValidation?: boolean
+   isLoading?: boolean
 }
 
 const OrderArticlesTable: React.FC<OrderArticlesTable> = ({
@@ -32,10 +34,10 @@ const OrderArticlesTable: React.FC<OrderArticlesTable> = ({
    orderArticles,
    onChangeValues,
    showValidation = false,
+   isLoading,
 }) => {
    // rows con rowId para UI
    const [rows, setRows] = useState<ArticleRow[]>([])
-   const [openRowId, setOpenRowId] = useState<string | null>(null)
    const [errors, setErrors] = useState<string[]>([])
 
    const { validateOrderArticles } = useOrders()
@@ -86,12 +88,6 @@ const OrderArticlesTable: React.FC<OrderArticlesTable> = ({
       setRowsAndEmit(rows.map((r) => (r.rowId === rowId ? { ...r, ...fields } : r)))
    }
 
-   const currentArticlesInOrder = new Set(
-      rows
-         .filter((r) => r.articleId && r.rowId !== openRowId) // excluye la row actual si querés
-         .map((r) => r.articleId)
-   )
-
    return (
       <Card>
          <CardHeader>
@@ -104,33 +100,20 @@ const OrderArticlesTable: React.FC<OrderArticlesTable> = ({
                   </CardDescription>
                </div>
 
-               <Button onClick={addArticleRow} className="w-full sm:w-min z-50">
-                  <Plus className="w-4 h-4" />
+               <Button onClick={addArticleRow} className="w-full sm:w-min">
+                  <Plus className="size-4" />
                   Agregar Artículo
                </Button>
             </div>
          </CardHeader>
 
-         <CardContent>
+         <CardContent className="space-y-4">
             {showValidation && errors.length > 0 && (
-               <div className="mb-4 p-3 rounded-lg border border-blue-200 bg-blue-50">
-                  <div className="flex items-start gap-2">
-                     <Info className="h-4 w-4 text-blue-600 mt-0.5 flex-shrink-0" />
-
-                     <div className="text-sm text-blue-800">
-                        <p className="font-medium mb-1">Para continuar, completá:</p>
-
-                        <ul className="space-y-1">
-                           {errors.map((error, index) => (
-                              <li key={index} className="flex items-center gap-1">
-                                 <span className="w-1 h-1 bg-blue-600 rounded-full" />
-                                 {error}
-                              </li>
-                           ))}
-                        </ul>
-                     </div>
-                  </div>
-               </div>
+               <InfoBanner
+                  title="Para continuar, completá:"
+                  description={errors}
+                  mode="error"
+               />
             )}
 
             {rows.length === 0 ? (
@@ -157,12 +140,10 @@ const OrderArticlesTable: React.FC<OrderArticlesTable> = ({
                            key={`article-row-${row.rowId}`}
                            row={row}
                            articlesList={articlesList}
-                           openRowId={openRowId}
-                           setOpenRowId={setOpenRowId}
                            showValidation={showValidation}
                            onSelectArticleOption={updateArticleRow}
                            onDeleteRow={deleteArticleRow}
-                           idArticlesInOrder={currentArticlesInOrder}
+                           isLoading={isLoading}
                         />
                      ))}
                   </TableBody>

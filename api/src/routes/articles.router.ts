@@ -42,6 +42,7 @@ articlesRouter.get('/', async (req: Request, res: Response) => {
 // GET -> listar artículos por cliente con sus precios especiales
 articlesRouter.get('/client/:clientId', async (req: Request, res: Response) => {
    const { clientId } = req.params
+   await sleep(3000)
 
    try {
       // 1) chequeo que exista el cliente

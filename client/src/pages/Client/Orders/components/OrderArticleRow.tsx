@@ -1,33 +1,16 @@
+import { Button, Input, TableCell, TableRow, Skeleton } from '@shadcn'
 import type { ArticleRow, OrderArticle } from '@models/Article.model'
-import { Check, ChevronsUpDown, Trash2 } from 'lucide-react'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import type { Article } from '@models/Article.model'
-import {
-   Button,
-   cn,
-   Command,
-   CommandEmpty,
-   CommandGroup,
-   CommandInput,
-   CommandItem,
-   CommandList,
-   Input,
-   TableCell,
-   TableRow,
-   Popover,
-   PopoverContent,
-   PopoverTrigger,
-   Skeleton,
-} from '@shadcn'
+import { CommandForm } from '@shared'
+import { Trash2 } from 'lucide-react'
 
 interface OrderArticleRowProps {
    row: ArticleRow
    articlesList: Article[]
-   openRowId: string | null
-   setOpenRowId: (id: string | null) => void
 
+   isLoading?: boolean
    showValidation?: boolean
-   idArticlesInOrder: Set<string> // para deshabilitar artículos ya seleccionados
 
    onSelectArticleOption: (rowId: string, fields: Partial<OrderArticle>) => void
    onDeleteRow: (rowId: string) => void
@@ -36,12 +19,10 @@ interface OrderArticleRowProps {
 const OrderArticleRow = ({
    row,
    articlesList,
-   openRowId,
-   setOpenRowId,
    showValidation,
    onSelectArticleOption,
    onDeleteRow,
-   idArticlesInOrder,
+   isLoading,
 }: OrderArticleRowProps) => {
    const { rowId, articleId, quantity, clientPrice } = row
 
@@ -49,81 +30,30 @@ const OrderArticleRow = ({
       <TableRow>
          {/* Selector de artículo */}
          <TableCell>
-            <Popover
-               open={openRowId === rowId}
-               onOpenChange={(open) => setOpenRowId(open ? rowId : null)}
-            >
-               <PopoverTrigger asChild>
-                  <Button
-                     variant="outline"
-                     role="combobox"
-                     className={cn(
-                        'w-full justify-between hover:bg-white font-normal',
-                        showValidation &&
-                           !articleId &&
-                           'border-blue-300 ring-1 ring-blue-200'
-                     )}
-                  >
-                     {articleId
-                        ? articlesList.find((a) => a.id === articleId)?.name
-                        : 'Seleccionar artículo...'}
-                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                  </Button>
-               </PopoverTrigger>
+            <CommandForm
+               isFilterMode
+               id="articleName"
+               value={articleId}
+               placeholder="Seleccionar artículo..."
+               options={articlesList.map((a) => ({
+                  id: a.id,
+                  label: a.name,
+               }))}
+               onSelect={(value) => {
+                  const articleData = articlesList.find((a) => a.id === articleId)
+                  const priceToShow = articleData?.clientPrice || articleData?.basePrice
 
-               <PopoverContent className="w-full p-0">
-                  <Command>
-                     <CommandInput placeholder="Buscar artículo..." />
-
-                     <CommandList>
-                        <CommandEmpty>No se encontraron artículos.</CommandEmpty>
-
-                        <CommandGroup>
-                           {articlesList.map((avaliableArticle) => {
-                              const disabled =
-                                 avaliableArticle.id === articleId ||
-                                 idArticlesInOrder.has(avaliableArticle.id)
-                              const priceToShow =
-                                 avaliableArticle.clientPrice ??
-                                 avaliableArticle.basePrice
-
-                              return (
-                                 <CommandItem
-                                    key={avaliableArticle.id}
-                                    value={avaliableArticle.name}
-                                    className="cursor-pointer"
-                                    disabled={disabled}
-                                    onSelect={() => {
-                                       onSelectArticleOption(rowId, {
-                                          articleId: avaliableArticle.id,
-                                          clientPrice: priceToShow,
-                                          quantity: quantity || 1,
-                                       })
-                                       setOpenRowId(null)
-                                    }}
-                                 >
-                                    <Check
-                                       className={cn(
-                                          'mr-2 h-4 w-4',
-                                          articleId === avaliableArticle.id
-                                             ? 'opacity-100'
-                                             : 'opacity-0'
-                                       )}
-                                    />
-                                    <div>
-                                       <div>{avaliableArticle.name}</div>
-                                       <div className="text-sm text-gray-500">
-                                          {valueToCurrency(priceToShow)}
-                                       </div>
-                                    </div>
-                                 </CommandItem>
-                              )
-                           })}
-                        </CommandGroup>
-                     </CommandList>
-                  </Command>
-               </PopoverContent>
-            </Popover>
+                  onSelectArticleOption(rowId, {
+                     articleId: value,
+                     clientPrice: priceToShow,
+                     quantity: quantity || 1,
+                  })
+               }}
+               isLoading={isLoading}
+               hasError={showValidation}
+               loadingMessage="Cargando artículos..."
+               noResultsMessage="No se encontraron artículos."
+            />
          </TableCell>
 
          {/* Cantidad */}

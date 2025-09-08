@@ -31,13 +31,15 @@ const ClientOrderForm = () => {
    const [showValidation, setShowValidation] = useState(false)
    const [observation, setObservation] = useState('')
 
-   const { articles } = useFetchArticles({ clientId: clienteLogueado.id })
-   const { createOrderMutate, isPending } = useCreateOrder()
-
-   const canSave = orderArticles.length > 0
+   const { articles, isPending: isLoadingArticles } = useFetchArticles({
+      clientId: clienteLogueado.id,
+   })
+   const { createOrderMutate, isPending: isCreatingOrder } = useCreateOrder()
 
    const allArticlesdAreValid = useMemo(
-      () => orderArticles.every((article) => article.articleId !== ''),
+      () =>
+         orderArticles.length &&
+         orderArticles.every((article) => article.articleId !== ''),
       [orderArticles]
    )
 
@@ -88,8 +90,8 @@ const ClientOrderForm = () => {
                variant="primary"
                label="Guardar Pedido"
                onClick={() => handleSaveOrder()}
-               isLoading={isPending}
-               disabled={!canSave}
+               isLoading={isCreatingOrder}
+               disabled={(showValidation && !allArticlesdAreValid) || isCreatingOrder}
                className="hidden sm:flex"
             />
          </div>
@@ -126,6 +128,7 @@ const ClientOrderForm = () => {
                   orderArticles={orderArticles}
                   onChangeValues={setOrderArticles}
                   showValidation={showValidation}
+                  isLoading={isLoadingArticles}
                />
             </div>
 
@@ -207,68 +210,8 @@ const ClientOrderForm = () => {
                variant="primary"
                label="Guardar Pedido"
                onClick={() => handleSaveOrder()}
-               isLoading={isPending}
-               disabled={!canSave}
-               className="sm:hidden"
-            />
-            <ActionButton
-               size="lg"
-               icon={Save}
-               variant="primary"
-               label="Guardar Pedido"
-               onClick={() => handleSaveOrder()}
-               isLoading={isPending}
-               disabled={!canSave}
-               className="sm:hidden"
-            />
-            <ActionButton
-               size="lg"
-               icon={Save}
-               variant="primary"
-               label="Guardar Pedido"
-               onClick={() => handleSaveOrder()}
-               isLoading={isPending}
-               disabled={!canSave}
-               className="sm:hidden"
-            />
-            <ActionButton
-               size="lg"
-               icon={Save}
-               variant="primary"
-               label="Guardar Pedido"
-               onClick={() => handleSaveOrder()}
-               isLoading={isPending}
-               disabled={!canSave}
-               className="sm:hidden"
-            />
-            <ActionButton
-               size="lg"
-               icon={Save}
-               variant="primary"
-               label="Guardar Pedido"
-               onClick={() => handleSaveOrder()}
-               isLoading={isPending}
-               disabled={!canSave}
-               className="sm:hidden"
-            />
-            <ActionButton
-               size="lg"
-               icon={Save}
-               variant="primary"
-               label="Guardar Pedido"
-               onClick={() => handleSaveOrder()}
-               isLoading={isPending}
-               disabled={!canSave}
-               className="sm:hidden"
-            />
-            <ActionButton
-               size="lg"
-               icon={Save}
-               variant="primary"
-               label="Guardar Pedido"
-               onClick={() => handleSaveOrder()}
-               isLoading={isPending}
-               disabled={!canSave}
+               isLoading={isCreatingOrder}
+               disabled={(showValidation && !allArticlesdAreValid) || isCreatingOrder}
                className="sm:hidden"
             />
          </div>

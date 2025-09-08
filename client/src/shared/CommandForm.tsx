@@ -1,5 +1,6 @@
-import { useState } from 'react'
 import { OctagonAlert, ChevronsUpDown, Check, Plus, Loader2 } from 'lucide-react'
+import normalizeString from '@utils/normalizeString'
+import { useState } from 'react'
 import {
    Button,
    Command,
@@ -13,7 +14,6 @@ import {
    PopoverTrigger,
    cn,
 } from '@shadcn'
-import normalizeString from '@utils/normalizeString'
 
 interface CommandOption {
    id: string
@@ -172,27 +172,25 @@ const CommandForm = ({
                         </div>
                      )}
 
-                     {!isLoading && (
+                     {!isLoading && showAllOption && (
                         <CommandGroup>
-                           {/* Add the "All" option */}
-                           {showAllOption && (
-                              <CommandItem
-                                 value={allOptionLabel}
-                                 onSelect={() => {
-                                    onSelect('all')
-                                    setSearchTerm('')
-                                    setIsOpen(false)
-                                 }}
-                              >
-                                 <Check
-                                    className={cn(
-                                       'mr-2 h-4 w-4',
-                                       isAllOptionSelected ? 'opacity-100' : 'opacity-0'
-                                    )}
-                                 />
-                                 {allOptionLabel}
-                              </CommandItem>
-                           )}
+                           {/* Agrega la opción "All" */}
+                           <CommandItem
+                              value={allOptionLabel}
+                              onSelect={() => {
+                                 onSelect('all')
+                                 setSearchTerm('')
+                                 setIsOpen(false)
+                              }}
+                           >
+                              <Check
+                                 className={cn(
+                                    'mr-2 h-4 w-4',
+                                    isAllOptionSelected ? 'opacity-100' : 'opacity-0'
+                                 )}
+                              />
+                              {allOptionLabel}
+                           </CommandItem>
                         </CommandGroup>
                      )}
 

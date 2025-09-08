@@ -14,6 +14,11 @@ const useArticleValidation = (formData: ArticleFormData) => {
       validateArticle(formData)
    }, [formData]) //eslint-disable-line
 
+   /**
+    * Valida los datos de un artículo y genera un objeto con los errores por campo.
+    * @param article  Artículo a validar.
+    * @returns Objeto con los errores de validación por campo.
+    */
    const validateArticle = useCallback((article: ArticleFormData) => {
       const fieldErrors: ArticleMapType = {
          name: [],
