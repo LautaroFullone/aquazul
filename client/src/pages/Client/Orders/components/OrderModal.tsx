@@ -44,17 +44,17 @@ const OrderModal: React.FC<OrderModalProps> = ({
 
    return (
       <Dialog open={isModalOpen} onOpenChange={(open) => open || onClose()}>
-         <DialogContent className="max-h-[90vh] overflow-y-auto">
+         <DialogContent className="max-h-[90dvh] overflow-y-auto">
             <DialogHeader>
                <div className="flex items-center justify-between">
                   <DialogTitle className="flex items-center gap-2">
                      <WashingMachine className="h-5 w-5" />
-                     Detalle del Pedido | {orderCode}
+                     Detalle Pedido | {orderCode}
                   </DialogTitle>
                </div>
             </DialogHeader>
 
-            <div className="space-y-4">
+            <div className="space-y-4 overflow-x-hidden">
                <InfoGrid isPending={isPending} order={order} />
                <Observations isPending={isPending} order={order} />
                <ArticlesTable isPending={isPending} order={order} articles={articles} />
@@ -74,43 +74,49 @@ interface ContentProps {
 const InfoGrid: React.FC<ContentProps> = ({ isPending, order }) => {
    if (isPending) {
       return (
-         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-4 border rounded-md">
-            <div className="text-center">
+         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 p-4 border rounded-md">
+            <div className="text-center col-span-2 md:col-span-1">
                <Skeleton className="h-5 w-16 mx-auto mb-1" />
                <Skeleton className="h-6 w-32 mx-auto" />
             </div>
+
             <div className="text-center">
                <Skeleton className="h-5 w-12 mx-auto mb-1" />
                <Skeleton className="h-6 w-22 mx-auto rounded-full" />
             </div>
+
             <div className="text-center">
                <Skeleton className="h-5 w-28 mx-auto mb-1" />
                <Skeleton className="h-6 w-8 mx-auto" />
             </div>
-            <div className="text-center">
+
+            <div className="text-center col-span-2 md:col-span-1">
                <Skeleton className="h-5 w-10 mx-auto mb-1" />
-               <Skeleton className="h-6 w-20 mx-auto" />
+               <Skeleton className="h-6 w-28 mx-auto" />
             </div>
          </div>
       )
    }
 
    return (
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 p-4 border rounded-md">
-         <div className="text-center">
-            <p className="text-sm text-gray-600 mb-1">Fecha y Hora</p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 p-4 border rounded-md">
+         <div className="text-center col-span-2 md:col-span-1">
+            <p className="text-sm text-muted-foreground mb-1">Fecha y Hora</p>
             <p className="font-medium">{formatDateToShow(order?.createdAt, 'full')}</p>
          </div>
+
          <div className="text-center">
-            <p className="text-sm text-gray-600 mb-1">Estado</p>
+            <p className="text-sm text-muted-foreground mb-1">Estado</p>
             {order?.status && <OrderStatusBadge status={order.status} />}
          </div>
+
          <div className="text-center">
-            <p className="text-sm text-gray-600 mb-1">Cantidad de Artículos</p>
+            <p className="text-sm text-muted-foreground mb-1">Cant. de Artículos</p>
             <p className="font-medium">{order?.articlesCount || 0}</p>
          </div>
-         <div className="text-center">
-            <p className="text-sm text-gray-600 mb-1">Total</p>
+
+         <div className="text-center col-span-2 md:col-span-1">
+            <p className="text-sm text-muted-foreground mb-1">Total</p>
             <p className="font-medium">{valueToCurrency(order?.totalPrice || 0)}</p>
          </div>
       </div>
@@ -194,9 +200,7 @@ const RelatedDocuments: React.FC<ContentProps> = ({ isPending, order }) => {
          <CardHeader>
             <div className="flex flex-col">
                <CardTitle>Documentos Relacionados</CardTitle>
-               <CardDescription>
-                  Remitos y Órdenes de Pago generadas para este pedido
-               </CardDescription>
+               <CardDescription>Documentos generados para este pedido</CardDescription>
             </div>
          </CardHeader>
 

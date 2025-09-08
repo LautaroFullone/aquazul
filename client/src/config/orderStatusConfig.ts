@@ -3,11 +3,11 @@ import {
    type LucideIcon,
    Clock,
    Loader2,
-   CheckCircle2,
    PackageCheck,
    CheckCheck,
    OctagonX,
    BadgeAlert,
+   Truck,
 } from 'lucide-react'
 
 interface OrderStatusInfo {
@@ -34,7 +34,7 @@ export const orderStatusConfig: Record<OrderStatus, OrderStatusInfo> = {
       label: 'Listo para entrega',
       description: 'Tu pedido está terminado y preparado para retirar o entregar.',
       color: 'bg-lime-100 text-lime-800',
-      icon: CheckCircle2,
+      icon: Truck,
    },
    DELIVERED: {
       label: 'Entregado',
