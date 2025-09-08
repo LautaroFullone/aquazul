@@ -26,7 +26,7 @@ const RecentOrderCard = (({
    onSelect,
 }) => (
    <div className="flex flex-col justify-between p-4 border rounded-md space-y-2 ">
-      <div className="flex items-center justify-between  gap-">
+      <div className="flex items-center justify-between">
          <div className="space-y-1">
             <p className="text-sm font-medium leading-none">{title}</p>
             <p className="text-sm text-muted-foreground">

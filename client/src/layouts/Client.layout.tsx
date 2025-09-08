@@ -8,7 +8,7 @@ const ClientLayout = () => {
          <Navbar />
 
          {/* Contenedor con scroll, ocupa el resto del espacio */}
-         <main className="overflow-auto mt-16">
+         <main className="overflow-y-auto mt-16">
             <div className="container mx-auto space-y-6 px-4 py-8">
                <Outlet />
             </div>
