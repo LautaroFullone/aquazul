@@ -99,6 +99,7 @@ const AdminArticlesPanel = () => {
          <ActionButton
             size="lg"
             icon={Plus}
+            variant="primary"
             label="Nuevo Artículo"
             onClick={() => navigate(routesConfig.ADMIN_ARTICLE_NEW)}
             className="md:hidden"

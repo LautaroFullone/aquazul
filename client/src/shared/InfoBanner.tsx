@@ -10,13 +10,11 @@ const InfoBanner = ({ title, description }: InfoBannerProps) => {
    const [showBanner, setShowBanner] = useState(false)
 
    return (
-      <div
-         className="text-blue-800 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-600 rounded-r-md"
-         onMouseEnter={() => setShowBanner(true)}
-         onMouseLeave={() => setShowBanner(false)}
-         onClick={() => setShowBanner(!showBanner)}
-      >
-         <div className="flex items-center justify-between">
+      <div className="text-blue-800 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-600 rounded-r-md">
+         <div
+            onClick={() => setShowBanner(!showBanner)}
+            className="flex items-center justify-between cursor-pointer"
+         >
             <div className="flex items-center gap-3">
                <Info className="size-5 flex-shrink-0" />
                <h4 className="font-medium ">{title}</h4>

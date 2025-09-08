@@ -168,6 +168,7 @@ const AdminArticleForm = () => {
             <ActionButton
                size="lg"
                icon={Save}
+               variant="primary"
                label="Guardar Artículo"
                className="sm:hidden"
                isLoading={isCreateArticlePending}
