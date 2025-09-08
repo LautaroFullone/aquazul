@@ -211,6 +211,66 @@ const ClientOrderForm = () => {
                disabled={!canSave}
                className="sm:hidden"
             />
+            <ActionButton
+               size="lg"
+               icon={Save}
+               variant="primary"
+               label="Guardar Pedido"
+               onClick={() => handleSaveOrder()}
+               isLoading={isPending}
+               disabled={!canSave}
+               className="sm:hidden"
+            />
+            <ActionButton
+               size="lg"
+               icon={Save}
+               variant="primary"
+               label="Guardar Pedido"
+               onClick={() => handleSaveOrder()}
+               isLoading={isPending}
+               disabled={!canSave}
+               className="sm:hidden"
+            />
+            <ActionButton
+               size="lg"
+               icon={Save}
+               variant="primary"
+               label="Guardar Pedido"
+               onClick={() => handleSaveOrder()}
+               isLoading={isPending}
+               disabled={!canSave}
+               className="sm:hidden"
+            />
+            <ActionButton
+               size="lg"
+               icon={Save}
+               variant="primary"
+               label="Guardar Pedido"
+               onClick={() => handleSaveOrder()}
+               isLoading={isPending}
+               disabled={!canSave}
+               className="sm:hidden"
+            />
+            <ActionButton
+               size="lg"
+               icon={Save}
+               variant="primary"
+               label="Guardar Pedido"
+               onClick={() => handleSaveOrder()}
+               isLoading={isPending}
+               disabled={!canSave}
+               className="sm:hidden"
+            />
+            <ActionButton
+               size="lg"
+               icon={Save}
+               variant="primary"
+               label="Guardar Pedido"
+               onClick={() => handleSaveOrder()}
+               isLoading={isPending}
+               disabled={!canSave}
+               className="sm:hidden"
+            />
          </div>
       </>
    )

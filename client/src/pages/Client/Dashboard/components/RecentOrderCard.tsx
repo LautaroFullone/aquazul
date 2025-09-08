@@ -25,19 +25,19 @@ const RecentOrderCard = (({
    totalPrice,
    onSelect,
 }) => (
-   <div className="flex flex-col p-4 border rounded-md space-y-2">
-      <div className="flex items-center justify-between  ">
+   <div className="flex flex-col justify-between p-4 border rounded-md space-y-2 ">
+      <div className="flex items-center justify-between  gap-">
          <div className="space-y-1">
             <p className="text-sm font-medium leading-none">{title}</p>
             <p className="text-sm text-muted-foreground">
-               Cantidad de artículos: {articlesCount}
+               Cant. Artículos: {articlesCount}
             </p>
             <p className="text-xs text-muted-foreground font-semibold">
                Fecha: {new Date(createdAt).toLocaleDateString()}
             </p>
          </div>
 
-         <div className="flex flex-col items-end space-y-1">
+         <div className="flex flex-col items-end justify-between space-y-2 h-full">
             <OrderStatusBadge status={status} />
             <p className="text-sm font-medium leading-none">
                {valueToCurrency(totalPrice || 0)}

@@ -3,8 +3,8 @@ export const routesConfig = {
    REGISTER: '/registro',
 
    CLIENT_DASHBOARD: '/panel',
-   CLIENT_ORDER_HISTORY: '/panel/historial-pedidos',
    CLIENT_ORDER_NEW: '/panel/nuevo-pedido',
+   CLIENT_ORDER_HISTORY: '/panel/historial-pedidos',
 
    ADMIN_DASHBOARD: '/panel-admin',
    ADMIN_ARTICLE_LIST: '/panel-admin/articulos',

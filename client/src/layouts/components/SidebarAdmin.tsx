@@ -1,4 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { checkIsLinkActive } from '@utils/checkIsLinkActive'
 import { routesConfig } from '@config/routesConfig'
 import useMobile from '@hooks/useMobile'
 import { Button, cn } from '@shadcn'
@@ -78,7 +79,6 @@ const Sidebar = () => {
             <div className="flex items-center justify-between h-16 px-2 border-b border-gray-200">
                <Link to="/" className="select-none">
                   <div className="flex items-center space-x-2">
-                     {/* <h1 className="text-primary text-4xl">AQUA</h1> */}
                      <img src="/aquazul-logo.png" alt="Logo" className="h-8" />
                      <span className="px-2 bg-blue-800 text-white text-sm font-light rounded-sm">
                         ADMIN
@@ -89,11 +89,7 @@ const Sidebar = () => {
 
             <nav className="flex-1 p-2 space-y-1">
                {navigationItems.map(({ label, route, icon: Icon }) => {
-                  const isActive =
-                     pathname === route ||
-                     (route !== routesConfig.ADMIN_DASHBOARD &&
-                        pathname.startsWith(route) &&
-                        pathname.charAt(route.length) === '/')
+                  const isActive = checkIsLinkActive(pathname, route)
 
                   return (
                      <Button
