@@ -39,29 +39,8 @@ const OrderModal: React.FC<OrderModalProps> = ({
    orderId,
    orderCode,
 }) => {
-   const { isPending } = useFetchOrderDetails({ orderId })
+   const { order, isPending } = useFetchOrderDetails({ orderId })
    const { articles } = useFetchArticles({ clientId: '1' })
-
-   const order = {
-      id: 'cmfa3oskw00051u5w6d8pn4om',
-      code: 'PED-000004',
-      clientId: '1',
-      status: 'READY',
-      observation: 'cuarto pedido',
-      articles: [
-         {
-            quantity: 8,
-            articleId: 'cmf68by8g00021ut87n24nevh',
-            clientPrice: 500,
-         },
-      ],
-      articlesCount: 1,
-      totalPrice: 4000,
-      createdAt: '2025-09-07T19:43:22.545Z',
-      updatedAt: '2025-09-07T19:43:22.545Z',
-      deliveryNotes: [],
-      paymentNotes: [],
-   }
 
    return (
       <Dialog open={isModalOpen} onOpenChange={(open) => open || onClose()}>
