@@ -9,4 +9,5 @@ export const routesConfig = {
    ADMIN_DASHBOARD: '/panel-admin',
    ADMIN_ARTICLE_LIST: '/panel-admin/articulos',
    ADMIN_ARTICLE_NEW: '/panel-admin/articulos/nuevo',
+   ADMIN_PRICES: '/panel-admin/precios',
 }

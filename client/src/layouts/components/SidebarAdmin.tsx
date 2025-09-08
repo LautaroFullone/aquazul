@@ -23,7 +23,7 @@ const navigationItems = [
    { label: 'Clientes', route: '/admin/testimonials', icon: UsersRound },
    { label: 'Pedidos', route: '/admin/posts', icon: WashingMachine },
    { label: 'Artículos', route: routesConfig.ADMIN_ARTICLE_LIST, icon: ClipboardList },
-   { label: 'Precios', route: '/admin/testimonials', icon: CircleDollarSign },
+   { label: 'Precios', route: routesConfig.ADMIN_PRICES, icon: CircleDollarSign },
    { label: 'Remitos', route: '/admin/testimonials', icon: FileText },
    { label: 'Órdenes de pago', route: '/admin/testimonials', icon: Receipt },
    { label: 'Estadisticas', route: '/admin/testimonials', icon: ChartColumn },

@@ -7,11 +7,12 @@ import {
    ClientDashboard,
    ClientOrderForm,
    ClientOrdersPanel,
+   AdminArticleForm,
    Login,
    NotFound,
    Register,
+   AdminPrices,
 } from './pages'
-import AdminArticleForm from '@pages/Admin/Articles/AdminArticleForm.page'
 
 const Router = () => {
    return (
@@ -49,6 +50,7 @@ const Router = () => {
                   path={routesConfig.ADMIN_ARTICLE_NEW}
                   element={<AdminArticleForm />}
                />
+               <Route path={routesConfig.ADMIN_PRICES} element={<AdminPrices />} />
 
                <Route path="*" element={<NotFound />} />
             </Route>
