@@ -9,6 +9,7 @@ interface InputFormProps extends InputHTMLAttributes<HTMLInputElement> {
    hasError?: boolean
    errorMessages?: string[]
    icon?: LucideIcon
+   iconSide?: 'left' | 'right'
    labelClassName?: string
 }
 
@@ -19,6 +20,7 @@ const InputForm = ({
    icon,
    className,
    id,
+   iconSide = 'left',
    ...props
 }: InputFormProps) => {
    const Icon = icon
@@ -26,14 +28,19 @@ const InputForm = ({
    return (
       <div className="space-y-1">
          {label && (
-            <Label htmlFor={id} className={cn('mb-1')}>
+            <Label htmlFor={id} className="mb-1">
                {label}
             </Label>
          )}
 
          <div className="relative">
             {Icon && (
-               <span className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+               <span
+                  className={cn(
+                     'absolute top-1/2 transform -translate-y-1/2 text-gray-500',
+                     iconSide === 'left' ? 'left-3' : 'right-3'
+                  )}
+               >
                   <Icon className="size-4" />
                </span>
             )}
@@ -41,7 +48,11 @@ const InputForm = ({
             <Input
                id={id}
                className={cn(
-                  icon && 'pl-8',
+                  icon && iconSide === 'left'
+                     ? 'pl-8'
+                     : iconSide === 'right'
+                     ? 'pr-8'
+                     : '',
                   hasError && 'border-red-500 focus:border-0 focus-visible:ring-red-500',
                   className
                )}

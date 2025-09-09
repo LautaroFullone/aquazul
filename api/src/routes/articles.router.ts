@@ -75,7 +75,7 @@ articlesRouter.get('/client/:clientId', async (req: Request, res: Response) => {
 
          return {
             ...article,
-            clientPrice: clientPriceArticle ? clientPriceArticle.price : null,
+            clientPrice: clientPriceArticle?.price || article?.basePrice,
          }
       })
 

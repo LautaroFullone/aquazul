@@ -90,6 +90,7 @@ const AdminArticlesPanel = () => {
 
          <InfoBanner
             title="Información importante"
+            withDropdown
             description={[
                'Los cambios en los artículos (actualizaciones o eliminaciones) no modificarán pedidos ya existentes. Cada pedido guarda una copia del artículo en el momento de su creación.',
                'Las categorías se generan automáticamente a partir de los artículos. Si se crea un artículo nuevo con una categoría distinta, ésta se añadirá. Si se elimina el único artículo de una categoría, esa categoría también será eliminada.',
@@ -102,7 +103,7 @@ const AdminArticlesPanel = () => {
             variant="primary"
             label="Nuevo Artículo"
             onClick={() => navigate(routesConfig.ADMIN_ARTICLE_NEW)}
-            className="md:hidden"
+            className="md:hidden w-full"
          />
 
          <Card>
@@ -145,7 +146,7 @@ const AdminArticlesPanel = () => {
                      disabled={isPending}
                   />
 
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between col-span-full gap-4">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between col-span-full gap-4">
                      <div className="text-sm text-gray-600">
                         {filteredArticles.length === 0
                            ? 'Mostrando 0 de 0 artículos'

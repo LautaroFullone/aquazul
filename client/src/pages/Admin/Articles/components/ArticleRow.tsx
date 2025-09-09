@@ -19,13 +19,13 @@ const ArticleRow = ({ article, onEdit, onDelete }: ArticleRowProps) => (
          <Badge className="bg-indigo-100 text-indigo-800">{article.category.name}</Badge>
       </TableCell>
 
-      <TableCell className="font-medium">
+      <TableCell className="font-medium text-right">
          {valueToCurrency(article.basePrice || 0)}
       </TableCell>
 
       <TableCell align="right" className="space-x-2">
-         <Button variant="outline" size="sm" onClick={() => onEdit(article)}>
-            <SquarePen className="h-4 w-4 mr-1" />
+         <Button variant="ghost" size="sm" onClick={() => onEdit(article)}>
+            <SquarePen className="size-4" />
             Editar
          </Button>
 
@@ -35,7 +35,7 @@ const ArticleRow = ({ article, onEdit, onDelete }: ArticleRowProps) => (
             onClick={() => onDelete(article)}
             className="text-destructive!"
          >
-            <Trash2 className="w-4 h-4 mr-1" />
+            <Trash2 className="size-4" />
             Eliminar
          </Button>
       </TableCell>

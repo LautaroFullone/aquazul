@@ -169,7 +169,7 @@ const ClientOrdersPanel = () => {
                      />
                   </div>
 
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between col-span-full gap-4">
+                  <div className="flex flex-col md:flex-row md:items-center justify-between col-span-full gap-4">
                      <div className="text-sm text-gray-600">
                         {filteredOrders.length === 0
                            ? 'Mostrando 0 de 0 pedidos'
