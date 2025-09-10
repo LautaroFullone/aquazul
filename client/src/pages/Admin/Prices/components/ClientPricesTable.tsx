@@ -36,11 +36,11 @@ const ClientPricesTable: React.FC<ClientPricesTableProps> = ({
                <TableHeader>
                   <TableRow>
                      <TableHead>ID</TableHead>
-                     <TableHead>Nombre</TableHead>
+                     <TableHead>Artículo</TableHead>
                      <TableHead>Categoria</TableHead>
-                     <TableHead>Precio Unit.</TableHead>
-                     <TableHead>Precio Cliente</TableHead>
-                     <TableHead>Diferencia</TableHead>
+                     <TableHead className="text-right">Precio Unit.</TableHead>
+                     <TableHead className="text-right">Precio Cliente</TableHead>
+                     <TableHead className="text-right">Diferencia</TableHead>
                      <TableHead></TableHead>
                   </TableRow>
                </TableHeader>

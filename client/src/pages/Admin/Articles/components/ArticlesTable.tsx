@@ -39,7 +39,7 @@ const ArticlesTable: React.FC<ArticlesTableProps> = ({
                      <TableHead>ID</TableHead>
                      <TableHead>Nombre</TableHead>
                      <TableHead>Categoria</TableHead>
-                     <TableHead>Precio Unit.</TableHead>
+                     <TableHead className="text-right">Precio Unit.</TableHead>
                      <TableHead></TableHead>
                   </TableRow>
                </TableHeader>

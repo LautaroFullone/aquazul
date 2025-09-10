@@ -6,4 +6,5 @@ export const queriesKeys = {
    RECENTS_ORDERS: 'recent_orders',
    CREATE_ARTICLE: 'create_article',
    CREATE_ORDER: 'create_order',
+   FETCH_CLIENTS: 'clients',
 }

@@ -41,8 +41,8 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
                      <TableHead>Fecha</TableHead>
                      <TableHead>Estado</TableHead>
                      <TableHead>Cant. Artículos</TableHead>
-                     <TableHead>Total</TableHead>
-                     <TableHead>Acciones</TableHead>
+                     <TableHead className="text-right">Total</TableHead>
+                     <TableHead></TableHead>
                   </TableRow>
                </TableHeader>
 
