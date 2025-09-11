@@ -135,21 +135,23 @@ const CommandForm = ({
                   aria-expanded={isOpen}
                   disabled={disabled}
                   className={cn(
-                     'w-full justify-between hover:bg-white font-normal border-input',
+                     'relative w-full hover:bg-white font-normal border-input',
                      'focus:border-ring focus:ring-ring/50 focus:ring-[3px]',
                      hasError &&
                         'border-red-500 focus:border-0 focus-visible:ring-red-500',
                      buttonClassName
                   )}
                >
-                  {value
-                     ? isAllOptionSelected
-                        ? allOptionLabel
-                        : isNewItem && !isFilterMode
-                        ? `${newItemPrefix} ${value}`
-                        : selectedOption?.label || value
-                     : placeholder}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  <span className="truncate block text-left w-[calc(100%-24px)] -ml-5">
+                     {value
+                        ? isAllOptionSelected
+                           ? allOptionLabel
+                           : isNewItem && !isFilterMode
+                           ? `${newItemPrefix} ${value}`
+                           : selectedOption?.label || value
+                        : placeholder}
+                  </span>
+                  <ChevronsUpDown className="size-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-500" />
                </Button>
             </PopoverTrigger>
 
@@ -223,7 +225,9 @@ const CommandForm = ({
                                           : 'opacity-0'
                                     )}
                                  />
-                                 {option.label}
+                                 <span className="truncate block max-w-3xs md:max-w-md">
+                                    {option.label}
+                                 </span>
                               </CommandItem>
                            ))}
                         </CommandGroup>

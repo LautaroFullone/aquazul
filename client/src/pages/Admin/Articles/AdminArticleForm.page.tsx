@@ -56,7 +56,7 @@ const AdminArticleForm = () => {
                icon={Save}
                variant="primary"
                label="Guardar Artículo"
-               className="hidden sm:flex"
+               className="hidden md:flex"
                isLoading={isCreateArticlePending}
                onClick={() => handleSaveArticle()}
                disabled={(showValidation && !isValid) || isCreateArticlePending}
@@ -170,7 +170,7 @@ const AdminArticleForm = () => {
                icon={Save}
                variant="primary"
                label="Guardar Artículo"
-               className="sm:hidden"
+               className="md:hidden"
                isLoading={isCreateArticlePending}
                onClick={() => handleSaveArticle()}
                disabled={(showValidation && !isValid) || isCreateArticlePending}
