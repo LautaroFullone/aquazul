@@ -1,3 +1,4 @@
+import { useDeleteArticle } from '@hooks/react-query'
 import type { Article } from '@models/Article.model'
 import { ActionButton } from '@shared'
 import { Trash2 } from 'lucide-react'
@@ -10,7 +11,6 @@ import {
    DialogHeader,
    DialogTitle,
 } from '@shadcn'
-import { useDeleteArticle } from '@hooks/react-query'
 
 interface ConfirmDeleteModalProps {
    selectedArticle: Article | null

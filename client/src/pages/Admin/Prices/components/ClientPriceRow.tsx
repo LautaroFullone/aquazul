@@ -1,24 +1,54 @@
+import { useDebounce } from '@hooks/useDebounce'
 import type { Article } from '@models/Article.model'
-import { Badge, Button, Skeleton, TableCell, TableRow } from '@shadcn'
+import { Badge, Button, cn, Input, Skeleton, TableCell, TableRow } from '@shadcn'
 import { valueToCurrency } from '@utils/valueToCurrency'
-import { SquarePen, Undo2 } from 'lucide-react'
+import { Undo2 } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 interface ClientPriceRowProps {
    clientArticle: Article
-   onEdit: () => void
-   onDelete: () => void
+   isEditing: boolean
+   hasPendingChanges?: boolean
+   onEdit: (value: number) => void
 }
 
-const ClientPriceRow = ({ clientArticle }: ClientPriceRowProps) => {
-   const diff = clientArticle.clientPrice - clientArticle.basePrice
+const ClientPriceRow = ({
+   clientArticle,
+   isEditing,
+   hasPendingChanges,
+   onEdit,
+}: ClientPriceRowProps) => {
+   const [clientPriceShown, setClientPriceShown] = useState(clientArticle.clientPrice)
+
+   const diff = clientPriceShown - clientArticle.basePrice
    const diffPct =
       clientArticle.basePrice > 0 ? (diff / clientArticle.basePrice) * 100 : 0
 
+   //uso el debound para evitar que se dispare la funcion onEdit cada vez que se escribe un numero
+   //y en su lugar se dispare solo cuando el usuario deja de escribir por 400ms
+   const debouncedPrice = useDebounce(clientPriceShown, 400)
+
+   useEffect(() => {
+      if (debouncedPrice) {
+         onEdit(debouncedPrice)
+      }
+   }, [debouncedPrice]) // eslint-disable-line
+
    return (
-      <TableRow>
+      <TableRow className={cn(hasPendingChanges && 'bg-amber-50 hover:bg-amber-100')}>
          <TableCell className="font-medium">{clientArticle.code}</TableCell>
 
-         <TableCell>{clientArticle.name}</TableCell>
+         <TableCell>
+            <div className="flex items-center gap-2">
+               {clientArticle.name}
+               {hasPendingChanges && (
+                  <div
+                     className="w-2 h-2 bg-amber-500 rounded-full"
+                     title="Cambios pendientes"
+                  />
+               )}
+            </div>
+         </TableCell>
 
          <TableCell>
             <Badge className="bg-indigo-100 text-indigo-800">
@@ -31,7 +61,23 @@ const ClientPriceRow = ({ clientArticle }: ClientPriceRowProps) => {
          </TableCell>
 
          <TableCell className="font-medium text-right">
-            {valueToCurrency(clientArticle.clientPrice || 0)}
+            {isEditing ? (
+               <span className="flex justify-end">
+                  <Input
+                     type="number"
+                     value={clientPriceShown}
+                     onChange={(evt) => {
+                        setClientPriceShown(Number(evt.target.value))
+                     }}
+                     className={cn(
+                        'max-w-32 text-right',
+                        hasPendingChanges && 'border-amber-300'
+                     )}
+                  />
+               </span>
+            ) : (
+               valueToCurrency(clientArticle.clientPrice || 0)
+            )}
          </TableCell>
 
          <TableCell className="text-right">
@@ -43,6 +89,7 @@ const ClientPriceRow = ({ clientArticle }: ClientPriceRowProps) => {
                   {diff >= 0 ? '+' : ''}
                   {valueToCurrency(diff || 0)}
                </span>
+
                <span
                   className={`font-mono text-xs ${
                      diffPct >= 0 ? 'text-green-600' : 'text-red-600'
@@ -54,26 +101,21 @@ const ClientPriceRow = ({ clientArticle }: ClientPriceRowProps) => {
             </div>
          </TableCell>
 
-         <TableCell align="right" className="space-x-2">
-            <Button variant="ghost" size="sm" onClick={() => console.log('Edit')}>
-               <SquarePen className="size-4" />
-               Editar
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => console.log('Edit')}>
-               <Undo2 className="size-4" />
-               Revertir
-            </Button>
-
-            {/* <Button
-               variant="outline"
-               size="sm"
-               onClick={() => console.log('Delete')}
-               className="text-destructive!"
-            >
-               <Trash2 className="w-4 h-4 mr-1" />
-               Eliminar
-            </Button> */}
-         </TableCell>
+         {isEditing && (
+            <TableCell align="right">
+               <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                     setClientPriceShown(clientArticle.basePrice)
+                     onEdit(clientArticle.basePrice)
+                  }}
+               >
+                  <Undo2 className="size-4" />
+                  Revertir
+               </Button>
+            </TableCell>
+         )}
       </TableRow>
    )
 }

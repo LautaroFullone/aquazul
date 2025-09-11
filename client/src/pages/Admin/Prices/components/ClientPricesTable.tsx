@@ -2,17 +2,23 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import type { Article } from '@models/Article.model'
 import { EmptyBanner, Pagination } from '@shared'
 import ClientPriceRow from './ClientPriceRow'
-import { useState } from 'react'
 
 interface ClientPricesTableProps {
    paginatedArticles: Article[]
    itemsPerPage: number
+   isEditing: boolean
    isLoading: boolean
    currentPage: number
    totalPages: number
    canGoNext: boolean
    canGoPrevious: boolean
+   articlesWithPendingChanges: string[]
    onPageChange: (page: number) => void
+   onPriceChange: (
+      articleId: string,
+      newPrice: number,
+      newPriceIsDifferent: boolean
+   ) => void
    emptyMessage: string
 }
 
@@ -20,15 +26,16 @@ const ClientPricesTable: React.FC<ClientPricesTableProps> = ({
    paginatedArticles,
    itemsPerPage,
    isLoading,
+   isEditing,
    currentPage,
    totalPages,
    canGoNext,
    canGoPrevious,
+   articlesWithPendingChanges,
    onPageChange,
+   onPriceChange,
    emptyMessage,
 }) => {
-   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null)
-
    return (
       <>
          <div className="overflow-x-auto">
@@ -41,7 +48,7 @@ const ClientPricesTable: React.FC<ClientPricesTableProps> = ({
                      <TableHead className="text-right">Precio Unit.</TableHead>
                      <TableHead className="text-right">Precio Cliente</TableHead>
                      <TableHead className="text-right">Diferencia</TableHead>
-                     <TableHead></TableHead>
+                     {isEditing && <TableHead></TableHead>}
                   </TableRow>
                </TableHeader>
 
@@ -51,21 +58,26 @@ const ClientPricesTable: React.FC<ClientPricesTableProps> = ({
                         <ClientPriceRow.Skeleton key={`skeleton-article-${i}`} />
                      ))
                   ) : paginatedArticles.length ? (
-                     paginatedArticles.map((article) => (
-                        <ClientPriceRow
-                           key={article.id}
-                           clientArticle={article}
-                           onEdit={() => {
-                              // Handle edit action
-                              console.log('Editing article:', article)
-                           }}
-                           onDelete={() => {
-                              // Handle delete action
-                              console.log('Deleting article:', article)
-                              setSelectedArticle(article)
-                           }}
-                        />
-                     ))
+                     paginatedArticles.map((article) => {
+                        const hasPendingChanges = articlesWithPendingChanges.includes(
+                           article.id
+                        )
+
+                        return (
+                           <ClientPriceRow
+                              key={article.id}
+                              isEditing={isEditing}
+                              clientArticle={article}
+                              hasPendingChanges={hasPendingChanges}
+                              onEdit={(newPrice) => {
+                                 const newPriceIsDifferent =
+                                    newPrice - article.clientPrice !== 0
+
+                                 onPriceChange(article.id, newPrice, newPriceIsDifferent)
+                              }}
+                           />
+                        )
+                     })
                   ) : (
                      <TableRow className="hover:bg-background ">
                         <TableCell colSpan={7} className="px-0">
@@ -89,12 +101,6 @@ const ClientPricesTable: React.FC<ClientPricesTableProps> = ({
                canGoPrevious={canGoPrevious}
             />
          )}
-
-         {/* <ConfirmDeleteModal
-            isModalOpen={!!selectedArticle}
-            onClose={() => setSelectedArticle(null)}
-            selectedArticle={selectedArticle}
-         /> */}
       </>
    )
 }

@@ -1,12 +1,24 @@
-import { ChevronDown, Info } from 'lucide-react'
+import { ChevronDown, Info, type LucideIcon } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@shadcn'
+import { Button } from '@shadcn'
+import ActionButton from './ActionButton'
 
 interface InfoBannerProps {
    title: string
-   description: string[]
+   description: string | string[]
    withDropdown?: boolean
    mode?: 'info' | 'error'
+   primaryAction?: {
+      icon: LucideIcon
+      label: string
+      disabled?: boolean
+      onClick: () => void
+   }
+   secondaryAction?: {
+      label: string
+      onClick: () => void
+   }
 }
 
 const InfoBanner = ({
@@ -14,6 +26,8 @@ const InfoBanner = ({
    description,
    mode = 'info',
    withDropdown,
+   primaryAction,
+   secondaryAction,
 }: InfoBannerProps) => {
    const [showBanner, setShowBanner] = useState(false)
    const isOpen = withDropdown ? showBanner : true
@@ -52,11 +66,43 @@ const InfoBanner = ({
                isOpen ? 'max-h-[500px]' : 'max-h-0'
             }`}
          >
-            <ul className="text-sm px-8 list-disc list-inside space-y-1 mt-2">
-               {description.map((item, index) => (
-                  <li key={index}>{item}</li>
-               ))}
-            </ul>
+            <div className="lg:flex lg:justify-between lg:items-start lg:gap-4">
+               <div className="lg:flex-1">
+                  {Array.isArray(description) ? (
+                     <ul className="text-sm px-8 list-disc list-inside space-y-1 mt-2">
+                        {description.map((item, index) => (
+                           <li key={index}>{item}</li>
+                        ))}
+                     </ul>
+                  ) : (
+                     <p className="text-sm px-8 mt-2">{description}</p>
+                  )}
+               </div>
+
+               {(primaryAction || secondaryAction) && (
+                  <div className="flex flex-col md:flex-row gap-2 mt-3 px-8 lg:px-0 lg:mt-0 lg:flex-shrink-0 lg:min-w-fit">
+                     {primaryAction && (
+                        <ActionButton
+                           variant={mode === 'info' ? 'primary' : 'destructive'}
+                           icon={primaryAction.icon}
+                           onClick={primaryAction.onClick}
+                           disabled={primaryAction.disabled}
+                           label={primaryAction.label}
+                        />
+                     )}
+
+                     {secondaryAction && (
+                        <Button
+                           variant="outline"
+                           className="text-primary"
+                           onClick={secondaryAction.onClick}
+                        >
+                           {secondaryAction.label}
+                        </Button>
+                     )}
+                  </div>
+               )}
+            </div>
          </div>
       </div>
    )

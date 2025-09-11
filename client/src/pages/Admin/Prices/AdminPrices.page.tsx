@@ -1,7 +1,7 @@
+import { Info, Percent, Save, Search, SquarePen, UserRoundSearch } from 'lucide-react'
 import { useFetchArticlesByClient, useFetchClients } from '@hooks/react-query'
-import { Info, Percent, Search, UserRoundSearch } from 'lucide-react'
+import { CommandForm, EmptyBanner, InfoBanner, PageTitle } from '@shared'
 import ClientPricesTable from './components/ClientPricesTable'
-import { CommandForm, EmptyBanner, PageTitle } from '@shared'
 import { useEffect, useMemo, useState } from 'react'
 import { usePagination } from '@hooks/usePagination'
 import normalizeString from '@utils/normalizeString'
@@ -25,13 +25,18 @@ import {
    TooltipContent,
    TooltipTrigger,
 } from '@shadcn'
+import ConfirmCancelModal from './components/ConfirmCancelModal'
 
 const AdminPrices = () => {
-   const [categoryFilter, setCategoryFilter] = useState<string>('all')
    const [clientFilter, setClientFilter] = useState<string>()
    const [clientSelected, setClientSelected] = useState<Client | undefined>(undefined)
+   const [categoryFilter, setCategoryFilter] = useState<string>('all')
    const [globalPercentage, setGlobalPercentage] = useState<number>(0)
    const [searchTerm, setSearchTerm] = useState<string>('')
+   const [isEditing, setIsEditing] = useState<boolean>(false)
+   const [newArticlesPrices, setNewArticlesPrices] = useState<Record<string, number>>({})
+   const [isCancelModalOpen, setIsCancelModalOpen] = useState<boolean>(false)
+   const [pendingClientId, setPendingClientId] = useState<string | null>(null)
 
    const debouncedSearch = useDebounce(searchTerm, 400)
 
@@ -78,6 +83,29 @@ const AdminPrices = () => {
 
    const paginatedArticles = filteredArticles.slice(startIndex, endIndex)
 
+   const editingBannerMessage = useMemo(() => {
+      const changesCount = Object.values(newArticlesPrices).filter(Boolean).length
+      if (changesCount > 0) {
+         return `Tenés ${changesCount} cambio${changesCount > 1 ? 's' : ''} pendiente${
+            changesCount > 1 ? 's' : ''
+         }`
+      } else {
+         return 'Modifica los precios que necesites y luego guarda todos los cambios'
+      }
+   }, [newArticlesPrices])
+
+   const handleClientChange = (newClientId: string) => {
+      setClientFilter(newClientId)
+      setClientSelected(clients?.find((client) => client.id === newClientId))
+      setNewArticlesPrices({})
+      setIsEditing(false)
+      setCategoryFilter('all')
+      setSearchTerm('')
+      setGlobalPercentage(0)
+   }
+
+   console.log(newArticlesPrices)
+
    return (
       <>
          <PageTitle
@@ -112,8 +140,13 @@ const AdminPrices = () => {
                      }))}
                      optionsHeader="Clientes existentes"
                      onSelect={(value) => {
-                        setClientFilter(value)
-                        setClientSelected(clients?.find((client) => client.id === value))
+                        if (isEditing && Object.keys(newArticlesPrices).length > 0) {
+                           setPendingClientId(value)
+
+                           setIsCancelModalOpen(true)
+                        } else {
+                           handleClientChange(value)
+                        }
                      }}
                      loadingMessage="Cargando clientes..."
                      isLoading={isClientsPending}
@@ -124,6 +157,25 @@ const AdminPrices = () => {
                {/* {clientSelected && <ClientDetailsBanner client={clientSelected} />} */}
             </CardContent>
          </Card>
+
+         {isEditing && (
+            <InfoBanner
+               mode="info"
+               title="Modo de edición múltiple activo"
+               description={editingBannerMessage}
+               primaryAction={{
+                  icon: Save,
+                  label: 'Guardar Cambios',
+                  disabled: Object.keys(newArticlesPrices).length === 0,
+                  onClick: () => console.log('Save all'),
+               }}
+               secondaryAction={{
+                  label: 'Cancelar',
+                  onClick: () => setIsEditing(false),
+               }}
+            />
+         )}
+
          <Card>
             <CardHeader>
                <CardTitle className="flex items-center gap-2">
@@ -270,6 +322,15 @@ const AdminPrices = () => {
                               >
                                  Limpiar Filtros
                               </Button>
+
+                              <Button
+                                 variant="outline"
+                                 disabled={isEditing}
+                                 onClick={() => setIsEditing(true)}
+                              >
+                                 <SquarePen className="size-4" />
+                                 Editar Precios
+                              </Button>
                            </div>
                         </div>
                      </div>
@@ -283,6 +344,25 @@ const AdminPrices = () => {
                         canGoNext={canGoNext}
                         canGoPrevious={canGoPrevious}
                         onPageChange={goToPage}
+                        isEditing={isEditing}
+                        articlesWithPendingChanges={Object.keys(newArticlesPrices) || []}
+                        onPriceChange={(articleId, newPrice, newPriceIsDifferent) => {
+                           setNewArticlesPrices((prev) => {
+                              //si el precio nuevo es diferente al anterior, lo agrego/modifico en el mapa
+                              if (newPriceIsDifferent) {
+                                 return { ...prev, [articleId]: newPrice }
+                              }
+
+                              //si el precio nuevo es igual al anterior, lo elimino del mapa (si existía)
+                              if (articleId in prev) {
+                                 const next = { ...prev }
+                                 delete next[articleId]
+                                 return next
+                              }
+
+                              return prev
+                           })
+                        }}
                         emptyMessage={
                            debouncedSearch || categoryFilter !== 'all'
                               ? `No hay artículos que coincidan con los filtros, probá limpiarlos o intentá con otros términos de búsqueda`
@@ -293,6 +373,21 @@ const AdminPrices = () => {
                )}
             </CardContent>
          </Card>
+
+         <ConfirmCancelModal
+            isModalOpen={isCancelModalOpen}
+            onClose={() => {
+               setIsCancelModalOpen(false)
+               setPendingClientId(null)
+            }}
+            onConfirm={() => {
+               if (pendingClientId) {
+                  handleClientChange(pendingClientId)
+               }
+               setIsCancelModalOpen(false)
+               setPendingClientId(null)
+            }}
+         />
       </>
    )
 }
