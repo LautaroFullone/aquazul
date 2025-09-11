@@ -1,4 +1,4 @@
-import { useFetchArticles, useCreateOrder } from '@hooks/react-query'
+import { useCreateOrder, useFetchArticlesByClient } from '@hooks/react-query'
 import OrderArticlesTable from './components/OrderArticlesTable'
 import { ActionButton, TextAreaForm, PageTitle } from '@shared'
 import { valueToCurrency } from '@utils/valueToCurrency'
@@ -31,7 +31,7 @@ const ClientOrderForm = () => {
    const [showValidation, setShowValidation] = useState(false)
    const [observation, setObservation] = useState('')
 
-   const { articles, isPending: isLoadingArticles } = useFetchArticles({
+   const { articles, isPending: isLoadingArticles } = useFetchArticlesByClient({
       clientId: clienteLogueado.id,
    })
    const { createOrderMutate, isPending: isCreatingOrder } = useCreateOrder()

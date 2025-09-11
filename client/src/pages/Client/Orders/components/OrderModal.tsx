@@ -1,4 +1,4 @@
-import { useFetchArticles, useFetchOrderDetails } from '@hooks/react-query'
+import { useFetchArticlesByClient, useFetchOrderDetails } from '@hooks/react-query'
 import type { Order, OrderSummary } from '@models/Order.model'
 import { formatDateToShow } from '@utils/formatDateToShow'
 import { valueToCurrency } from '@utils/valueToCurrency'
@@ -40,7 +40,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
    orderCode,
 }) => {
    const { order, isPending } = useFetchOrderDetails({ orderId })
-   const { articles } = useFetchArticles({ clientId: '1' })
+   const { articles } = useFetchArticlesByClient({ clientId: '1' })
 
    return (
       <Dialog open={isModalOpen} onOpenChange={(open) => open || onClose()}>
