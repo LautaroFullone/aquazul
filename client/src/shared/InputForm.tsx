@@ -1,8 +1,8 @@
-import { Input } from '@shadcn'
-import { Label } from '@shadcn'
-import { cn } from '@shadcn'
 import { OctagonAlert, type LucideIcon } from 'lucide-react'
 import type { InputHTMLAttributes } from 'react'
+import { Input, Skeleton } from '@shadcn'
+import { Label } from '@shadcn'
+import { cn } from '@shadcn'
 
 interface InputFormProps extends InputHTMLAttributes<HTMLInputElement> {
    label?: string
@@ -11,20 +11,21 @@ interface InputFormProps extends InputHTMLAttributes<HTMLInputElement> {
    icon?: LucideIcon
    iconSide?: 'left' | 'right'
    labelClassName?: string
+   isLoading?: boolean
 }
 
 const InputForm = ({
    label,
    hasError,
    errorMessages,
-   icon,
+   icon: Icon,
    className,
    id,
    iconSide = 'left',
+   isLoading = false,
+   disabled,
    ...props
 }: InputFormProps) => {
-   const Icon = icon
-
    return (
       <div className="space-y-1">
          {label && (
@@ -34,30 +35,38 @@ const InputForm = ({
          )}
 
          <div className="relative">
-            {Icon && (
-               <span
-                  className={cn(
-                     'absolute top-1/2 transform -translate-y-1/2 text-gray-500',
-                     iconSide === 'left' ? 'left-3' : 'right-3'
+            {isLoading ? (
+               <Skeleton className="w-full h-9" />
+            ) : (
+               <>
+                  {Icon && (
+                     <span
+                        className={cn(
+                           'absolute top-1/2 transform -translate-y-1/2 text-gray-500',
+                           iconSide === 'left' ? 'left-3' : 'right-3'
+                        )}
+                     >
+                        <Icon className="size-4" />
+                     </span>
                   )}
-               >
-                  <Icon className="size-4" />
-               </span>
-            )}
 
-            <Input
-               id={id}
-               className={cn(
-                  icon && iconSide === 'left'
-                     ? 'pl-8'
-                     : iconSide === 'right'
-                     ? 'pr-8'
-                     : '',
-                  hasError && 'border-red-500 focus:border-0 focus-visible:ring-red-500',
-                  className
-               )}
-               {...props}
-            />
+                  <Input
+                     id={id}
+                     className={cn(
+                        Icon && iconSide === 'left'
+                           ? 'pl-8'
+                           : iconSide === 'right'
+                           ? 'pr-8'
+                           : '',
+                        hasError &&
+                           'border-red-500 focus:border-0 focus-visible:ring-red-500',
+                        className
+                     )}
+                     disabled={disabled || isLoading}
+                     {...props}
+                  />
+               </>
+            )}
          </div>
 
          {hasError && errorMessages?.length && (

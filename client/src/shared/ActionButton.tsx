@@ -17,6 +17,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
    icon,
    isLoading,
    label = 'Guardar',
+   onClick,
    loadingLabel = 'Guardando...',
    className,
    ...props
@@ -28,11 +29,8 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 
    return (
       <Button
-         className={cn(
-            // 'bg-blue-800 active:bg-blue-800/90 hover:bg-blue-800/90 text-white',
-            isMobile && 'w-full',
-            className
-         )}
+         className={cn(isMobile && 'w-full', className)}
+         onClick={(e) => !isLoading && onClick && onClick(e)} //previene acciones mientras carga
          {...props}
       >
          {isLoading ? <Loader2 className="animate-spin" /> : <Icon />}
