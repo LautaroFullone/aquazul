@@ -50,6 +50,10 @@ const Router = () => {
                   path={routesConfig.ADMIN_ARTICLE_NEW}
                   element={<AdminArticleForm />}
                />
+               <Route
+                  path={routesConfig.ADMIN_ARTICLE_EDIT}
+                  element={<AdminArticleForm />}
+               />
                <Route path={routesConfig.ADMIN_PRICES} element={<AdminPrices />} />
 
                <Route path="*" element={<NotFound />} />

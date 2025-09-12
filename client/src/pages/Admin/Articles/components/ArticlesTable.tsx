@@ -1,9 +1,11 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@shadcn'
+import ConfirmDeleteModal from './ConfirmDeleteModal'
 import type { Article } from '@models/Article.model'
+import { routesConfig } from '@config/routesConfig'
 import { EmptyBanner, Pagination } from '@shared'
+import { useNavigate } from 'react-router-dom'
 import ArticleRow from './ArticleRow'
 import { useState } from 'react'
-import ConfirmDeleteModal from './ConfirmDeleteModal'
 
 interface ArticlesTableProps {
    paginatedArticles: Article[]
@@ -28,6 +30,7 @@ const ArticlesTable: React.FC<ArticlesTableProps> = ({
    onPageChange,
    emptyMessage,
 }) => {
+   const navigate = useNavigate()
    const [selectedArticle, setSelectedArticle] = useState<Article | null>(null)
 
    return (
@@ -54,7 +57,14 @@ const ArticlesTable: React.FC<ArticlesTableProps> = ({
                         <ArticleRow
                            key={article.id}
                            article={article}
-                           onEdit={setSelectedArticle}
+                           onEdit={() =>
+                              navigate(
+                                 routesConfig.ADMIN_ARTICLE_EDIT.replace(
+                                    ':articleId',
+                                    article.id
+                                 )
+                              )
+                           }
                            onDelete={(article) => {
                               // Handle delete action
                               console.log('Deleting article:', article)

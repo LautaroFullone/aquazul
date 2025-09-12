@@ -1,11 +1,17 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@shadcn'
 import { InputForm, CommandForm, PageTitle, ActionButton } from '@shared'
-import { useFetchArticles, useCreateArticle } from '@hooks/react-query'
 import useArticleValidation from '@hooks/useArticleValidate'
 import type { ArticleFormData } from '@models/Article.model'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import { DollarSign, Save } from 'lucide-react'
-import { useState } from 'react'
+import { useParams } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import {
+   useFetchArticles,
+   useCreateArticle,
+   useFetchArticleDetails,
+   useUpdateArticle,
+} from '@hooks/react-query'
 
 const articleInitialState: ArticleFormData = {
    name: '',
@@ -14,12 +20,47 @@ const articleInitialState: ArticleFormData = {
 }
 
 const AdminArticleForm = () => {
+   const { articleId } = useParams()
+   const isEdit = Boolean(articleId)
+
    const [showValidation, setShowValidation] = useState(false)
    const [formData, setFormData] = useState<ArticleFormData>(articleInitialState)
 
-   const { createArticleMutate, isPending: isCreateArticlePending } = useCreateArticle()
+   const { article: articleToUpdate, isPending: isFetchArticlePending } =
+      useFetchArticleDetails({ articleId })
    const { categories, isPending: isFetchCategoriesPending } = useFetchArticles()
+   const { createArticleMutate, isPending: isCreateArticlePending } = useCreateArticle()
+   const { updateArticleMutate, isPending: isUpdateArticlePending } = useUpdateArticle()
+
    const { validationErrors, isValid, hasFieldError } = useArticleValidation(formData)
+
+   // Cargar datos del artículo en modo edición
+   useEffect(() => {
+      if (isEdit && articleToUpdate) {
+         setFormData({
+            name: articleToUpdate.name,
+            categoryName: articleToUpdate.category.name,
+            basePrice: articleToUpdate.basePrice,
+         })
+      }
+   }, [articleToUpdate, isEdit])
+
+   const handleSaveArticle = async () => {
+      setShowValidation(true)
+
+      if (!isValid) {
+         return
+      }
+
+      if (isEdit && articleId) {
+         await updateArticleMutate({ articleId, articleData: formData })
+      } else {
+         await createArticleMutate(formData)
+         setFormData(articleInitialState)
+      }
+
+      setShowValidation(false)
+   }
 
    const updateField = (field: keyof ArticleFormData, value: unknown) => {
       setFormData((prev) => ({
@@ -28,38 +69,32 @@ const AdminArticleForm = () => {
       }))
    }
 
-   const handleSaveArticle = async () => {
-      setShowValidation(true)
-
-      if (!isValid) {
-         return setShowValidation(true)
-      }
-
-      await createArticleMutate(formData)
-
-      setFormData(articleInitialState)
-      setShowValidation(false)
-   }
+   const isLoadingInputs = isEdit && isFetchArticlePending
+   const isMutationPending = isCreateArticlePending || isUpdateArticlePending
 
    return (
       <>
          <div className="flex justify-between">
             <PageTitle
-               title="Crear Nuevo Artículo"
+               title={isEdit ? 'Editar Artículo' : 'Crear Nuevo Artículo'}
                hasGoBack
                goBackRoute="ADMIN_ARTICLE_LIST"
-               description="Completá el contenido del artículo"
+               description={
+                  isEdit
+                     ? 'Actualiza la información del artículo'
+                     : 'Completá el contenido del artículo'
+               }
             />
 
             <ActionButton
                size="lg"
                icon={Save}
                variant="primary"
-               label="Guardar Artículo"
+               label={isEdit ? 'Guardar Cambios' : 'Guardar Artículo'}
                className="hidden md:flex"
-               isLoading={isCreateArticlePending}
+               isLoading={isMutationPending}
+               disabled={showValidation && !isValid}
                onClick={() => handleSaveArticle()}
-               disabled={(showValidation && !isValid) || isCreateArticlePending}
             />
          </div>
 
@@ -81,12 +116,13 @@ const AdminArticleForm = () => {
                         id="name"
                         type="text"
                         label="Nombre"
-                        placeholder="Ej: Sábanas Matrimoniales"
+                        isLoading={isLoadingInputs}
                         value={formData.name}
+                        placeholder={'Ej: Sábanas Matrimoniales'}
                         onChange={(e) => updateField('name', e.target.value)}
                         hasError={showValidation && hasFieldError('name')}
                         errorMessages={validationErrors.name}
-                        disabled={isCreateArticlePending}
+                        disabled={isMutationPending}
                      />
 
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -103,11 +139,12 @@ const AdminArticleForm = () => {
                            onCreate={(value) => updateField('categoryName', value)}
                            hasError={showValidation && hasFieldError('categoryName')}
                            errorMessages={validationErrors.categoryName}
-                           isLoading={isFetchCategoriesPending}
+                           isLoadingInput={isLoadingInputs}
+                           isLoadingOptions={isFetchCategoriesPending}
                            newItemPrefix="Nueva:"
                            loadingMessage="Cargando categorías..."
                            noResultsMessage="No se encontraron categorías."
-                           disabled={isCreateArticlePending}
+                           disabled={isMutationPending}
                         />
 
                         {/* Precio Base */}
@@ -124,6 +161,8 @@ const AdminArticleForm = () => {
                            }
                            hasError={showValidation && hasFieldError('basePrice')}
                            errorMessages={validationErrors.basePrice}
+                           isLoading={isLoadingInputs}
+                           disabled={isMutationPending}
                         />
                      </div>
                   </CardContent>
@@ -169,11 +208,11 @@ const AdminArticleForm = () => {
                size="lg"
                icon={Save}
                variant="primary"
-               label="Guardar Artículo"
+               label={isEdit ? 'Guardar Cambios' : 'Guardar Artículo'}
                className="md:hidden"
-               isLoading={isCreateArticlePending}
+               isLoading={isMutationPending}
                onClick={() => handleSaveArticle()}
-               disabled={(showValidation && !isValid) || isCreateArticlePending}
+               disabled={showValidation && !isValid}
             />
          </div>
       </>

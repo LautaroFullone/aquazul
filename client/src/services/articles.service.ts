@@ -14,12 +14,42 @@ export async function createArticle(articleData: ArticleFormData) {
 }
 
 /**
+ * Actualizar un artículo existente
+ * @param articleId ID del artículo a actualizar
+ * @param articleData Datos del artículo a actualizar
+ * @returns Mensaje de éxito y datos del artículo actualizado
+ */
+export async function updateArticle({
+   articleId,
+   articleData,
+}: {
+   articleId: string
+   articleData: ArticleFormData
+}) {
+   type Response = Pick<ResponseApi, 'message' | 'article'>
+   const { data } = await api.patch<Response>(`/articles/${articleId}`, articleData)
+   return data
+}
+
+/**
  * Obtener todos los artículos y sus categorías del sistema
  * @returns Mensaje de éxito y datos de los artículos y sus categorías
  */
 export async function getArticles() {
    type Response = Pick<ResponseApi, 'articles' | 'categories'>
    const { data } = await api.get<Response>(`/articles`)
+   return data
+}
+
+/**
+ * Obtener los detalles de un artículo específico
+ * @param articleId ID del artículo a obtener
+ * @returns Detalles del artículo
+ */
+export async function getArticleDetails(articleId: string) {
+   type Response = Pick<ResponseApi, 'article'>
+
+   const { data } = await api.get<Response>(`/articles/${articleId}`)
    return data
 }
 

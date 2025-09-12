@@ -90,6 +90,33 @@ articlesRouter.get('/client/:clientId', async (req: Request, res: Response) => {
    }
 })
 
+articlesRouter.get('/:articleId', async (req, res) => {
+   try {
+      await sleep(5000)
+      const { articleId } = req.params
+
+      const article = await prismaClient.article.findFirstOrThrow({
+         where: { id: articleId },
+         select: {
+            id: true,
+            name: true,
+            basePrice: true,
+            code: true,
+            category: { select: { id: true, name: true } },
+         },
+      })
+
+      return res.send({
+         message: 'Artículo obtenido',
+         article: {
+            ...article,
+         },
+      })
+   } catch (error) {
+      return handleRouteError(res, error)
+   }
+})
+
 // POST -> crear artículo y asignar o crear la categoría
 articlesRouter.post('/', async (req: Request, res: Response) => {
    try {
@@ -173,11 +200,11 @@ articlesRouter.put(
    }
 )
 
-//TODO: agregar category
+//TODO: agregar category, si cambia conectar o eliminar la anterior si no tiene más artículos
 // PATCH -> actualizar artículo
 articlesRouter.patch('/:articleId', async (req: Request, res: Response) => {
    const { articleId } = req.params
-
+   await sleep(5000)
    try {
       // 1) validar payload
       const body = articleUpdateSchema.parse(req.body)

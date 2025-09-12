@@ -8,6 +8,7 @@ export const routesConfig = {
 
    ADMIN_DASHBOARD: '/panel-admin',
    ADMIN_ARTICLE_LIST: '/panel-admin/articulos',
-   ADMIN_ARTICLE_NEW: '/panel-admin/articulos/nuevo',
+   ADMIN_ARTICLE_NEW: '/panel-admin/articulos/formulario',
+   ADMIN_ARTICLE_EDIT: '/panel-admin/articulos/formulario/:articleId',
    ADMIN_PRICES: '/panel-admin/precios',
 }
