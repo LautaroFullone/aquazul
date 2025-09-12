@@ -49,7 +49,7 @@ const OrderArticleRow = ({
                      quantity: quantity || 1,
                   })
                }}
-               isLoading={isLoading}
+               isLoadingOptions={isLoading}
                hasError={showValidation}
                loadingMessage="Cargando artículos..."
                noResultsMessage="No se encontraron artículos."

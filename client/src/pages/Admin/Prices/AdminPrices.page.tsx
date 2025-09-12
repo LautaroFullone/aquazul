@@ -149,7 +149,7 @@ const AdminPrices = () => {
                         }
                      }}
                      loadingMessage="Cargando clientes..."
-                     isLoading={isClientsPending}
+                     isLoadingOptions={isClientsPending}
                      noResultsMessage="No se encontraron clientes."
                   />
                </div>
