@@ -81,3 +81,14 @@ model Order {
 
    client Client @relation("ClientOrders", fields: [clientId], references: [id])
 }
+
+enum CounterName {
+   ARTICLE
+   ORDER
+}
+
+model CodeCounterConfig {
+   name      CounterName @id
+   next      Int
+   updatedAt DateTime    @updatedAt
+}

@@ -1,25 +1,32 @@
-/**
- * Genera el siguiente código de artículo a partir del último código utilizado.
- *
- * @param lastCode - Último código de artículo utilizado
- * @returns Siguiente código de artículo
- */
-export function nextArticleCode(lastCode?: string | undefined) {
-   if (!lastCode) return 'ART-0001'
+import { Prisma } from '@prisma/client'
 
-   const n = Number(lastCode.replace('ART-', ''))
-   return `ART-${String(n + 1).padStart(4, '0')}`
+type CounterName = 'ARTICLE' | 'ORDER'
+
+/** Prefijos para los diferentes tipos de contadores */
+const MODEL_PREFIX: Record<CounterName, string> = {
+   ARTICLE: 'ART',
+   ORDER: 'PED',
 }
 
 /**
- * Genera el siguiente código de pedido a partir del último código utilizado.
+ * Obtiene el siguiente código de artículo o pedido desde la base de datos y lo incrementa.
  *
- * @param lastCode - Último código de pedido utilizado
- * @returns Siguiente código de pedido
+ * @param tx - Transacción de Prisma para realizar la operación
+ * @param counterName - Nombre del contador ('ARTICLE' o 'ORDER')
+ * @param pad - Cantidad de dígitos total del código
+ * @returns Siguiente código formateado
  */
-export function nextOrderCode(lastCode?: string | undefined) {
-   if (!lastCode) return 'PED-000001'
+export async function getNextCode(
+   tx: Prisma.TransactionClient,
+   counterName: CounterName,
+   pad: number
+) {
+   const { next } = await tx.codeCounterConfig.update({
+      where: { name: counterName },
+      data: { next: { increment: 1 } },
+      select: { next: true },
+   })
+   const prefix = MODEL_PREFIX[counterName] || 'CODE-'
 
-   const n = Number(lastCode.replace('PED-', ''))
-   return `PED-${String(n + 1).padStart(6, '0')}`
+   return prefix + '-' + String(next).padStart(pad, '0')
 }
