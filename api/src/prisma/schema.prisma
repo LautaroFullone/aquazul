@@ -80,6 +80,10 @@ model Order {
    updatedAt DateTime @updatedAt
 
    client Client @relation("ClientOrders", fields: [clientId], references: [id])
+
+   @@index([clientId])
+   @@index([createdAt])
+   @@index([clientId, status])
 }
 
 enum CounterName {
