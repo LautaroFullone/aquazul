@@ -1,6 +1,6 @@
 export const queriesKeys = {
    FETCH_ARTICLES: 'articles',
-   ARTICLE_DETAILS: 'article_details',
+   FETCH_ARTICLE_DETAILS: 'article_details',
    CREATE_ARTICLE: 'create_article',
    UPDATE_ARTICLE: 'update_article',
 

@@ -20,6 +20,7 @@ export const articleCreateSchema = z.object({
 export const articleUpdateSchema = z.object({
    name: z.string().trim().min(1).optional(),
    basePrice: z.number().int().nonnegative().optional(),
+   categoryName: z.string().trim().optional(),
 })
 
 export const articlePriceByClientSchema = z.object({

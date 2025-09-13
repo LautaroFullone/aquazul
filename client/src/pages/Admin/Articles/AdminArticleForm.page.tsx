@@ -20,11 +20,11 @@ const articleInitialState: ArticleFormData = {
 }
 
 const AdminArticleForm = () => {
-   const { articleId } = useParams()
-   const isEdit = Boolean(articleId)
-
    const [showValidation, setShowValidation] = useState(false)
    const [formData, setFormData] = useState<ArticleFormData>(articleInitialState)
+
+   const { articleId } = useParams()
+   const isEdit = Boolean(articleId)
 
    const { article: articleToUpdate, isPending: isFetchArticlePending } =
       useFetchArticleDetails({ articleId })

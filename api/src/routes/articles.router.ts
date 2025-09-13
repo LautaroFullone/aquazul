@@ -200,8 +200,7 @@ articlesRouter.put(
    }
 )
 
-//TODO: agregar category, si cambia conectar o eliminar la anterior si no tiene más artículos
-// PATCH -> actualizar artículo
+// PATCH -> actualizar artículo y manejar categoría
 articlesRouter.patch('/:articleId', async (req: Request, res: Response) => {
    const { articleId } = req.params
    await sleep(5000)
@@ -212,6 +211,7 @@ articlesRouter.patch('/:articleId', async (req: Request, res: Response) => {
       // 2) buscar artículo actual, sino tira excepcion
       const currentArticle = await prismaClient.article.findUniqueOrThrow({
          where: { id: articleId },
+         include: { category: true },
       })
 
       // 3) preparar update solo con cambios reales
@@ -222,15 +222,60 @@ articlesRouter.patch('/:articleId', async (req: Request, res: Response) => {
          })
       }
 
-      // 4) actualizar
-      const updatedArticle = await prismaClient.article.update({
-         where: { id: articleId },
-         data: body,
+      // 4) actualizar usando transacción para manejar categorías
+      const result = await prismaClient.$transaction(async (tx) => {
+         let categoryDeleted = null
+         const updateData: any = { ...body }
+         const oldCategoryId = currentArticle.category.id
+
+         // Si hay cambio de categoría
+         if (body?.categoryName && body.categoryName !== currentArticle.category.name) {
+            // Usar connectOrCreate para la nueva categoría
+            updateData.category = {
+               connectOrCreate: {
+                  where: { name: body.categoryName },
+                  create: { name: body.categoryName },
+               },
+            }
+            console.log('## 3 updateData', updateData) //
+         }
+         // Eliminar categoryName del objeto de actualización para evitar errores
+         delete updateData.categoryName //categoryName no existe en el modelo Article, existe category: {id,name}
+
+         const updatedArticle = await tx.article.update({
+            where: { id: articleId },
+            data: updateData,
+            include: { category: true },
+         })
+
+         // Solo verificar la categoría antigua si cambió
+         if (body?.categoryName && updatedArticle.category.id !== oldCategoryId) {
+            // Verificar si la categoría anterior tiene más artículos
+            const oldCategoryHasMoreArticles = await tx.article.findFirst({
+               where: {
+                  categoryId: oldCategoryId,
+               },
+            })
+
+            // Eliminar la categoría anterior si no tiene más artículos
+            if (!oldCategoryHasMoreArticles) {
+               categoryDeleted = await tx.articleCategory.delete({
+                  where: { id: oldCategoryId },
+               })
+            }
+         }
+
+         return {
+            updatedArticle,
+            categoryDeleted,
+         } as const
       })
 
       return res.status(200).send({
-         message: 'Artículo actualizado',
-         article: updatedArticle,
+         message: result.categoryDeleted
+            ? 'Artículo actualizado y categoría anterior eliminada'
+            : 'Artículo actualizado',
+         article: result.updatedArticle,
       })
    } catch (error) {
       return handleRouteError(res, error)
@@ -239,9 +284,9 @@ articlesRouter.patch('/:articleId', async (req: Request, res: Response) => {
 
 // DELETE -> eliminar artículo
 articlesRouter.delete('/:articleId', async (req: Request, res: Response) => {
-   try {
-      const { articleId } = req.params
+   const { articleId } = req.params
 
+   try {
       const result = await prismaClient.$transaction(async (tx) => {
          // 1) Eliminar el artículo
          const articleDeleted = await tx.article.delete({
