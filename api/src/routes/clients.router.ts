@@ -1,8 +1,8 @@
 import { handleRouteError } from '../errors/handleRouteError'
 import { Router, type Request, type Response } from 'express'
+import { clientCreateSchema } from '../models/Client.model'
 import prismaClient from '../prisma/prismaClient'
 import { sleep } from '../utils/sleep'
-import { clientCreateSchema } from '../models/Client.model'
 
 const clientsRouter = Router()
 

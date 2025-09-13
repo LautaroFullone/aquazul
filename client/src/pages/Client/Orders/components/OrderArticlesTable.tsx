@@ -21,7 +21,7 @@ import {
    CardDescription,
 } from '@shadcn'
 
-interface OrderArticlesTable {
+interface OrderArticlesTableProps {
    articlesList: Article[]
    orderArticles: OrderArticle[]
    onChangeValues: (cleanArticles: OrderArticle[]) => void
@@ -29,7 +29,7 @@ interface OrderArticlesTable {
    isLoading?: boolean
 }
 
-const OrderArticlesTable: React.FC<OrderArticlesTable> = ({
+const OrderArticlesTable: React.FC<OrderArticlesTableProps> = ({
    articlesList,
    orderArticles,
    onChangeValues,
@@ -50,6 +50,8 @@ const OrderArticlesTable: React.FC<OrderArticlesTable> = ({
             return {
                rowId: existing?.rowId ?? generateShortId(),
                articleId: article.articleId ?? '',
+               articleName: article.articleName ?? '',
+               articleCode: article.articleCode ?? '',
                quantity: article.quantity ?? 0,
                clientPrice: article.clientPrice ?? 0,
             }
@@ -62,13 +64,18 @@ const OrderArticlesTable: React.FC<OrderArticlesTable> = ({
    }, [orderArticles]) //eslint-disable-line
 
    const setRowsAndEmit = (articleRows: ArticleRow[]) => {
-      //envia al padre sin el rowId
+      //envia al padre sin el rowId}
+      console.log('setRowsAndEmit', articleRows)
       onChangeValues(
-         articleRows.map(({ articleId, quantity, clientPrice }) => ({
-            articleId,
-            quantity,
-            clientPrice,
-         }))
+         articleRows.map(
+            ({ articleId, articleName, articleCode, quantity, clientPrice }) => ({
+               articleId,
+               articleName,
+               articleCode,
+               quantity,
+               clientPrice,
+            })
+         )
       )
    }
 
@@ -76,7 +83,14 @@ const OrderArticlesTable: React.FC<OrderArticlesTable> = ({
       if (rows.filter((r) => r.articleId === '').length === 3) return
       setRowsAndEmit([
          ...rows,
-         { rowId: generateShortId(), articleId: '', quantity: 0, clientPrice: 0 },
+         {
+            rowId: generateShortId(),
+            articleId: '',
+            articleName: '',
+            articleCode: '',
+            quantity: 0,
+            clientPrice: 0,
+         },
       ])
    }
 
@@ -127,9 +141,9 @@ const OrderArticlesTable: React.FC<OrderArticlesTable> = ({
                   <TableHeader>
                      <TableRow>
                         <TableHead>Artículo</TableHead>
-                        <TableHead>Cantidad</TableHead>
-                        <TableHead>Precio Unit.</TableHead>
-                        <TableHead>Subtotal</TableHead>
+                        <TableHead className="text-center">Cantidad</TableHead>
+                        <TableHead className="text-right">Precio Unit.</TableHead>
+                        <TableHead className="text-right">Subtotal</TableHead>
                         <TableHead></TableHead>
                      </TableRow>
                   </TableHeader>

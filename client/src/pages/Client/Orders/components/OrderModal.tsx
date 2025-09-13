@@ -1,6 +1,6 @@
-import { useFetchArticlesByClient, useFetchOrderDetails } from '@hooks/react-query'
 import type { Order, OrderSummary } from '@models/Order.model'
 import { formatDateToShow } from '@utils/formatDateToShow'
+import { useFetchOrderDetails } from '@hooks/react-query'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import { Download, WashingMachine } from 'lucide-react'
 import OrderStatusBadge from '@shared/OrderStatusBadge'
@@ -40,7 +40,6 @@ const OrderModal: React.FC<OrderModalProps> = ({
    orderCode,
 }) => {
    const { order, isPending } = useFetchOrderDetails({ orderId })
-   const { articles } = useFetchArticlesByClient({ clientId: '1' })
 
    return (
       <Dialog open={isModalOpen} onOpenChange={(open) => open || onClose()}>
@@ -57,7 +56,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
             <div className="space-y-4 overflow-x-hidden">
                <InfoGrid isPending={isPending} order={order} />
                <Observations isPending={isPending} order={order} />
-               <ArticlesTable isPending={isPending} order={order} articles={articles} />
+               <ArticlesTable isPending={isPending} order={order} />
                <RelatedDocuments isPending={isPending} order={order} />
             </div>
          </DialogContent>
@@ -136,7 +135,7 @@ const Observations: React.FC<ContentProps> = ({ isPending, order }) => {
    )
 }
 
-const ArticlesTable: React.FC<ContentProps> = ({ isPending, order, articles = [] }) => {
+const ArticlesTable: React.FC<ContentProps> = ({ isPending, order }) => {
    return (
       <Card className="overflow-hidden">
          <CardHeader>
@@ -160,9 +159,9 @@ const ArticlesTable: React.FC<ContentProps> = ({ isPending, order, articles = []
                      <TableRow>
                         <TableHead>ID</TableHead>
                         <TableHead>Nombre</TableHead>
-                        <TableHead>Cantidad</TableHead>
-                        <TableHead>Precio Unit.</TableHead>
-                        <TableHead>Subtotal</TableHead>
+                        <TableHead className="text-center">Cantidad</TableHead>
+                        <TableHead className="text-right">Precio Unit.</TableHead>
+                        <TableHead className="text-right">Subtotal</TableHead>
                      </TableRow>
                   </TableHeader>
 
@@ -171,19 +170,13 @@ const ArticlesTable: React.FC<ContentProps> = ({ isPending, order, articles = []
                         ? Array.from({ length: 3 }).map((_, i) => (
                              <OrderArticleRow.Skeleton key={`skeleton-order-${i}`} />
                           ))
-                        : order?.articles.map(({ articleId, clientPrice, quantity }) => (
+                        : order?.articles.map((orderArticle) => (
                              <OrderArticleRow.Simple
-                                key={`row-${articleId}`}
-                                articleCode={
-                                   articles.find((article) => article.id === articleId)
-                                      ?.code || 'ART-XXXX'
-                                }
-                                articleName={
-                                   articles.find((article) => article.id === articleId)
-                                      ?.name || 'Articulo inexistente'
-                                }
-                                clientPrice={clientPrice}
-                                quantity={quantity}
+                                key={`row-${orderArticle.articleId}`}
+                                articleCode={orderArticle.articleCode}
+                                articleName={orderArticle.articleName}
+                                clientPrice={orderArticle.clientPrice}
+                                quantity={orderArticle.quantity}
                              />
                           ))}
                   </TableBody>

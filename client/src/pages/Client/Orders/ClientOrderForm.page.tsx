@@ -19,10 +19,10 @@ import {
 
 const clienteLogueado = {
    id: '1',
-   nombre: 'Hotel Plaza Grande',
-   contacto: 'María Rodríguez',
+   nombre: 'Hotel Patagones',
+   contacto: 'Luis Fullone',
    telefono: '+54 9 11 5555-1234',
-   email: 'maria@hotelplaza.com',
+   email: 'luis@hotelpatagones.com',
    direccion: 'Av. Independencia 3030',
 }
 

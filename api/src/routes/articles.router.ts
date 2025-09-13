@@ -2,8 +2,8 @@ import { Router, type Request, type Response } from 'express'
 import { handleRouteError } from '../errors/handleRouteError'
 import { generateCategoriesMap } from '../utils/generateMap'
 import { hasRealChanges } from '../utils/hasRealChanges'
-import { nextArticleCode } from '../utils/nextCode'
 import prismaClient from '../prisma/prismaClient'
+import { getNextCode } from '../utils/nextCode'
 import { sleep } from '../utils/sleep'
 import {
    articleCreateSchema,
@@ -128,7 +128,8 @@ articlesRouter.post('/', async (req: Request, res: Response) => {
             orderBy: { createdAt: 'desc' },
          })
 
-         const newCode = nextArticleCode(lastArticle?.code)
+         // const newCode = nextArticleCode(lastArticle?.code)
+         const newCode = await getNextCode(tx, 'ARTICLE', 4)
 
          //CHEQUEO DE DUPLICADOS AUTOMATICO (name es @unique y case insensitive)
          return tx.article.create({

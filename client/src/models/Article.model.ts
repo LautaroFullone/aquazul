@@ -16,8 +16,10 @@ export interface Article {
 
 export interface OrderArticle {
    articleId: Article['id']
-   quantity: number
+   articleCode: Article['code']
+   articleName: Article['name']
    clientPrice: number
+   quantity: number
 }
 
 export type ArticleRow = OrderArticle & { rowId: string }

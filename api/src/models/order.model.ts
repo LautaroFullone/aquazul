@@ -17,6 +17,8 @@ export const getOrdersSchema = z.object({
 
 const orderArticleSchema = z.object({
    articleId: z.string().min(1),
+   articleCode: z.string().min(1),
+   articleName: z.string().min(1),
    clientPrice: z.number().positive(),
    quantity: z.number().int().positive(),
 })

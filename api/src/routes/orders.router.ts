@@ -1,8 +1,8 @@
 import { Router, type Request, type Response } from 'express'
 import { handleRouteError } from '../errors/handleRouteError'
 import { NotFoundError } from '../errors/ApiError'
-import { nextOrderCode } from '../utils/nextCode'
 import prismaClient from '../prisma/prismaClient'
+import { getNextCode } from '../utils/nextCode'
 import { sleep } from '../utils/sleep'
 import {
    getOrdersSchema,
@@ -67,7 +67,6 @@ ordersRouter.get('/:orderId', async (req, res) => {
       //TODO: traer remitos y ordenes de pago
 
       return res.send({
-         message: 'Pedido obtenido',
          order: {
             ...order,
             deliveryNotes: [
@@ -133,7 +132,7 @@ ordersRouter.post('/', async (req: Request, res: Response) => {
             orderBy: { createdAt: 'desc' },
          })
 
-         const newCode = nextOrderCode(lastOrder?.code)
+         const newCode = await getNextCode(tx, 'ORDER', 6)
 
          return tx.order.create({
             data: {

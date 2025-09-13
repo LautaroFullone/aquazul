@@ -39,12 +39,14 @@ const OrderArticleRow = ({
                   id: a.id,
                   label: a.name,
                }))}
-               onSelect={(value) => {
-                  const articleData = articlesList.find((a) => a.id === articleId)
+               onSelect={(optionValue) => {
+                  const articleData = articlesList.find((a) => a.id === optionValue)
                   const priceToShow = articleData?.clientPrice || articleData?.basePrice
 
                   onSelectArticleOption(rowId, {
-                     articleId: value,
+                     articleId: optionValue,
+                     articleName: articleData?.name || '',
+                     articleCode: articleData?.code || '',
                      clientPrice: priceToShow,
                      quantity: quantity || 1,
                   })
@@ -57,7 +59,7 @@ const OrderArticleRow = ({
          </TableCell>
 
          {/* Cantidad */}
-         <TableCell>
+         <TableCell align="center">
             <Input
                type="number"
                value={quantity}
@@ -69,22 +71,22 @@ const OrderArticleRow = ({
                   if ((quantity ?? 0) < min)
                      onSelectArticleOption(rowId, { quantity: min })
                }}
-               className="w-20 bg-white"
+               className="w-16 bg-white"
                min={articleId ? 1 : 0}
                disabled={!articleId}
             />
          </TableCell>
 
          {/* Precio unitario */}
-         <TableCell>{valueToCurrency(Number(clientPrice) || 0)}</TableCell>
+         <TableCell align="right">{valueToCurrency(clientPrice)}</TableCell>
 
          {/* Subtotal */}
-         <TableCell className="font-medium">
-            {valueToCurrency((Number(clientPrice) || 0) * (Number(quantity) || 0))}
+         <TableCell align="right" className="font-medium">
+            {valueToCurrency(clientPrice * quantity)}
          </TableCell>
 
          {/* Eliminar fila */}
-         <TableCell>
+         <TableCell align="right">
             <Button variant="outline" size="icon" onClick={() => onDeleteRow(rowId)}>
                <Trash2 className="w-4 h-4 text-destructive" />
             </Button>
@@ -100,15 +102,15 @@ OrderArticleRow.Skeleton = function OrderArticleRowSkeleton() {
             <Skeleton className="h-4 w-20" />
          </TableCell>
          <TableCell>
-            <Skeleton className=" h-4 w-28" />
+            <Skeleton className="h-4 w-28" />
          </TableCell>
-         <TableCell>
-            <Skeleton className=" h-4 w-20" />
+         <TableCell align="center">
+            <Skeleton className="h-4 w-16" />
          </TableCell>
-         <TableCell>
+         <TableCell align="right">
             <Skeleton className="h-4 w-24" />
          </TableCell>
-         <TableCell>
+         <TableCell align="right">
             <Skeleton className=" h-4 w-26" />
          </TableCell>
       </TableRow>
@@ -132,11 +134,11 @@ OrderArticleRow.Simple = function OrderArticleRowSimple({
 
          <TableCell>{articleName}</TableCell>
 
-         <TableCell>{quantity}</TableCell>
+         <TableCell align="center">{quantity}</TableCell>
 
-         <TableCell>{valueToCurrency(clientPrice)}</TableCell>
+         <TableCell align="right">{valueToCurrency(clientPrice)}</TableCell>
 
-         <TableCell className="font-medium">
+         <TableCell align="right" className="font-medium">
             {valueToCurrency(Number(clientPrice) * Number(quantity))}
          </TableCell>
       </TableRow>
