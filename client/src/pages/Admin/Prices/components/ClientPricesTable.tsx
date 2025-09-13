@@ -5,7 +5,6 @@ import ClientPriceRow from './ClientPriceRow'
 
 interface ClientPricesTableProps {
    paginatedArticles: Article[]
-   itemsPerPage: number
    isEditing: boolean
    isLoading: boolean
    currentPage: number
@@ -24,7 +23,6 @@ interface ClientPricesTableProps {
 
 const ClientPricesTable: React.FC<ClientPricesTableProps> = ({
    paginatedArticles,
-   itemsPerPage,
    isLoading,
    isEditing,
    currentPage,
@@ -54,7 +52,7 @@ const ClientPricesTable: React.FC<ClientPricesTableProps> = ({
 
                <TableBody>
                   {isLoading ? (
-                     Array.from({ length: itemsPerPage }).map((_, i) => (
+                     Array.from({ length: 5 }).map((_, i) => (
                         <ClientPriceRow.Skeleton key={`skeleton-article-${i}`} />
                      ))
                   ) : paginatedArticles.length ? (

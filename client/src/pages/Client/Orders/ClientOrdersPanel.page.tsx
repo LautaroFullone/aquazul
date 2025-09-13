@@ -31,7 +31,7 @@ const ClientOrdersPanel = () => {
 
    const debouncedSearch = useDebounce(searchTerm, 400)
 
-   const { orders, isPending } = useFetchOrders({ clientId: '1' })
+   const { orders, isLoading } = useFetchOrders({ clientId: '1' })
 
    useEffect(() => {
       if (currentPage !== 1) goToPage(1)
@@ -103,7 +103,7 @@ const ClientOrdersPanel = () => {
                         <Input
                            id="id-v3"
                            value={searchTerm}
-                           disabled={isPending}
+                           disabled={isLoading}
                            className="pl-8 bg-white"
                            placeholder="Ej: PED-000004"
                            onChange={(e) => setSearchTerm(e.target.value)}
@@ -116,7 +116,7 @@ const ClientOrdersPanel = () => {
 
                      <Select
                         value={statusFilter}
-                        disabled={isPending}
+                        disabled={isLoading}
                         onValueChange={(v: OrderStatus | 'all') => setStatusFilter(v)}
                      >
                         <SelectTrigger id="estado" className="mt-1 bg-white w-full">
@@ -147,7 +147,7 @@ const ClientOrdersPanel = () => {
                      <Input
                         id="fromDate"
                         value={fromDate}
-                        disabled={isPending}
+                        disabled={isLoading}
                         max={toDate || undefined}
                         type="date"
                         className="bg-white mt-1 appearance-none"
@@ -161,7 +161,7 @@ const ClientOrdersPanel = () => {
                      <Input
                         id="toDate"
                         value={toDate}
-                        disabled={isPending}
+                        disabled={isLoading}
                         min={fromDate || undefined}
                         type="date"
                         className="bg-white mt-1 appearance-none"
@@ -189,19 +189,21 @@ const ClientOrdersPanel = () => {
                            </Label>
 
                            <Select
-                              value={itemsPerPage.toString()}
-                              disabled={isPending}
-                              onValueChange={(v) => setItemsPerPage(Number(v))}
+                              value={String(itemsPerPage)}
+                              disabled={isLoading}
+                              onValueChange={(v) =>
+                                 setItemsPerPage(v === '*' ? '*' : Number(v))
+                              }
                            >
                               <SelectTrigger id="items-per-page">
                                  <SelectValue />
                               </SelectTrigger>
 
                               <SelectContent>
-                                 <SelectItem value="5">5</SelectItem>
                                  <SelectItem value="10">10</SelectItem>
                                  <SelectItem value="25">25</SelectItem>
                                  <SelectItem value="50">50</SelectItem>
+                                 <SelectItem value="*">Todos</SelectItem>
                               </SelectContent>
                            </Select>
                         </div>
@@ -223,8 +225,7 @@ const ClientOrdersPanel = () => {
 
                <OrdersTable
                   paginatedOrders={paginatedOrders}
-                  itemsPerPage={itemsPerPage}
-                  isLoading={isPending}
+                  isLoading={isLoading}
                   currentPage={currentPage}
                   totalPages={totalPages}
                   canGoNext={canGoNext}

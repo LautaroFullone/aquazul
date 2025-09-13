@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 const useFetchOrders = (params?: { clientId?: string }) => {
-   const { data, isPending, error, isError } = useQuery({
+   const { data, isLoading, error, isError } = useQuery({
       queryKey: params?.clientId
          ? [queriesKeys.FETCH_ORDERS, params.clientId]
          : [queriesKeys.FETCH_ORDERS],
@@ -22,7 +22,7 @@ const useFetchOrders = (params?: { clientId?: string }) => {
 
    return {
       orders: data?.ordersSummary || [],
-      isPending,
+      isLoading,
       isError,
       error,
    }

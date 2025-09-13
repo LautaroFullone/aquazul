@@ -127,16 +127,20 @@ ClientPriceRow.Skeleton = function ClientPriceRowSkeleton() {
             <Skeleton className="h-5 w-22" />
          </TableCell>
          <TableCell>
-            <Skeleton className="h-5 w-20" />
+            <Skeleton className="h-5 w-34" />
          </TableCell>
          <TableCell>
             <Skeleton className="h-6 w-20 mr-4" />
          </TableCell>
-         <TableCell>
-            <Skeleton className="h-5 w-12" />
-         </TableCell>
-         <TableCell>
+         <TableCell align="right">
             <Skeleton className="h-5 w-20" />
+         </TableCell>
+         <TableCell align="right">
+            <Skeleton className="h-5 w-20" />
+         </TableCell>
+         <TableCell align="right">
+            <Skeleton className="h-4 w-14 mb-1" />
+            <Skeleton className="h-4 w-12" />
          </TableCell>
       </TableRow>
    )

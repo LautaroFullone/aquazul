@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 const useFetchOrderDetails = (param: { orderId: string }) => {
-   const { data, isPending, error, isError } = useQuery({
+   const { data, isLoading, error, isError } = useQuery({
       queryKey: [queriesKeys.ORDER_DETAILS, param.orderId],
       queryFn: () => getOrderDetails(param.orderId),
       enabled: Boolean(param.orderId),
@@ -21,7 +21,7 @@ const useFetchOrderDetails = (param: { orderId: string }) => {
 
    return {
       order: data?.order || null,
-      isPending,
+      isLoading,
       isError,
       error,
    }

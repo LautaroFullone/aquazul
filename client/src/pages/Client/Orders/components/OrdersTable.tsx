@@ -8,7 +8,6 @@ import { useState } from 'react'
 
 interface OrdersTableProps {
    paginatedOrders: OrderSummary[]
-   itemsPerPage: number
    isLoading: boolean
    currentPage: number
    totalPages: number
@@ -20,7 +19,6 @@ interface OrdersTableProps {
 
 const OrdersTable: React.FC<OrdersTableProps> = ({
    paginatedOrders,
-   itemsPerPage,
    isLoading,
    currentPage,
    totalPages,
@@ -48,7 +46,7 @@ const OrdersTable: React.FC<OrdersTableProps> = ({
 
                <TableBody>
                   {isLoading ? (
-                     Array.from({ length: itemsPerPage }).map((_, i) => (
+                     Array.from({ length: 5 }).map((_, i) => (
                         <OrderRow.Skeleton key={`skeleton-order-${i}`} />
                      ))
                   ) : paginatedOrders.length ? (

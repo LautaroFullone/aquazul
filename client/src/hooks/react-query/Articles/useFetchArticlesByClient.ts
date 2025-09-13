@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 const useFetchArticlesByClient = (params: { clientId: string | undefined }) => {
-   const { data, isPending, error, isError } = useQuery({
+   const { data, isLoading, error, isError } = useQuery({
       queryKey: [queriesKeys.FETCH_ARTICLES, params.clientId],
       queryFn: () => getArticlesByClient(params.clientId!),
       enabled: !!params.clientId,
@@ -24,7 +24,7 @@ const useFetchArticlesByClient = (params: { clientId: string | undefined }) => {
    return {
       articles: data?.articles || [],
       categories: data?.categories || {},
-      isPending,
+      isLoading,
       isError,
       error,
    }

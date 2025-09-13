@@ -30,7 +30,7 @@ const AdminArticlesPanel = () => {
 
    const navigate = useNavigate()
    const debouncedSearch = useDebounce(searchTerm, 400)
-   const { articles, categories, isPending } = useFetchArticles()
+   const { articles, categories, isLoading: isLoadingArticles } = useFetchArticles()
 
    useEffect(() => {
       if (currentPage !== 1) goToPage(1)
@@ -124,7 +124,7 @@ const AdminArticlesPanel = () => {
                         <Input
                            id="id-v3"
                            value={searchTerm}
-                           disabled={isPending}
+                           disabled={isLoadingArticles}
                            className="pl-8 bg-white"
                            placeholder="Ej: ART-0004"
                            onChange={(e) => setSearchTerm(e.target.value)}
@@ -143,7 +143,7 @@ const AdminArticlesPanel = () => {
                      onSelect={setCategoryFilter}
                      loadingMessage="Cargando categorías..."
                      noResultsMessage="No se encontraron categorías."
-                     disabled={isPending}
+                     disabled={isLoadingArticles}
                   />
 
                   <div className="flex flex-col md:flex-row md:items-center justify-between col-span-full gap-4">
@@ -167,7 +167,7 @@ const AdminArticlesPanel = () => {
 
                            <Select
                               value={itemsPerPage.toString()}
-                              disabled={isPending}
+                              disabled={isLoadingArticles}
                               onValueChange={(v) => setItemsPerPage(Number(v))}
                            >
                               <SelectTrigger id="items-per-page">
@@ -175,10 +175,10 @@ const AdminArticlesPanel = () => {
                               </SelectTrigger>
 
                               <SelectContent>
-                                 <SelectItem value="5">5</SelectItem>
                                  <SelectItem value="10">10</SelectItem>
                                  <SelectItem value="25">25</SelectItem>
                                  <SelectItem value="50">50</SelectItem>
+                                 <SelectItem value="*">Todos</SelectItem>
                               </SelectContent>
                            </Select>
                         </div>
@@ -189,6 +189,7 @@ const AdminArticlesPanel = () => {
                               setSearchTerm('')
                               setCategoryFilter('all')
                            }}
+                           disabled={isLoadingArticles}
                         >
                            Limpiar Filtros
                         </Button>
@@ -198,8 +199,7 @@ const AdminArticlesPanel = () => {
 
                <ArticlesTable
                   paginatedArticles={paginatedArticles}
-                  itemsPerPage={itemsPerPage}
-                  isLoading={isPending}
+                  isLoading={isLoadingArticles}
                   currentPage={currentPage}
                   totalPages={totalPages}
                   canGoNext={canGoNext}

@@ -31,7 +31,7 @@ const ClientOrderForm = () => {
    const [showValidation, setShowValidation] = useState(false)
    const [observation, setObservation] = useState('')
 
-   const { articles, isPending: isLoadingArticles } = useFetchArticlesByClient({
+   const { articles, isLoading: isLoadingArticles } = useFetchArticlesByClient({
       clientId: clienteLogueado.id,
    })
    const { createOrderMutate, isPending: isCreatingOrder } = useCreateOrder()
@@ -165,17 +165,17 @@ const ClientOrderForm = () => {
                      <Separator />
 
                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-sm gap-2">
                            <span>Teléfono:</span>
                            <span>{clienteLogueado.telefono}</span>
                         </div>
 
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-sm gap-2">
                            <span>Email:</span>
                            <span className="text-blue-600">{clienteLogueado.email}</span>
                         </div>
 
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-sm gap-2">
                            <span>Dirección:</span>
                            <span>{clienteLogueado.direccion}</span>
                         </div>
@@ -191,11 +191,11 @@ const ClientOrderForm = () => {
 
                   <CardContent>
                      <div className="space-y-2">
-                        <div className="flex justify-between">
+                        <div className="flex justify-between gap-2">
                            <span>Cantidad de artículos:</span>
                            <span>{articlesTotalQuantity}</span>
                         </div>
-                        <div className="border-t pt-2 flex justify-between font-bold">
+                        <div className="border-t pt-2 flex justify-between font-bold gap-2">
                            <span>Total a Pagar:</span>
                            <span>{valueToCurrency(articlesTotalPrice)}</span>
                         </div>

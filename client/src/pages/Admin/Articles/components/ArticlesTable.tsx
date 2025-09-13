@@ -9,7 +9,6 @@ import { useState } from 'react'
 
 interface ArticlesTableProps {
    paginatedArticles: Article[]
-   itemsPerPage: number
    isLoading: boolean
    currentPage: number
    totalPages: number
@@ -21,7 +20,6 @@ interface ArticlesTableProps {
 
 const ArticlesTable: React.FC<ArticlesTableProps> = ({
    paginatedArticles,
-   itemsPerPage,
    isLoading,
    currentPage,
    totalPages,
@@ -49,7 +47,7 @@ const ArticlesTable: React.FC<ArticlesTableProps> = ({
 
                <TableBody>
                   {isLoading ? (
-                     Array.from({ length: itemsPerPage }).map((_, i) => (
+                     Array.from({ length: 5 }).map((_, i) => (
                         <ArticleRow.Skeleton key={`skeleton-article-${i}`} />
                      ))
                   ) : paginatedArticles.length ? (

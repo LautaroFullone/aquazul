@@ -65,7 +65,6 @@ const OrderArticlesTable: React.FC<OrderArticlesTableProps> = ({
 
    const setRowsAndEmit = (articleRows: ArticleRow[]) => {
       //envia al padre sin el rowId}
-      console.log('setRowsAndEmit', articleRows)
       onChangeValues(
          articleRows.map(
             ({ articleId, articleName, articleCode, quantity, clientPrice }) => ({

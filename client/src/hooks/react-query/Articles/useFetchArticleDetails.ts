@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 const useFetchArticleDetails = (param: { articleId: string | undefined }) => {
-   const { data, isPending, error, isError } = useQuery({
+   const { data, isLoading, error, isError } = useQuery({
       queryKey: [queriesKeys.FETCH_ARTICLE_DETAILS, param.articleId],
       queryFn: () => getArticleDetails(param.articleId!),
       enabled: Boolean(param.articleId),
@@ -21,7 +21,7 @@ const useFetchArticleDetails = (param: { articleId: string | undefined }) => {
 
    return {
       article: data?.article || null,
-      isPending,
+      isLoading,
       isError,
       error,
    }

@@ -40,11 +40,11 @@ const AdminPrices = () => {
 
    const debouncedSearch = useDebounce(searchTerm, 400)
 
-   const { clients, isPending: isClientsPending } = useFetchClients()
+   const { clients, isLoading: isClientLoading } = useFetchClients()
    const {
       articles,
       categories,
-      isPending: isArticlesPending,
+      isLoading: isArticlesLoading,
    } = useFetchArticlesByClient({ clientId: clientFilter })
 
    useEffect(() => {
@@ -104,8 +104,6 @@ const AdminPrices = () => {
       setGlobalPercentage(0)
    }
 
-   console.log(newArticlesPrices)
-
    return (
       <>
          <PageTitle
@@ -149,7 +147,7 @@ const AdminPrices = () => {
                         }
                      }}
                      loadingMessage="Cargando clientes..."
-                     isLoadingOptions={isClientsPending}
+                     isLoadingOptions={isClientLoading}
                      noResultsMessage="No se encontraron clientes."
                   />
                </div>
@@ -203,7 +201,7 @@ const AdminPrices = () => {
                               <Input
                                  id="id-v3"
                                  value={searchTerm}
-                                 disabled={isClientsPending || isArticlesPending}
+                                 disabled={isClientLoading || isArticlesLoading}
                                  className="pl-8 bg-white"
                                  placeholder="Ej: ART-0004"
                                  onChange={(e) => setSearchTerm(e.target.value)}
@@ -222,7 +220,7 @@ const AdminPrices = () => {
                            onSelect={setCategoryFilter}
                            loadingMessage="Cargando categorías..."
                            noResultsMessage="No se encontraron categorías."
-                           disabled={isArticlesPending || isClientsPending}
+                           disabled={isArticlesLoading || isClientLoading}
                         />
 
                         <div>
@@ -257,7 +255,7 @@ const AdminPrices = () => {
                                     id="global-percentage"
                                     type="number"
                                     value={globalPercentage}
-                                    disabled={isClientsPending || isArticlesPending}
+                                    disabled={isClientLoading || isArticlesLoading}
                                     onChange={(e) =>
                                        setGlobalPercentage(Number(e.target.value))
                                     }
@@ -269,7 +267,7 @@ const AdminPrices = () => {
                                  variant="primary"
                                  className="rounded-l-none"
                                  onClick={() => {}}
-                                 disabled={isClientsPending || isArticlesPending}
+                                 disabled={isClientLoading || isArticlesLoading}
                               >
                                  Aplicar
                               </Button>
@@ -296,9 +294,11 @@ const AdminPrices = () => {
                                  </Label>
 
                                  <Select
-                                    value={itemsPerPage.toString()}
-                                    disabled={isArticlesPending || isClientsPending}
-                                    onValueChange={(v) => setItemsPerPage(Number(v))}
+                                    value={String(itemsPerPage)}
+                                    disabled={isArticlesLoading || isClientLoading}
+                                    onValueChange={(v) =>
+                                       setItemsPerPage(v === '*' ? '*' : Number(v))
+                                    }
                                  >
                                     <SelectTrigger id="items-per-page">
                                        <SelectValue />
@@ -308,7 +308,7 @@ const AdminPrices = () => {
                                        <SelectItem value="10">10</SelectItem>
                                        <SelectItem value="25">25</SelectItem>
                                        <SelectItem value="50">50</SelectItem>
-                                       <SelectItem value="100">100</SelectItem>
+                                       <SelectItem value="*">Todos</SelectItem>
                                     </SelectContent>
                                  </Select>
                               </div>
@@ -319,13 +319,18 @@ const AdminPrices = () => {
                                     setSearchTerm('')
                                     setCategoryFilter('all')
                                  }}
+                                 disabled={
+                                    isEditing || isClientLoading || isArticlesLoading
+                                 }
                               >
                                  Limpiar Filtros
                               </Button>
 
                               <Button
                                  variant="outline"
-                                 disabled={isEditing}
+                                 disabled={
+                                    isEditing || isClientLoading || isArticlesLoading
+                                 }
                                  onClick={() => setIsEditing(true)}
                               >
                                  <SquarePen className="size-4" />
@@ -337,8 +342,7 @@ const AdminPrices = () => {
 
                      <ClientPricesTable
                         paginatedArticles={paginatedArticles}
-                        itemsPerPage={itemsPerPage}
-                        isLoading={isArticlesPending || isClientsPending}
+                        isLoading={isArticlesLoading || isClientLoading}
                         currentPage={currentPage}
                         totalPages={totalPages}
                         canGoNext={canGoNext}

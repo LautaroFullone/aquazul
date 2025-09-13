@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 const useFetchClients = () => {
-   const { data, isPending, error, isError } = useQuery({
+   const { data, isLoading, error, isError } = useQuery({
       queryKey: [queriesKeys.FETCH_CLIENTS],
       queryFn: getClients,
       staleTime: 20 * 60 * 1000, //20min
@@ -22,7 +22,7 @@ const useFetchClients = () => {
 
    return {
       clients: data?.clients || [],
-      isPending,
+      isLoading,
       isError,
       error,
    }

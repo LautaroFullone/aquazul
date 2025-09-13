@@ -37,12 +37,12 @@ const ClientDashboard = () => {
       ordersCompletedCount,
       ordersInProgressCount,
       totalOrdersMonthPrice,
-      isPending: isLoadingStats,
+      isLoading: isLoadingStats,
    } = useFetchOrdersClientStats({
       clientId: '1',
    })
 
-   const { orders, isPending: isLoadingOrders } = useFetchRecentOrders({
+   const { orders, isLoading: isLoadingOrders } = useFetchRecentOrders({
       clientId: '1',
       limit: ORDERS_LIMIT,
       orderBy: 'updatedAt',

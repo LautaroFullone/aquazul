@@ -9,7 +9,7 @@ const useFetchRecentOrders = (params: {
    limit: number
    orderBy: 'createdAt' | 'updatedAt'
 }) => {
-   const { data, isPending, error, isError } = useQuery({
+   const { data, isLoading, error, isError } = useQuery({
       queryKey: [queriesKeys.RECENTS_ORDERS, params.clientId],
       queryFn: () =>
          getClientOrders(params.clientId, {
@@ -27,7 +27,7 @@ const useFetchRecentOrders = (params: {
 
    return {
       orders: data?.ordersSummary || [],
-      isPending,
+      isLoading,
       isError,
       error,
    }

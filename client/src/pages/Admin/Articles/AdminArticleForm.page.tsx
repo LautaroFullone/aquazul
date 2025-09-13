@@ -26,9 +26,9 @@ const AdminArticleForm = () => {
    const { articleId } = useParams()
    const isEdit = Boolean(articleId)
 
-   const { article: articleToUpdate, isPending: isFetchArticlePending } =
+   const { article: articleToUpdate, isLoading: isArticleLoading } =
       useFetchArticleDetails({ articleId })
-   const { categories, isPending: isFetchCategoriesPending } = useFetchArticles()
+   const { categories, isLoading: isCategoriesLoading } = useFetchArticles()
    const { createArticleMutate, isPending: isCreateArticlePending } = useCreateArticle()
    const { updateArticleMutate, isPending: isUpdateArticlePending } = useUpdateArticle()
 
@@ -69,7 +69,7 @@ const AdminArticleForm = () => {
       }))
    }
 
-   const isLoadingInputs = isEdit && isFetchArticlePending
+   const isLoadingInputs = isEdit && isArticleLoading
    const isMutationPending = isCreateArticlePending || isUpdateArticlePending
 
    return (
@@ -140,7 +140,7 @@ const AdminArticleForm = () => {
                            hasError={showValidation && hasFieldError('categoryName')}
                            errorMessages={validationErrors.categoryName}
                            isLoadingInput={isLoadingInputs}
-                           isLoadingOptions={isFetchCategoriesPending}
+                           isLoadingOptions={isCategoriesLoading}
                            newItemPrefix="Nueva:"
                            loadingMessage="Cargando categorías..."
                            noResultsMessage="No se encontraron categorías."
@@ -179,21 +179,21 @@ const AdminArticleForm = () => {
 
                   <CardContent>
                      <div className="space-y-3">
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-sm gap-2">
                            <span className="text-muted-foreground">Nombre:</span>
                            <span className="font-medium">
                               {formData.name || 'Sin definir'}
                            </span>
                         </div>
 
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-sm gap-2">
                            <span className="text-muted-foreground">Precio:</span>
                            <span className="font-medium">
                               {valueToCurrency(formData.basePrice || 0)}
                            </span>
                         </div>
 
-                        <div className="flex justify-between text-sm">
+                        <div className="flex justify-between text-sm gap-2">
                            <span className="text-muted-foreground">Categoría:</span>
                            <span className="font-medium">
                               {formData.categoryName || 'Sin definir'}
@@ -211,8 +211,8 @@ const AdminArticleForm = () => {
                label={isEdit ? 'Guardar Cambios' : 'Guardar Artículo'}
                className="md:hidden"
                isLoading={isMutationPending}
-               onClick={() => handleSaveArticle()}
                disabled={showValidation && !isValid}
+               onClick={() => handleSaveArticle()}
             />
          </div>
       </>

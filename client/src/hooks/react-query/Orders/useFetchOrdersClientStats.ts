@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
 const useFetchOrdersClientStats = (params: { clientId: string }) => {
-   const { data, isPending, error, isError } = useQuery({
+   const { data, isLoading, error, isError } = useQuery({
       queryKey: [queriesKeys.ORDERS_STATS, params.clientId],
       queryFn: () => getOrdersClientStats(params.clientId),
       staleTime: 20 * 60 * 1000, // 20 min
@@ -23,7 +23,7 @@ const useFetchOrdersClientStats = (params: { clientId: string }) => {
       ordersInProgressCount: data?.ordersInProgressCount || 0,
       ordersCompletedCount: data?.ordersCompletedCount || 0,
       totalOrdersMonthPrice: data?.totalOrdersMonthPrice || 0,
-      isPending,
+      isLoading,
       isError,
       error,
    }

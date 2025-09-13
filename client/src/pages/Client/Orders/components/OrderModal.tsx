@@ -4,7 +4,6 @@ import { useFetchOrderDetails } from '@hooks/react-query'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import { Download, WashingMachine } from 'lucide-react'
 import OrderStatusBadge from '@shared/OrderStatusBadge'
-import type { Article } from '@models/Article.model'
 import OrderArticleRow from './OrderArticleRow'
 import EmptyBanner from '@shared/EmptyBanner'
 import {
@@ -39,7 +38,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
    orderId,
    orderCode,
 }) => {
-   const { order, isPending } = useFetchOrderDetails({ orderId })
+   const { order, isLoading } = useFetchOrderDetails({ orderId })
 
    return (
       <Dialog open={isModalOpen} onOpenChange={(open) => open || onClose()}>
@@ -54,10 +53,10 @@ const OrderModal: React.FC<OrderModalProps> = ({
             </DialogHeader>
 
             <div className="space-y-4 overflow-x-hidden">
-               <InfoGrid isPending={isPending} order={order} />
-               <Observations isPending={isPending} order={order} />
-               <ArticlesTable isPending={isPending} order={order} />
-               <RelatedDocuments isPending={isPending} order={order} />
+               <InfoGrid isLoading={isLoading} order={order} />
+               <Observations isLoading={isLoading} order={order} />
+               <ArticlesTable isLoading={isLoading} order={order} />
+               <RelatedDocuments isLoading={isLoading} order={order} />
             </div>
          </DialogContent>
       </Dialog>
@@ -65,13 +64,12 @@ const OrderModal: React.FC<OrderModalProps> = ({
 }
 
 interface ContentProps {
-   isPending: boolean
    order: Order | null
-   articles?: Article[]
+   isLoading: boolean
 }
 
-const InfoGrid: React.FC<ContentProps> = ({ isPending, order }) => {
-   if (isPending) {
+const InfoGrid: React.FC<ContentProps> = ({ isLoading, order }) => {
+   if (isLoading) {
       return (
          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 p-4 border rounded-md">
             <div className="text-center col-span-2 md:col-span-1">
@@ -122,8 +120,8 @@ const InfoGrid: React.FC<ContentProps> = ({ isPending, order }) => {
    )
 }
 
-const Observations: React.FC<ContentProps> = ({ isPending, order }) => {
-   if (isPending) {
+const Observations: React.FC<ContentProps> = ({ isLoading, order }) => {
+   if (isLoading) {
       return <Skeleton className="p-4 h-12" />
    }
 
@@ -135,7 +133,7 @@ const Observations: React.FC<ContentProps> = ({ isPending, order }) => {
    )
 }
 
-const ArticlesTable: React.FC<ContentProps> = ({ isPending, order }) => {
+const ArticlesTable: React.FC<ContentProps> = ({ isLoading, order }) => {
    return (
       <Card className="overflow-hidden">
          <CardHeader>
@@ -148,7 +146,7 @@ const ArticlesTable: React.FC<ContentProps> = ({ isPending, order }) => {
          </CardHeader>
 
          <CardContent>
-            {!isPending && order?.articles.length === 0 ? (
+            {!isLoading && order?.articles.length === 0 ? (
                <EmptyBanner
                   title="No hay artículos registrados"
                   description="El pedido actual no contiene artículos"
@@ -166,7 +164,7 @@ const ArticlesTable: React.FC<ContentProps> = ({ isPending, order }) => {
                   </TableHeader>
 
                   <TableBody>
-                     {isPending
+                     {isLoading
                         ? Array.from({ length: 3 }).map((_, i) => (
                              <OrderArticleRow.Skeleton key={`skeleton-order-${i}`} />
                           ))
@@ -187,7 +185,7 @@ const ArticlesTable: React.FC<ContentProps> = ({ isPending, order }) => {
    )
 }
 
-const RelatedDocuments: React.FC<ContentProps> = ({ isPending, order }) => {
+const RelatedDocuments: React.FC<ContentProps> = ({ isLoading, order }) => {
    return (
       <Card>
          <CardHeader>
@@ -200,7 +198,7 @@ const RelatedDocuments: React.FC<ContentProps> = ({ isPending, order }) => {
          </CardHeader>
 
          <CardContent>
-            {isPending ? (
+            {isLoading ? (
                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                      <Skeleton className="h-5 w-32 mb-2" />
