@@ -19,6 +19,7 @@ interface InfoBannerProps {
       label: string
       onClick: () => void
    }
+   classname?: string
 }
 
 const InfoBanner = ({
@@ -28,17 +29,21 @@ const InfoBanner = ({
    withDropdown,
    primaryAction,
    secondaryAction,
+   classname,
 }: InfoBannerProps) => {
    const [showBanner, setShowBanner] = useState(false)
    const isOpen = withDropdown ? showBanner : true
 
    return (
       <div
-         className={`p-4 border-l-4 rounded-r-md ${
-            mode === 'info'
-               ? 'text-blue-800 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-600'
-               : 'text-red-800 bg-gradient-to-r from-rose-50 to-red-50 border-red-600'
-         }`}
+         className={cn(
+            `p-4 border-l-4 rounded-r-md ${
+               mode === 'info'
+                  ? 'text-blue-800 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-600'
+                  : 'text-red-800 bg-gradient-to-r from-rose-50 to-red-50 border-red-600'
+            }`,
+            classname
+         )}
       >
          <div
             onClick={withDropdown ? () => setShowBanner((prev) => !prev) : undefined}

@@ -1,6 +1,7 @@
 import { Info, Percent, Save, Search, SquarePen, UserRoundSearch } from 'lucide-react'
 import { useFetchArticlesByClient, useFetchClients } from '@hooks/react-query'
 import { CommandForm, EmptyBanner, InfoBanner, PageTitle } from '@shared'
+import ConfirmCancelModal from './components/ConfirmCancelModal'
 import ClientPricesTable from './components/ClientPricesTable'
 import { useEffect, useMemo, useState } from 'react'
 import { usePagination } from '@hooks/usePagination'
@@ -21,11 +22,11 @@ import {
    SelectItem,
    SelectTrigger,
    SelectValue,
+   Separator,
    Tooltip,
    TooltipContent,
    TooltipTrigger,
 } from '@shadcn'
-import ConfirmCancelModal from './components/ConfirmCancelModal'
 
 const AdminPrices = () => {
    const [clientFilter, setClientFilter] = useState<string>()
@@ -81,8 +82,6 @@ const AdminPrices = () => {
       itemsPerPage: 25,
    })
 
-   const paginatedArticles = filteredArticles.slice(startIndex, endIndex)
-
    const editingBannerMessage = useMemo(() => {
       const changesCount = Object.values(newArticlesPrices).filter(Boolean).length
       if (changesCount > 0) {
@@ -103,6 +102,9 @@ const AdminPrices = () => {
       setSearchTerm('')
       setGlobalPercentage(0)
    }
+
+   const paginatedArticles = filteredArticles.slice(startIndex, endIndex)
+   const isFetchingLoading = isArticlesLoading || isClientLoading
 
    return (
       <>
@@ -156,24 +158,6 @@ const AdminPrices = () => {
             </CardContent>
          </Card>
 
-         {isEditing && (
-            <InfoBanner
-               mode="info"
-               title="Modo de edición múltiple activo"
-               description={editingBannerMessage}
-               primaryAction={{
-                  icon: Save,
-                  label: 'Guardar Cambios',
-                  disabled: Object.keys(newArticlesPrices).length === 0,
-                  onClick: () => console.log('Save all'),
-               }}
-               secondaryAction={{
-                  label: 'Cancelar',
-                  onClick: () => setIsEditing(false),
-               }}
-            />
-         )}
-
          <Card>
             <CardHeader>
                <CardTitle className="flex items-center gap-2">
@@ -192,16 +176,16 @@ const AdminPrices = () => {
                   />
                ) : (
                   <>
-                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-                        <div className="sm:col-span-2">
-                           <Label htmlFor="id-v3">Buscar por ID o Nombre</Label>
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="md:col-span-2">
+                           <Label htmlFor="search-filter">Buscar por ID o Nombre</Label>
 
                            <div className="relative mt-1">
                               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                               <Input
-                                 id="id-v3"
+                                 id="search-filter"
                                  value={searchTerm}
-                                 disabled={isClientLoading || isArticlesLoading}
+                                 disabled={isFetchingLoading}
                                  className="pl-8 bg-white"
                                  placeholder="Ej: ART-0004"
                                  onChange={(e) => setSearchTerm(e.target.value)}
@@ -220,59 +204,8 @@ const AdminPrices = () => {
                            onSelect={setCategoryFilter}
                            loadingMessage="Cargando categorías..."
                            noResultsMessage="No se encontraron categorías."
-                           disabled={isArticlesLoading || isClientLoading}
+                           disabled={isFetchingLoading}
                         />
-
-                        <div>
-                           <Label htmlFor="global-percentage" className="flex">
-                              Aplicar Porcentaje
-                              <Tooltip>
-                                 <TooltipTrigger asChild>
-                                    <span
-                                       aria-label="Ayuda sobre porcentaje global"
-                                       className="text-muted-foreground hover:text-foreground"
-                                    >
-                                       <Info className="size-4" />
-                                    </span>
-                                 </TooltipTrigger>
-
-                                 <TooltipContent side="top" align="center">
-                                    <p className="text-sm text-center max-w-xs">
-                                       Usá valores positivos para aumentar (ej: 15) o
-                                       negativos para descontar (ej: -10).
-                                    </p>
-                                 </TooltipContent>
-                              </Tooltip>
-                           </Label>
-
-                           <div className="mt-1 flex">
-                              <div className="relative w-full">
-                                 <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">
-                                    <Percent className="h-4 w-4" />
-                                 </span>
-
-                                 <Input
-                                    id="global-percentage"
-                                    type="number"
-                                    value={globalPercentage}
-                                    disabled={isClientLoading || isArticlesLoading}
-                                    onChange={(e) =>
-                                       setGlobalPercentage(Number(e.target.value))
-                                    }
-                                    className="pr-6 rounded-r-none"
-                                 />
-                              </div>
-
-                              <Button
-                                 variant="primary"
-                                 className="rounded-l-none"
-                                 onClick={() => {}}
-                                 disabled={isClientLoading || isArticlesLoading}
-                              >
-                                 Aplicar
-                              </Button>
-                           </div>
-                        </div>
 
                         <div className="flex flex-col md:flex-row md:items-center justify-between col-span-full gap-4">
                            <div className="text-sm text-gray-600">
@@ -284,7 +217,7 @@ const AdminPrices = () => {
                                    )} de ${filteredArticles.length} artículos`}
                            </div>
 
-                           <div className="flex items-center gap-4">
+                           <div className="flex gap-4 justify-between">
                               <div className="flex items-center gap-2">
                                  <Label
                                     htmlFor="items-per-page"
@@ -294,11 +227,9 @@ const AdminPrices = () => {
                                  </Label>
 
                                  <Select
-                                    value={String(itemsPerPage)}
-                                    disabled={isArticlesLoading || isClientLoading}
-                                    onValueChange={(v) =>
-                                       setItemsPerPage(v === '*' ? '*' : Number(v))
-                                    }
+                                    value={itemsPerPage.toString()}
+                                    disabled={isFetchingLoading}
+                                    onValueChange={(v) => setItemsPerPage(Number(v))}
                                  >
                                     <SelectTrigger id="items-per-page">
                                        <SelectValue />
@@ -319,30 +250,106 @@ const AdminPrices = () => {
                                     setSearchTerm('')
                                     setCategoryFilter('all')
                                  }}
-                                 disabled={
-                                    isEditing || isClientLoading || isArticlesLoading
-                                 }
+                                 disabled={isFetchingLoading}
                               >
                                  Limpiar Filtros
                               </Button>
-
-                              <Button
-                                 variant="outline"
-                                 disabled={
-                                    isEditing || isClientLoading || isArticlesLoading
-                                 }
-                                 onClick={() => setIsEditing(true)}
-                              >
-                                 <SquarePen className="size-4" />
-                                 Editar Precios
-                              </Button>
                            </div>
                         </div>
+
+                        <Separator className="col-span-full" />
+
+                        <div className="flex flex-col md:flex-row md:items-end justify-between col-span-full gap-4">
+                           <div>
+                              <Label htmlFor="global-percentage" className="flex">
+                                 Aplicar Porcentaje
+                                 <Tooltip>
+                                    <TooltipTrigger asChild>
+                                       <span
+                                          aria-label="Ayuda sobre porcentaje global"
+                                          className="text-muted-foreground hover:text-foreground"
+                                       >
+                                          <Info className="size-4" />
+                                       </span>
+                                    </TooltipTrigger>
+
+                                    <TooltipContent side="top" align="center">
+                                       <p className="text-sm text-center max-w-xs">
+                                          Usá valores positivos para aumentar (ej: 15) o
+                                          negativos para descontar (ej: -10).
+                                       </p>
+                                    </TooltipContent>
+                                 </Tooltip>
+                              </Label>
+
+                              <div className="mt-1 flex">
+                                 <div className="relative w-full">
+                                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">
+                                       <Percent className="h-4 w-4" />
+                                    </span>
+
+                                    <Input
+                                       id="global-percentage"
+                                       type="number"
+                                       value={globalPercentage}
+                                       disabled={
+                                          !clientSelected ||
+                                          isFetchingLoading ||
+                                          isEditing
+                                       }
+                                       onChange={(e) =>
+                                          setGlobalPercentage(Number(e.target.value))
+                                       }
+                                       className="pr-6 rounded-r-none"
+                                    />
+                                 </div>
+
+                                 <Button
+                                    variant="primary"
+                                    className="rounded-l-none"
+                                    onClick={() => {}}
+                                    disabled={
+                                       !clientSelected || isFetchingLoading || isEditing
+                                    }
+                                 >
+                                    Aplicar
+                                 </Button>
+                              </div>
+                           </div>
+
+                           <Button
+                              variant="outline"
+                              disabled={!clientSelected || isFetchingLoading || isEditing}
+                              onClick={() => setIsEditing(true)}
+                           >
+                              <SquarePen className="size-4" />
+                              Editar Precios
+                           </Button>
+                        </div>
+
+                        {isEditing && (
+                           <InfoBanner
+                              mode="info"
+                              title="Modo de edición múltiple activo"
+                              description={editingBannerMessage}
+                              primaryAction={{
+                                 icon: Save,
+                                 label: 'Guardar Cambios',
+                                 disabled: Object.keys(newArticlesPrices).length === 0,
+                                 onClick: () => console.log('Save all'),
+                              }}
+                              secondaryAction={{
+                                 label: 'Cancelar',
+                                 onClick: () => setIsEditing(false),
+                              }}
+                              classname="col-span-full"
+                           />
+                        )}
                      </div>
 
                      <ClientPricesTable
                         paginatedArticles={paginatedArticles}
-                        isLoading={isArticlesLoading || isClientLoading}
+                        isLoading={isFetchingLoading}
                         currentPage={currentPage}
                         totalPages={totalPages}
                         canGoNext={canGoNext}

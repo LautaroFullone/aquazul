@@ -115,14 +115,14 @@ const AdminArticlesPanel = () => {
             </CardHeader>
 
             <CardContent className="space-y-4">
-               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="sm:col-span-2">
-                     <Label htmlFor="id-v3">Buscar por ID o Nombre</Label>
+               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="md:col-span-2">
+                     <Label htmlFor="search-filter">Buscar por ID o Nombre</Label>
 
                      <div className="relative mt-1">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
-                           id="id-v3"
+                           id="search-filter"
                            value={searchTerm}
                            disabled={isLoadingArticles}
                            className="pl-8 bg-white"
@@ -156,7 +156,7 @@ const AdminArticlesPanel = () => {
                              )} de ${filteredArticles.length} artículos`}
                      </div>
 
-                     <div className="flex items-center gap-4">
+                     <div className="flex items-center gap-4 justify-between">
                         <div className="flex items-center gap-2">
                            <Label
                               htmlFor="items-per-page"
