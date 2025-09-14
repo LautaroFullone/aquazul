@@ -336,11 +336,15 @@ const AdminPrices = () => {
                                  icon: Save,
                                  label: 'Guardar Cambios',
                                  disabled: Object.keys(newArticlesPrices).length === 0,
-                                 onClick: () => console.log('Save all'),
+                                 onClick: () =>
+                                    console.log('Save all', newArticlesPrices),
                               }}
                               secondaryAction={{
                                  label: 'Cancelar',
-                                 onClick: () => setIsEditing(false),
+                                 onClick: () => {
+                                    setIsEditing(false)
+                                    setNewArticlesPrices({})
+                                 },
                               }}
                               classname="col-span-full"
                            />
@@ -356,7 +360,7 @@ const AdminPrices = () => {
                         canGoPrevious={canGoPrevious}
                         onPageChange={goToPage}
                         isEditing={isEditing}
-                        articlesWithPendingChanges={Object.keys(newArticlesPrices) || []}
+                        editedPrices={newArticlesPrices}
                         onPriceChange={(articleId, newPrice, newPriceIsDifferent) => {
                            setNewArticlesPrices((prev) => {
                               //si el precio nuevo es diferente al anterior, lo agrego/modifico en el mapa

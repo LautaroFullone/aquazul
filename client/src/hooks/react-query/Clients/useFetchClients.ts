@@ -20,9 +20,28 @@ const useFetchClients = () => {
       }) //Seteo un ID para evitar toast duplicados
    }
 
+   const mockData = [
+      {
+         id: '1',
+         name: 'Hotel Patagones',
+         contactName: 'Luis Fullone',
+         phone: '2236801937',
+         email: 'luisroberto@gmail.com',
+         address: 'Patagones 1607',
+      },
+      {
+         id: 'cmfd6e4tb00011uwwe24xv450',
+         name: 'Clinica Balcarce',
+         contactName: 'Mirta Gaitero',
+         phone: '2252900189',
+         email: 'mirta.gaitero@gmail.com',
+         address: 'Garay 3247',
+      },
+   ]
+
    return {
-      clients: data?.clients || [],
-      isLoading,
+      clients: mockData, //data?.clients || [],
+      isLoading: false,
       isError,
       error,
    }

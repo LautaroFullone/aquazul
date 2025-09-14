@@ -11,7 +11,7 @@ interface ClientPricesTableProps {
    totalPages: number
    canGoNext: boolean
    canGoPrevious: boolean
-   articlesWithPendingChanges: string[]
+   editedPrices: Record<string, number>
    onPageChange: (page: number) => void
    onPriceChange: (
       articleId: string,
@@ -29,7 +29,7 @@ const ClientPricesTable: React.FC<ClientPricesTableProps> = ({
    totalPages,
    canGoNext,
    canGoPrevious,
-   articlesWithPendingChanges,
+   editedPrices,
    onPageChange,
    onPriceChange,
    emptyMessage,
@@ -56,26 +56,20 @@ const ClientPricesTable: React.FC<ClientPricesTableProps> = ({
                         <ClientPriceRow.Skeleton key={`skeleton-article-${i}`} />
                      ))
                   ) : paginatedArticles.length ? (
-                     paginatedArticles.map((article) => {
-                        const hasPendingChanges = articlesWithPendingChanges.includes(
-                           article.id
-                        )
+                     paginatedArticles.map((article) => (
+                        <ClientPriceRow
+                           key={article.id}
+                           isEditing={isEditing}
+                           clientArticle={article}
+                           currentEditedPrice={editedPrices[article.id]} // Pasar el precio editado
+                           onEdit={(newPrice) => {
+                              const newPriceIsDifferent =
+                                 newPrice - article.clientPrice !== 0
 
-                        return (
-                           <ClientPriceRow
-                              key={article.id}
-                              isEditing={isEditing}
-                              clientArticle={article}
-                              hasPendingChanges={hasPendingChanges}
-                              onEdit={(newPrice) => {
-                                 const newPriceIsDifferent =
-                                    newPrice - article.clientPrice !== 0
-
-                                 onPriceChange(article.id, newPrice, newPriceIsDifferent)
-                              }}
-                           />
-                        )
-                     })
+                              onPriceChange(article.id, newPrice, newPriceIsDifferent)
+                           }}
+                        />
+                     ))
                   ) : (
                      <TableRow className="hover:bg-background ">
                         <TableCell colSpan={7} className="px-0">

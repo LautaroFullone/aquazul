@@ -8,17 +8,19 @@ import { useEffect, useState } from 'react'
 interface ClientPriceRowProps {
    clientArticle: Article
    isEditing: boolean
-   hasPendingChanges?: boolean
+   currentEditedPrice?: number
    onEdit: (value: number) => void
 }
 
 const ClientPriceRow = ({
    clientArticle,
    isEditing,
-   hasPendingChanges,
+   currentEditedPrice,
    onEdit,
 }: ClientPriceRowProps) => {
-   const [clientPriceShown, setClientPriceShown] = useState(clientArticle.clientPrice)
+   const [clientPriceShown, setClientPriceShown] = useState(
+      currentEditedPrice ?? clientArticle.clientPrice
+   )
 
    const diff = clientPriceShown - clientArticle.basePrice
    const diffPct =
@@ -33,6 +35,18 @@ const ClientPriceRow = ({
          onEdit(debouncedPrice)
       }
    }, [debouncedPrice]) // eslint-disable-line
+
+   useEffect(() => {
+      if (!isEditing) {
+         // Si salimos del modo de edición, volvemos al precio original
+         setClientPriceShown(clientArticle.clientPrice)
+      } else if (currentEditedPrice !== undefined) {
+         // Si hay un precio editado, lo usamos
+         setClientPriceShown(currentEditedPrice)
+      }
+   }, [isEditing]) // eslint-disable-line
+
+   const hasPendingChanges = Boolean(currentEditedPrice)
 
    return (
       <TableRow className={cn(hasPendingChanges && 'bg-amber-50 hover:bg-amber-100')}>
