@@ -1,39 +1,33 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@shadcn'
 import type { Article } from '@models/Article.model'
 import { EmptyBanner, Pagination } from '@shared'
+import usePricesStore from '@stores/prices.store'
 import ClientPriceRow from './ClientPriceRow'
 
 interface ClientPricesTableProps {
    paginatedArticles: Article[]
-   isEditing: boolean
    isLoading: boolean
    currentPage: number
    totalPages: number
    canGoNext: boolean
    canGoPrevious: boolean
-   editedPrices: Record<string, number>
    onPageChange: (page: number) => void
-   onPriceChange: (
-      articleId: string,
-      newPrice: number,
-      newPriceIsDifferent: boolean
-   ) => void
    emptyMessage: string
 }
 
 const ClientPricesTable: React.FC<ClientPricesTableProps> = ({
    paginatedArticles,
    isLoading,
-   isEditing,
    currentPage,
    totalPages,
    canGoNext,
    canGoPrevious,
-   editedPrices,
    onPageChange,
-   onPriceChange,
    emptyMessage,
 }) => {
+   const isEditing = usePricesStore.use.isEditing()
+   const { dispatchArticleNewPrice } = usePricesStore.use.actions()
+
    return (
       <>
          <div className="overflow-x-auto">
@@ -59,14 +53,13 @@ const ClientPricesTable: React.FC<ClientPricesTableProps> = ({
                      paginatedArticles.map((article) => (
                         <ClientPriceRow
                            key={article.id}
-                           isEditing={isEditing}
                            clientArticle={article}
-                           currentEditedPrice={editedPrices[article.id]} // Pasar el precio editado
-                           onEdit={(newPrice) => {
-                              const newPriceIsDifferent =
-                                 newPrice - article.clientPrice !== 0
-
-                              onPriceChange(article.id, newPrice, newPriceIsDifferent)
+                           onUpdatePrice={(newPrice) => {
+                              dispatchArticleNewPrice(
+                                 article.id,
+                                 newPrice,
+                                 article.clientPrice
+                              )
                            }}
                         />
                      ))

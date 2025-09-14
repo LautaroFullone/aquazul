@@ -6,7 +6,6 @@ import ClientPricesTable from './components/ClientPricesTable'
 import { useEffect, useMemo, useState } from 'react'
 import { usePagination } from '@hooks/usePagination'
 import normalizeString from '@utils/normalizeString'
-import type { Client } from '@models/Client.model'
 import { useDebounce } from '@hooks/useDebounce'
 import {
    Button,
@@ -27,17 +26,28 @@ import {
    TooltipContent,
    TooltipTrigger,
 } from '@shadcn'
+import usePricesStore from '@stores/prices.store'
 
 const AdminPrices = () => {
-   const [clientFilter, setClientFilter] = useState<string>()
-   const [clientSelected, setClientSelected] = useState<Client | undefined>(undefined)
    const [categoryFilter, setCategoryFilter] = useState<string>('all')
-   const [globalPercentage, setGlobalPercentage] = useState<number>(0)
    const [searchTerm, setSearchTerm] = useState<string>('')
-   const [isEditing, setIsEditing] = useState<boolean>(false)
-   const [newArticlesPrices, setNewArticlesPrices] = useState<Record<string, number>>({})
-   const [isCancelModalOpen, setIsCancelModalOpen] = useState<boolean>(false)
-   const [pendingClientId, setPendingClientId] = useState<string | null>(null)
+
+   const isEditing = usePricesStore.use.isEditing()
+   const newArticlesPrices = usePricesStore.use.newArticlesPrices()
+   const globalPercentage = usePricesStore.use.globalPercentage()
+   const selectedClient = usePricesStore.use.selectedClient()
+   const isCancelModalOpen = usePricesStore.use.isCancelModalOpen()
+   const {
+      dispatchIsEditing,
+      dispatchGlobalPercentage,
+      dispatchSelectedClient,
+      dispatchAbortingClient,
+      dispatchIsCancelModalOpen,
+      resetPrices,
+      confirmClientChange,
+      cancelClientChange,
+      applyGlobalPercentage,
+   } = usePricesStore.use.actions()
 
    const debouncedSearch = useDebounce(searchTerm, 400)
 
@@ -46,11 +56,9 @@ const AdminPrices = () => {
       articles,
       categories,
       isLoading: isArticlesLoading,
-   } = useFetchArticlesByClient({ clientId: clientFilter })
+   } = useFetchArticlesByClient({ clientId: selectedClient?.id })
 
-   useEffect(() => {
-      if (currentPage !== 1) goToPage(1)
-   }, [debouncedSearch, categoryFilter]) // eslint-disable-line
+   console.log('# selectedClient: ', selectedClient)
 
    const filteredArticles = useMemo(() => {
       return articles.filter((article) => {
@@ -82,6 +90,28 @@ const AdminPrices = () => {
       itemsPerPage: 25,
    })
 
+   useEffect(() => {
+      if (currentPage !== 1) goToPage(1)
+   }, [debouncedSearch, categoryFilter]) // eslint-disable-line
+
+   const handleClientChange = (newClientId: string) => {
+      const client = clients?.find((c) => c.id === newClientId)
+
+      // Si estamos editando y tenemos cambios pendientes, mostramos el modal de confirmación
+      if (isEditing && Object.keys(newArticlesPrices).length > 0) {
+         dispatchAbortingClient(client)
+         dispatchIsCancelModalOpen(true)
+      } else {
+         // Si no, cambiamos directamente
+         dispatchSelectedClient(client)
+         setCategoryFilter('all')
+         setSearchTerm('')
+      }
+   }
+
+   const paginatedArticles = filteredArticles.slice(startIndex, endIndex)
+   const isFetchingLoading = isArticlesLoading || isClientLoading
+
    const editingBannerMessage = useMemo(() => {
       const changesCount = Object.values(newArticlesPrices).filter(Boolean).length
       if (changesCount > 0) {
@@ -93,19 +123,7 @@ const AdminPrices = () => {
       }
    }, [newArticlesPrices])
 
-   const handleClientChange = (newClientId: string) => {
-      setClientFilter(newClientId)
-      setClientSelected(clients?.find((client) => client.id === newClientId))
-      setNewArticlesPrices({})
-      setIsEditing(false)
-      setCategoryFilter('all')
-      setSearchTerm('')
-      setGlobalPercentage(0)
-   }
-
-   const paginatedArticles = filteredArticles.slice(startIndex, endIndex)
-   const isFetchingLoading = isArticlesLoading || isClientLoading
-
+   console.log('# prices; ', newArticlesPrices)
    return (
       <>
          <PageTitle
@@ -133,21 +151,13 @@ const AdminPrices = () => {
                      id="client"
                      label="Nombre"
                      placeholder="Seleccionar cliente..."
-                     value={clientFilter}
+                     value={selectedClient?.id || ''}
+                     optionsHeader="Clientes existentes"
                      options={clients.map((client) => ({
                         id: client.id,
                         label: client.name,
                      }))}
-                     optionsHeader="Clientes existentes"
-                     onSelect={(value) => {
-                        if (isEditing && Object.keys(newArticlesPrices).length > 0) {
-                           setPendingClientId(value)
-
-                           setIsCancelModalOpen(true)
-                        } else {
-                           handleClientChange(value)
-                        }
-                     }}
+                     onSelect={handleClientChange}
                      loadingMessage="Cargando clientes..."
                      isLoadingOptions={isClientLoading}
                      noResultsMessage="No se encontraron clientes."
@@ -161,14 +171,14 @@ const AdminPrices = () => {
          <Card>
             <CardHeader>
                <CardTitle className="flex items-center gap-2">
-                  Listado de Precios {clientSelected && `para ${clientSelected.name}`}
+                  Listado de Precios {selectedClient && `para ${selectedClient.name}`}
                </CardTitle>
 
                <CardDescription>Filtrá por ID, nombre y/o categoría</CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-4">
-               {!clientFilter ? (
+               {!selectedClient ? (
                   <EmptyBanner
                      icon={UserRoundSearch}
                      title="Ningún cliente seleccionado"
@@ -293,12 +303,12 @@ const AdminPrices = () => {
                                        type="number"
                                        value={globalPercentage}
                                        disabled={
-                                          !clientSelected ||
+                                          !selectedClient ||
                                           isFetchingLoading ||
                                           isEditing
                                        }
                                        onChange={(e) =>
-                                          setGlobalPercentage(Number(e.target.value))
+                                          dispatchGlobalPercentage(Number(e.target.value))
                                        }
                                        className="pr-6 rounded-r-none"
                                     />
@@ -307,9 +317,9 @@ const AdminPrices = () => {
                                  <Button
                                     variant="primary"
                                     className="rounded-l-none"
-                                    onClick={() => {}}
+                                    onClick={() => applyGlobalPercentage(articles)}
                                     disabled={
-                                       !clientSelected || isFetchingLoading || isEditing
+                                       !selectedClient || isFetchingLoading || isEditing
                                     }
                                  >
                                     Aplicar
@@ -319,8 +329,8 @@ const AdminPrices = () => {
 
                            <Button
                               variant="outline"
-                              disabled={!clientSelected || isFetchingLoading || isEditing}
-                              onClick={() => setIsEditing(true)}
+                              disabled={!selectedClient || isFetchingLoading || isEditing}
+                              onClick={() => dispatchIsEditing(true)}
                            >
                               <SquarePen className="size-4" />
                               Editar Precios
@@ -341,10 +351,7 @@ const AdminPrices = () => {
                               }}
                               secondaryAction={{
                                  label: 'Cancelar',
-                                 onClick: () => {
-                                    setIsEditing(false)
-                                    setNewArticlesPrices({})
-                                 },
+                                 onClick: () => resetPrices(),
                               }}
                               classname="col-span-full"
                            />
@@ -359,25 +366,6 @@ const AdminPrices = () => {
                         canGoNext={canGoNext}
                         canGoPrevious={canGoPrevious}
                         onPageChange={goToPage}
-                        isEditing={isEditing}
-                        editedPrices={newArticlesPrices}
-                        onPriceChange={(articleId, newPrice, newPriceIsDifferent) => {
-                           setNewArticlesPrices((prev) => {
-                              //si el precio nuevo es diferente al anterior, lo agrego/modifico en el mapa
-                              if (newPriceIsDifferent) {
-                                 return { ...prev, [articleId]: newPrice }
-                              }
-
-                              //si el precio nuevo es igual al anterior, lo elimino del mapa (si existía)
-                              if (articleId in prev) {
-                                 const next = { ...prev }
-                                 delete next[articleId]
-                                 return next
-                              }
-
-                              return prev
-                           })
-                        }}
                         emptyMessage={
                            debouncedSearch || categoryFilter !== 'all'
                               ? `No hay artículos que coincidan con los filtros, probá limpiarlos o intentá con otros términos de búsqueda`
@@ -391,17 +379,8 @@ const AdminPrices = () => {
 
          <ConfirmCancelModal
             isModalOpen={isCancelModalOpen}
-            onClose={() => {
-               setIsCancelModalOpen(false)
-               setPendingClientId(null)
-            }}
-            onConfirm={() => {
-               if (pendingClientId) {
-                  handleClientChange(pendingClientId)
-               }
-               setIsCancelModalOpen(false)
-               setPendingClientId(null)
-            }}
+            onClose={() => cancelClientChange()}
+            onConfirm={() => confirmClientChange()}
          />
       </>
    )

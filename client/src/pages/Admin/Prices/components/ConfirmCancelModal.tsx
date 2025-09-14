@@ -1,11 +1,11 @@
 import {
    Button,
-   Dialog,
-   DialogContent,
-   DialogDescription,
-   DialogFooter,
-   DialogHeader,
-   DialogTitle,
+   AlertDialog,
+   AlertDialogContent,
+   AlertDialogDescription,
+   AlertDialogFooter,
+   AlertDialogHeader,
+   AlertDialogTitle,
 } from '@shadcn'
 
 interface ConfirmCancelModalProps {
@@ -20,37 +20,32 @@ const ConfirmCancelModal: React.FC<ConfirmCancelModalProps> = ({
    onClose,
 }) => {
    return (
-      <Dialog open={isModalOpen} onOpenChange={(open) => open || onClose()}>
-         <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-               <DialogTitle className="leading-tight">
+      <AlertDialog open={isModalOpen}>
+         <AlertDialogContent className="sm:max-w-lg">
+            <AlertDialogHeader>
+               <AlertDialogTitle className="leading-tight">
                   ¿Estás seguro que querés cambiar de cliente?
-               </DialogTitle>
+               </AlertDialogTitle>
 
-               <DialogDescription>
+               <AlertDialogDescription>
                   Tenes cambios sin guardar, si decidís cambiar de cliente se perderán
                   esos cambios.
-               </DialogDescription>
-            </DialogHeader>
+               </AlertDialogDescription>
+            </AlertDialogHeader>
 
-            <DialogFooter
+            <AlertDialogFooter
                className={`w-full flex flex-col space-y-2 sm:grid grid-cols-2 gap-2`}
             >
-               <Button variant="outline" onClick={() => onClose()} className="m-0">
+               <Button variant="outline" onClick={onClose} className="m-0">
                   No, seguir editando
                </Button>
 
-               <Button
-                  variant="primary"
-                  onClick={() => {
-                     onConfirm()
-                  }}
-               >
+               <Button variant="primary" onClick={onConfirm}>
                   Cambiar de cliente
                </Button>
-            </DialogFooter>
-         </DialogContent>
-      </Dialog>
+            </AlertDialogFooter>
+         </AlertDialogContent>
+      </AlertDialog>
    )
 }
 

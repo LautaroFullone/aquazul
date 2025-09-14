@@ -1,5 +1,6 @@
 import { cn } from '../utils'
 
+export * from './alert-dialog'
 export * from './badge'
 export * from './button'
 export * from './card'

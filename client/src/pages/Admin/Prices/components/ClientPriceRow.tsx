@@ -1,23 +1,22 @@
-import { useDebounce } from '@hooks/useDebounce'
-import type { Article } from '@models/Article.model'
 import { Badge, Button, cn, Input, Skeleton, TableCell, TableRow } from '@shadcn'
 import { valueToCurrency } from '@utils/valueToCurrency'
-import { Undo2 } from 'lucide-react'
+import type { Article } from '@models/Article.model'
+import usePricesStore from '@stores/prices.store'
+import { useDebounce } from '@hooks/useDebounce'
 import { useEffect, useState } from 'react'
+import { Undo2 } from 'lucide-react'
 
 interface ClientPriceRowProps {
    clientArticle: Article
-   isEditing: boolean
-   currentEditedPrice?: number
-   onEdit: (value: number) => void
+   onUpdatePrice: (value: number) => void
 }
 
-const ClientPriceRow = ({
-   clientArticle,
-   isEditing,
-   currentEditedPrice,
-   onEdit,
-}: ClientPriceRowProps) => {
+const ClientPriceRow = ({ clientArticle, onUpdatePrice }: ClientPriceRowProps) => {
+   const isEditing = usePricesStore.use.isEditing()
+   const newArticlesPrices = usePricesStore.use.newArticlesPrices()
+
+   const currentEditedPrice = newArticlesPrices[clientArticle.id]
+
    const [clientPriceShown, setClientPriceShown] = useState(
       currentEditedPrice ?? clientArticle.clientPrice
    )
@@ -26,13 +25,13 @@ const ClientPriceRow = ({
    const diffPct =
       clientArticle.basePrice > 0 ? (diff / clientArticle.basePrice) * 100 : 0
 
-   //uso el debound para evitar que se dispare la funcion onEdit cada vez que se escribe un numero
+   //uso el debound para evitar que se dispare la funcion onUpdatePrice cada vez que se escribe un numero
    //y en su lugar se dispare solo cuando el usuario deja de escribir por 400ms
    const debouncedPrice = useDebounce(clientPriceShown, 400)
 
    useEffect(() => {
       if (debouncedPrice) {
-         onEdit(debouncedPrice)
+         onUpdatePrice(debouncedPrice)
       }
    }, [debouncedPrice]) // eslint-disable-line
 
@@ -41,10 +40,13 @@ const ClientPriceRow = ({
          // Si salimos del modo de edición, volvemos al precio original
          setClientPriceShown(clientArticle.clientPrice)
       } else if (currentEditedPrice !== undefined) {
-         // Si hay un precio editado, lo usamos
+         // Si seguimos editando y hay un precio editado, lo usamos
          setClientPriceShown(currentEditedPrice)
+      } else {
+         // En modo edición sin cambios, usamos el precio cliente actual
+         setClientPriceShown(clientArticle.clientPrice)
       }
-   }, [isEditing]) // eslint-disable-line
+   }, [isEditing, currentEditedPrice]) // eslint-disable-line
 
    const hasPendingChanges = Boolean(currentEditedPrice)
 
@@ -122,7 +124,7 @@ const ClientPriceRow = ({
                   size="sm"
                   onClick={() => {
                      setClientPriceShown(clientArticle.basePrice)
-                     onEdit(clientArticle.basePrice)
+                     onUpdatePrice(clientArticle.basePrice)
                   }}
                >
                   <Undo2 className="size-4" />
