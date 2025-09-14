@@ -42,7 +42,7 @@ const Sidebar = () => {
          {/* Header mobile */}
          {isMobile && (
             <div className="fixed top-0 left-0 right-0 z-40 bg-white border-b border-gray-200 shadow-xs h-16 px-4 py-3">
-               <div className="flex items-center space-x-1">
+               <div className="flex items-center">
                   <Button
                      variant="ghost"
                      size="icon"
@@ -52,14 +52,11 @@ const Sidebar = () => {
                      <Menu className="h-5 w-5" />
                   </Button>
 
-                  <div className="flex items-center ">
-                     {/* <h1 className="text-primary text-4xl">AQUAZUL</h1> */}
-                     <img src="/aquazul-logo.png" alt="Logo" className="h-7" />
+                  <img src="/banner-aquazul.png" alt="Logo" className="h-8 mt-1" />
 
-                     <span className="px-2 bg-blue-800 text-white text-sm font-light rounded-sm">
-                        ADMIN
-                     </span>
-                  </div>
+                  <span className="px-2 bg-blue-800 text-white text-sm font-light rounded-sm ml-2">
+                     ADMIN
+                  </span>
                </div>
             </div>
          )}
@@ -78,9 +75,10 @@ const Sidebar = () => {
             {/* Header con botón cerrar solo visible en mobile */}
             <div className="flex items-center justify-between h-16 px-2 border-b border-gray-200">
                <Link to="/" className="select-none">
-                  <div className="flex items-center space-x-2">
-                     <img src="/aquazul-logo.png" alt="Logo" className="h-8" />
-                     <span className="px-2 bg-blue-800 text-white text-sm font-light rounded-sm">
+                  <div className="flex items-center">
+                     <img src="/banner-aquazul.png" alt="Logo" className="h-8 mt-1" />
+
+                     <span className="px-2 bg-blue-800 text-white text-sm font-light rounded-sm ml-2">
                         ADMIN
                      </span>
                   </div>
