@@ -30,7 +30,7 @@ import {
    Separator,
 } from '@shadcn'
 
-const AdminPrices = () => {
+const AdminPricesPanel = () => {
    const isEditing = usePricesStore.use.isEditing()
    const newArticlesPrices = usePricesStore.use.newArticlesPrices()
    const globalPercentage = usePricesStore.use.globalPercentage()
@@ -370,4 +370,4 @@ const AdminPrices = () => {
       </>
    )
 }
-export default AdminPrices
+export default AdminPricesPanel
