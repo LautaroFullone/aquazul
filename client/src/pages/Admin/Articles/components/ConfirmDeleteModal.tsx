@@ -4,12 +4,12 @@ import { ActionButton } from '@shared'
 import { Trash2 } from 'lucide-react'
 import {
    Button,
-   Dialog,
-   DialogContent,
-   DialogDescription,
-   DialogFooter,
-   DialogHeader,
-   DialogTitle,
+   AlertDialog,
+   AlertDialogContent,
+   AlertDialogDescription,
+   AlertDialogFooter,
+   AlertDialogHeader,
+   AlertDialogTitle,
 } from '@shadcn'
 
 interface ConfirmDeleteModalProps {
@@ -19,31 +19,31 @@ interface ConfirmDeleteModalProps {
 }
 
 const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
-   selectedArticle,
    isModalOpen,
+   selectedArticle,
    onClose,
 }) => {
    const { deleteArticleMutate, isPending } = useDeleteArticle()
 
    return (
-      <Dialog open={isModalOpen} onOpenChange={(open) => open || onClose()}>
-         <DialogContent className="sm:max-w-lg">
-            <DialogHeader>
-               <DialogTitle className="leading-tight">
+      <AlertDialog open={isModalOpen}>
+         <AlertDialogContent className="sm:max-w-lg">
+            <AlertDialogHeader>
+               <AlertDialogTitle className="leading-tight">
                   ¿Estás seguro que querés eliminar{' '}
                   <span className="font-semibold">"{selectedArticle?.name}"</span>?
-               </DialogTitle>
+               </AlertDialogTitle>
 
-               <DialogDescription>
+               <AlertDialogDescription>
                   Esta acción eliminará permanentemente el artículo. Recordá que los
                   pedidos que ya lo incluyan no se verán afectados.
-               </DialogDescription>
-            </DialogHeader>
+               </AlertDialogDescription>
+            </AlertDialogHeader>
 
-            <DialogFooter
+            <AlertDialogFooter
                className={`w-full flex flex-col space-y-2 sm:grid grid-cols-2 gap-2`}
             >
-               <Button variant="outline" onClick={() => onClose()} className="m-0">
+               <Button variant="outline" onClick={onClose} className="m-0">
                   No, mantener
                </Button>
 
@@ -58,9 +58,9 @@ const ConfirmDeleteModal: React.FC<ConfirmDeleteModalProps> = ({
                      onClose()
                   }}
                />
-            </DialogFooter>
-         </DialogContent>
-      </Dialog>
+            </AlertDialogFooter>
+         </AlertDialogContent>
+      </AlertDialog>
    )
 }
 

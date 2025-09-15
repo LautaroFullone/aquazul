@@ -27,6 +27,7 @@ interface PricesStoreProps {
       resetPrices: () => void
       confirmClientChange: () => void
       cancelClientChange: () => void
+      // Aplicar el porcentaje global a los artículos proporcionados (sobre el client price)
       applyGlobalPercentage: (articles: Article[]) => void
    }
 }
@@ -72,7 +73,8 @@ const usePricesStoreBase = create<PricesStoreProps>()(
                })
             },
 
-            resetPrices: () => set({ newArticlesPrices: {}, isEditing: false }),
+            resetPrices: () =>
+               set({ newArticlesPrices: {}, isEditing: false, globalPercentage: 0 }),
 
             dispatchGlobalPercentage: (percentage) =>
                set({ globalPercentage: percentage }),
@@ -111,22 +113,23 @@ const usePricesStoreBase = create<PricesStoreProps>()(
                }),
 
             applyGlobalPercentage: (articles) => {
-               const { globalPercentage } = get()
+               const { globalPercentage, newArticlesPrices } = get()
                if (globalPercentage === 0) return
 
-               const newPrices: Record<string, number> = {}
-               articles.forEach((article) => {
-                  const currentPrice = article.clientPrice || article.basePrice
-                  const adjustmentFactor = 1 + globalPercentage / 100
-                  const newPrice = currentPrice * adjustmentFactor
+               // Start with existing price changes instead of an empty object
+               const updatedPrices = { ...newArticlesPrices }
 
-                  // Solo agregamos precios que realmente cambian
+               articles.forEach((article) => {
+                  const adjustmentFactor = 1 + globalPercentage / 100
+                  const newPrice = Math.round(article.basePrice * adjustmentFactor)
+
+                  // Solo actualizamos si el precio ha cambiado realmente
                   if (newPrice !== article.clientPrice) {
-                     newPrices[article.id] = newPrice
+                     updatedPrices[article.id] = newPrice
                   }
                })
 
-               set({ newArticlesPrices: newPrices })
+               set({ newArticlesPrices: updatedPrices, isEditing: true })
             },
          },
       }),

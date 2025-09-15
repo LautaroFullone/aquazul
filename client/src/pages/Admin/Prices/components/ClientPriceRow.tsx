@@ -1,10 +1,11 @@
-import { Badge, Button, cn, Input, Skeleton, TableCell, TableRow } from '@shadcn'
+import { Badge, Button, cn, Skeleton, TableCell, TableRow } from '@shadcn'
 import { valueToCurrency } from '@utils/valueToCurrency'
 import type { Article } from '@models/Article.model'
 import usePricesStore from '@stores/prices.store'
 import { useDebounce } from '@hooks/useDebounce'
 import { useEffect, useState } from 'react'
-import { Undo2 } from 'lucide-react'
+import { DollarSign, Undo2 } from 'lucide-react'
+import { InputForm } from '@shared'
 
 interface ClientPriceRowProps {
    clientArticle: Article
@@ -79,14 +80,16 @@ const ClientPriceRow = ({ clientArticle, onUpdatePrice }: ClientPriceRowProps) =
          <TableCell className="font-medium text-right">
             {isEditing ? (
                <span className="flex justify-end">
-                  <Input
+                  <InputForm
                      type="number"
+                     min={0}
+                     icon={DollarSign}
                      value={clientPriceShown}
                      onChange={(evt) => {
                         setClientPriceShown(Number(evt.target.value))
                      }}
                      className={cn(
-                        'max-w-32 text-right',
+                        'min-w-28 max-w-32 text-right',
                         hasPendingChanges && 'border-amber-300'
                      )}
                   />

@@ -96,8 +96,8 @@ const ArticlesTable: React.FC<ArticlesTableProps> = ({
 
          <ConfirmDeleteModal
             isModalOpen={!!selectedArticle}
-            onClose={() => setSelectedArticle(null)}
             selectedArticle={selectedArticle}
+            onClose={() => setSelectedArticle(null)}
          />
       </>
    )

@@ -1,7 +1,8 @@
-import { Info, Percent, Save, Search, SquarePen, UserRoundSearch } from 'lucide-react'
 import { CommandForm, EmptyBanner, InfoBanner, PageTitle } from '@shared'
+import { Save, Search, SquarePen, UserRoundSearch } from 'lucide-react'
 import ConfirmCancelModal from './components/ConfirmCancelModal'
 import ClientPricesTable from './components/ClientPricesTable'
+import InputPercentage from '@shared/InputPercentage'
 import { useEffect, useMemo, useState } from 'react'
 import { usePagination } from '@hooks/usePagination'
 import normalizeString from '@utils/normalizeString'
@@ -27,9 +28,6 @@ import {
    SelectTrigger,
    SelectValue,
    Separator,
-   Tooltip,
-   TooltipContent,
-   TooltipTrigger,
 } from '@shadcn'
 
 const AdminPrices = () => {
@@ -98,6 +96,15 @@ const AdminPrices = () => {
    useEffect(() => {
       if (currentPage !== 1) goToPage(1)
    }, [debouncedSearch, categoryFilter]) // eslint-disable-line
+
+   useEffect(() => {
+      return () => {
+         resetPrices()
+         dispatchSelectedClient(undefined)
+         dispatchGlobalPercentage(0)
+         dispatchIsCancelModalOpen(false)
+      }
+   }, []) // eslint-disable-line
 
    const handleClientChange = (newClientId: string) => {
       const client = clients?.find((c) => c.id === newClientId)
@@ -286,62 +293,23 @@ const AdminPrices = () => {
                         <Separator className="col-span-full" />
 
                         <div className="flex flex-col md:flex-row md:items-end justify-between col-span-full gap-4">
-                           <div>
-                              <Label htmlFor="global-percentage" className="flex">
-                                 Aplicar Porcentaje
-                                 <Tooltip>
-                                    <TooltipTrigger asChild>
-                                       <span
-                                          aria-label="Ayuda sobre porcentaje global"
-                                          className="text-muted-foreground hover:text-foreground"
-                                       >
-                                          <Info className="size-4" />
-                                       </span>
-                                    </TooltipTrigger>
-
-                                    <TooltipContent side="top" align="center">
-                                       <p className="text-sm text-center max-w-xs">
-                                          Usá valores positivos para aumentar (ej: 15) o
-                                          negativos para descontar (ej: -10).
-                                       </p>
-                                    </TooltipContent>
-                                 </Tooltip>
-                              </Label>
-
-                              <div className="mt-1 flex">
-                                 <div className="relative w-full">
-                                    <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500">
-                                       <Percent className="h-4 w-4" />
-                                    </span>
-
-                                    <Input
-                                       id="global-percentage"
-                                       type="number"
-                                       value={globalPercentage}
-                                       disabled={
-                                          !selectedClient ||
-                                          isFetchingLoading ||
-                                          isEditing
-                                       }
-                                       onChange={(e) =>
-                                          dispatchGlobalPercentage(Number(e.target.value))
-                                       }
-                                       className="pr-6 rounded-r-none"
-                                    />
-                                 </div>
-
-                                 <Button
-                                    variant="primary"
-                                    className="rounded-l-none"
-                                    onClick={() => applyGlobalPercentage(articles)}
-                                    disabled={
-                                       !selectedClient || isFetchingLoading || isEditing
-                                    }
-                                 >
-                                    Aplicar
-                                 </Button>
-                              </div>
-                           </div>
+                           <InputPercentage
+                              label="Aplicar Porcentaje Global"
+                              tooltip={
+                                 <>
+                                    Aplica el porcentaje ingresado (positivo o negativo)
+                                    sobre el <strong>precio unitario base</strong> de
+                                    todos los artículos. Podés revertir cambios puntuales
+                                    desde el botón <strong>Revertir</strong>.
+                                 </>
+                              }
+                              value={globalPercentage}
+                              onApply={(percentageNumber) => {
+                                 dispatchGlobalPercentage(percentageNumber)
+                                 applyGlobalPercentage(articles)
+                              }}
+                              disabled={!selectedClient || isFetchingLoading || isEditing}
+                           />
 
                            <Button
                               variant="outline"
