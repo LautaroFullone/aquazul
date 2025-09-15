@@ -216,6 +216,7 @@ const ClientOrdersPanel = () => {
                               setFromDate('')
                               setToDate('')
                            }}
+                           disabled={isLoading}
                         >
                            Limpiar Filtros
                         </Button>

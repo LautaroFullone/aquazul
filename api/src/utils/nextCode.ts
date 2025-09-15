@@ -28,5 +28,5 @@ export async function getNextCode(
    })
    const prefix = MODEL_PREFIX[counterName] || 'CODE-'
 
-   return prefix + '-' + String(next).padStart(pad, '0')
+   return prefix + '-' + String(next - 1).padStart(pad, '0')
 }

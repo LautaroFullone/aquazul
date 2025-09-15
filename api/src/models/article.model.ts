@@ -26,3 +26,5 @@ export const articleUpdateSchema = z.object({
 export const articlePriceByClientSchema = z.object({
    price: z.number().int().nonnegative('El precio debe ser un entero ≥ 0'),
 })
+
+export const articlePriceMapByClientSchema = z.record(z.string(), z.number().positive())

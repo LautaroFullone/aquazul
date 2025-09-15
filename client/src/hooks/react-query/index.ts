@@ -3,6 +3,7 @@ import useDeleteArticle from './Articles/useDeleteArticle'
 import useFetchArticles from './Articles/useFetchArticles'
 import useFetchArticlesByClient from './Articles/useFetchArticlesByClient'
 import useFetchArticleDetails from './Articles/useFetchArticleDetails'
+import useSetArticleClientPrice from './Articles/useSetArticleClientPrice'
 import useUpdateArticle from './Articles/useUpdateArticle'
 
 import useFetchClients from './Clients/useFetchClients'
@@ -19,6 +20,7 @@ export {
    useFetchArticles,
    useFetchArticlesByClient,
    useFetchArticleDetails,
+   useSetArticleClientPrice,
    useUpdateArticle,
    useFetchClients,
    useCreateOrder,

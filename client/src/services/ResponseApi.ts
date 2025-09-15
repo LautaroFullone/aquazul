@@ -13,6 +13,7 @@ export interface ResponseApi {
    order: Order
    orders: Order[]
    client: Client
+   clientId: string
    clients: Client[]
    ordersSummary: OrderSummary[]
    category: ArticleCategory

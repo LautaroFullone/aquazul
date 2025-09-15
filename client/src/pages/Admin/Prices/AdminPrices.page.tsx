@@ -1,12 +1,17 @@
 import { Info, Percent, Save, Search, SquarePen, UserRoundSearch } from 'lucide-react'
-import { useFetchArticlesByClient, useFetchClients } from '@hooks/react-query'
 import { CommandForm, EmptyBanner, InfoBanner, PageTitle } from '@shared'
 import ConfirmCancelModal from './components/ConfirmCancelModal'
 import ClientPricesTable from './components/ClientPricesTable'
 import { useEffect, useMemo, useState } from 'react'
 import { usePagination } from '@hooks/usePagination'
 import normalizeString from '@utils/normalizeString'
+import usePricesStore from '@stores/prices.store'
 import { useDebounce } from '@hooks/useDebounce'
+import {
+   useFetchArticlesByClient,
+   useFetchClients,
+   useSetArticleClientPrice,
+} from '@hooks/react-query'
 import {
    Button,
    Card,
@@ -26,12 +31,8 @@ import {
    TooltipContent,
    TooltipTrigger,
 } from '@shadcn'
-import usePricesStore from '@stores/prices.store'
 
 const AdminPrices = () => {
-   const [categoryFilter, setCategoryFilter] = useState<string>('all')
-   const [searchTerm, setSearchTerm] = useState<string>('')
-
    const isEditing = usePricesStore.use.isEditing()
    const newArticlesPrices = usePricesStore.use.newArticlesPrices()
    const globalPercentage = usePricesStore.use.globalPercentage()
@@ -49,16 +50,20 @@ const AdminPrices = () => {
       applyGlobalPercentage,
    } = usePricesStore.use.actions()
 
+   const [categoryFilter, setCategoryFilter] = useState<string>('all')
+   const [searchTerm, setSearchTerm] = useState<string>('')
    const debouncedSearch = useDebounce(searchTerm, 400)
 
    const { clients, isLoading: isClientLoading } = useFetchClients()
+
    const {
       articles,
       categories,
       isLoading: isArticlesLoading,
    } = useFetchArticlesByClient({ clientId: selectedClient?.id })
 
-   console.log('# selectedClient: ', selectedClient)
+   const { setArticlesPricesByClientMutate, isPending: isSettingPricesPending } =
+      useSetArticleClientPrice()
 
    const filteredArticles = useMemo(() => {
       return articles.filter((article) => {
@@ -107,6 +112,17 @@ const AdminPrices = () => {
          setCategoryFilter('all')
          setSearchTerm('')
       }
+   }
+
+   const handleSetArticlesPrices = async (clientId: string) => {
+      if (!clientId) return
+
+      await setArticlesPricesByClientMutate({
+         clientId,
+         pricesMap: newArticlesPrices,
+      })
+
+      resetPrices()
    }
 
    const paginatedArticles = filteredArticles.slice(startIndex, endIndex)
@@ -347,7 +363,8 @@ const AdminPrices = () => {
                                  label: 'Guardar Cambios',
                                  disabled: Object.keys(newArticlesPrices).length === 0,
                                  onClick: () =>
-                                    console.log('Save all', newArticlesPrices),
+                                    handleSetArticlesPrices(selectedClient.id),
+                                 isLoading: isSettingPricesPending,
                               }}
                               secondaryAction={{
                                  label: 'Cancelar',

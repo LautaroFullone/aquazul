@@ -3,6 +3,8 @@ export const queriesKeys = {
    FETCH_ARTICLE_DETAILS: 'article_details',
    CREATE_ARTICLE: 'create_article',
    UPDATE_ARTICLE: 'update_article',
+   DELETE_ARTICLE: 'delete_article',
+   SET_ARTICLE_CLIENT_PRICE: 'set_article_client_price',
 
    FETCH_ORDERS: 'orders',
    ORDER_DETAILS: 'order_details',

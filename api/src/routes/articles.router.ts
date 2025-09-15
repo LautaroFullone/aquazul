@@ -8,6 +8,7 @@ import { sleep } from '../utils/sleep'
 import {
    articleCreateSchema,
    articlePriceByClientSchema,
+   articlePriceMapByClientSchema,
    articleUpdateSchema,
 } from '../models/Article.model'
 
@@ -90,6 +91,7 @@ articlesRouter.get('/client/:clientId', async (req: Request, res: Response) => {
    }
 })
 
+// GET -> obtener artículo por id
 articlesRouter.get('/:articleId', async (req, res) => {
    try {
       await sleep(5000)
@@ -160,7 +162,7 @@ articlesRouter.post('/', async (req: Request, res: Response) => {
    }
 })
 
-// POST -> setear precio de artículo por cliente
+// PUT -> setear precio de artículo por cliente
 articlesRouter.put(
    '/:articleId/client/:clientId/price',
    async (req: Request, res: Response) => {
@@ -180,7 +182,7 @@ articlesRouter.put(
 
          if (existing && existing.price === body.price) {
             return res.status(200).send({
-               message: 'Sin cambios: el precio es el mismo',
+               message: 'El precio del artículo no ha cambiado',
                article: existing,
             })
          }
@@ -200,6 +202,58 @@ articlesRouter.put(
       }
    }
 )
+
+// PUT -> setear precios de artículos por cliente (múltiples)
+articlesRouter.put('/prices/client/:clientId', async (req: Request, res: Response) => {
+   const { clientId } = req.params
+
+   try {
+      // Validar el formato del objeto recibido {articleId: price, articleId2: price2, ...}
+      const pricesMap = articlePriceMapByClientSchema.parse(req.body)
+
+      // Verificar que el cliente existe
+      await prismaClient.client.findUniqueOrThrow({
+         where: { id: clientId },
+      })
+
+      // Convertir el objeto a un array de operaciones
+      const articleIds = Object.keys(pricesMap)
+
+      // Verificar que todos los artículos existen
+      await Promise.all(
+         articleIds.map((articleId) =>
+            prismaClient.article.findUniqueOrThrow({ where: { id: articleId } })
+         )
+      )
+
+      // Actualizar los precios en la base de datos
+      const updatedPrices = await Promise.all(
+         articleIds.map((articleId) =>
+            prismaClient.clientArticlePrice.upsert({
+               where: {
+                  clientId_articleId: { clientId, articleId },
+               },
+               create: {
+                  clientId,
+                  articleId,
+                  price: pricesMap[articleId],
+               },
+               update: {
+                  price: pricesMap[articleId],
+               },
+            })
+         )
+      )
+
+      return res.status(200).send({
+         message: 'Precios de artículos actualizados',
+         articles: updatedPrices,
+         clientId,
+      })
+   } catch (error) {
+      return handleRouteError(res, error)
+   }
+})
 
 // PATCH -> actualizar artículo y manejar categoría
 articlesRouter.patch('/:articleId', async (req: Request, res: Response) => {

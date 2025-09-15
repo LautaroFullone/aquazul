@@ -12,8 +12,9 @@ interface InfoBannerProps {
    primaryAction?: {
       icon: LucideIcon
       label: string
-      disabled?: boolean
       onClick: () => void
+      disabled?: boolean
+      isLoading?: boolean
    }
    secondaryAction?: {
       label: string
@@ -93,6 +94,7 @@ const InfoBanner = ({
                            onClick={primaryAction.onClick}
                            disabled={primaryAction.disabled}
                            label={primaryAction.label}
+                           isLoading={primaryAction.isLoading}
                         />
                      )}
 
