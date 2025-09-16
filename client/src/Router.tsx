@@ -12,6 +12,7 @@ import {
    NotFound,
    Register,
    AdminPricesPanel,
+   AdminClientsPanel,
 } from './pages'
 
 const Router = () => {
@@ -55,6 +56,7 @@ const Router = () => {
                   element={<AdminArticleForm />}
                />
                <Route path={routesConfig.ADMIN_PRICES} element={<AdminPricesPanel />} />
+               <Route path={routesConfig.ADMIN_CLIENTS} element={<AdminClientsPanel />} />
 
                <Route path="*" element={<NotFound />} />
             </Route>

@@ -11,4 +11,5 @@ export const routesConfig = {
    ADMIN_ARTICLE_NEW: '/panel-admin/articulos/formulario',
    ADMIN_ARTICLE_EDIT: '/panel-admin/articulos/formulario/:articleId',
    ADMIN_PRICES: '/panel-admin/precios',
+   ADMIN_CLIENTS: '/panel-admin/clientes',
 }

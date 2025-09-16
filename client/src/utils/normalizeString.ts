@@ -5,7 +5,9 @@
  * @returns El string normalizado.
  */
 
-function normalizeString(value: string) {
+function normalizeString(value: string | undefined) {
+   if (!value) return ''
+
    return (value ?? '')
       .toString()
       .normalize('NFD')

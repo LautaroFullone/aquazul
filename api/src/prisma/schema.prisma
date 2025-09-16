@@ -19,17 +19,27 @@ enum OrderStatus {
 }
 
 model Client {
-   id          String @id @default(cuid())
+   id          String    @id @default(cuid())
    name        String
    contactName String
-   address     String
-   phone       String
-   email       String
+   address     String?
+   phone       String?
+   email       String?
+   categoryId  String
+   lastOrderAt DateTime?
 
    createdAt DateTime @default(now())
    updatedAt DateTime @updatedAt
 
-   orders Order[] @relation("ClientOrders")
+   orders   Order[]        @relation("ClientOrders")
+   category ClientCategory @relation(fields: [categoryId], references: [id])
+}
+
+model ClientCategory {
+   id   String @id @default(cuid())
+   name String @unique @db.Citext
+
+   clients Client[]
 }
 
 model Article {
@@ -48,10 +58,8 @@ model Article {
 }
 
 model ArticleCategory {
-   id        String   @id @default(cuid())
-   name      String   @unique @db.Citext
-   createdAt DateTime @default(now())
-   updatedAt DateTime @updatedAt
+   id   String @id @default(cuid())
+   name String @unique @db.Citext
 
    articles Article[]
 }
@@ -71,7 +79,7 @@ model Order {
 
    clientId      String
    status        OrderStatus @default(PENDING)
-   observation   String?     @default("")
+   observation   String?
    articles      Json[] // { articleId, quantity, clientPrice }
    articlesCount Int         @default(0)
    totalPrice    Int         @default(0)

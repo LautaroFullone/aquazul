@@ -10,3 +10,11 @@ export const UNIQUE_CONSTRAINT_MESSAGES: Record<string, string> = {
    Client: 'Ya existe un cliente con estos datos',
    Order: 'Ya existe un pedido con estas características',
 }
+
+export const FOREIGN_KEY_CONSTRAINT_MESSAGES: Record<string, string> = {
+   Client: 'El cliente referenciado no existe',
+   Article: 'El artículo referenciado no existe',
+   ClientCategory: 'La categoría de cliente referenciada no existe',
+   ArticleCategory: 'La categoría de artículo referenciada no existe',
+   Order: 'El pedido referenciado no existe',
+}

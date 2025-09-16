@@ -1,4 +1,8 @@
-import { NOT_FOUND_MESSAGES, UNIQUE_CONSTRAINT_MESSAGES } from './errorLabels'
+import {
+   FOREIGN_KEY_CONSTRAINT_MESSAGES,
+   NOT_FOUND_MESSAGES,
+   UNIQUE_CONSTRAINT_MESSAGES,
+} from './errorLabels'
 import { Prisma } from '@prisma/client'
 import { ApiError } from './ApiError'
 import { Response } from 'express'
@@ -38,6 +42,30 @@ export function handleRouteError(res: Response, caughtError: unknown) {
          return res.status(409).send({
             message: uniqueMessage,
             code: 'UNIQUE_CONSTRAINT',
+            details: caughtError.meta,
+         })
+      }
+      if (caughtError.code === 'P2003') {
+         const constraint = (caughtError.meta?.constraint as string) || ''
+         console.log('# constraint', constraint)
+         // Para constraints como "Order_clientId_fkey", extraer "Client"
+         let model = ''
+         const fkMatch = constraint.match(/\w+_(\w+)Id_fkey$/i)
+         console.log('# fkMatch', fkMatch)
+
+         if (fkMatch && fkMatch[1]) {
+            // Capitalize first letter to match model names in messages
+            model = fkMatch[1].charAt(0).toUpperCase() + fkMatch[1].slice(1)
+         }
+         console.log('# model:', model)
+
+         const foreignKeyMessage =
+            FOREIGN_KEY_CONSTRAINT_MESSAGES[model] ||
+            'La referencia a otro recurso no es válida'
+
+         return res.status(400).send({
+            message: foreignKeyMessage,
+            code: 'FOREIGN_KEY_CONSTRAINT',
             details: caughtError.meta,
          })
       }

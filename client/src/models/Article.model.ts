@@ -1,8 +1,6 @@
 export interface ArticleCategory {
    id: string
    name: string
-   createdAt: Date
-   updatedAt: Date
 }
 
 export interface Article {
@@ -10,7 +8,7 @@ export interface Article {
    name: string
    basePrice: number
    code: string
-   category: Pick<ArticleCategory, 'id' | 'name'>
+   category: ArticleCategory
    clientPrice: number
 }
 

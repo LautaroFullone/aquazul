@@ -12,6 +12,7 @@ import {
 
 const ordersRouter = Router()
 
+// GET -> listar pedidos (resumen)
 ordersRouter.get('/', async (req, res) => {
    try {
       await sleep(2000)
@@ -29,6 +30,7 @@ ordersRouter.get('/', async (req, res) => {
    }
 })
 
+// GET -> listar pedidos de un cliente (resumen)
 ordersRouter.get('/client/:clientId', async (req, res) => {
    try {
       await sleep(2000)
@@ -55,6 +57,7 @@ ordersRouter.get('/client/:clientId', async (req, res) => {
    }
 })
 
+// GET -> obtener detalle de un pedido
 ordersRouter.get('/:orderId', async (req, res) => {
    try {
       await sleep(2000)
@@ -92,19 +95,27 @@ ordersRouter.get('/:orderId', async (req, res) => {
    }
 })
 
-// POST /orders - crear
+// POST -> crear pedido
 ordersRouter.post('/', async (req: Request, res: Response) => {
    try {
-      const body = orderCreateSchema.parse(req.body)
+      const { clientId, articles, observation, status } = orderCreateSchema.parse(
+         req.body
+      )
+
+      await prismaClient.client.findUniqueOrThrow({
+         where: { id: clientId },
+      })
 
       // 1) Traer artículos
-      const orderArticlesIds = body.articles.map((article) => article.articleId)
+      const orderArticlesIds = articles.map((article) => article.articleId)
 
-      const articles = await prismaClient.article.findMany({
+      const existingArticles = await prismaClient.article.findMany({
          where: { id: { in: orderArticlesIds } },
       })
 
-      const articlesMap = new Map(articles.map((article) => [article.id, article]))
+      const articlesMap = new Map(
+         existingArticles.map((article) => [article.id, article])
+      )
 
       // 2) Validar existencia
       for (const orderArticleID of orderArticlesIds) {
@@ -121,30 +132,33 @@ ordersRouter.post('/', async (req: Request, res: Response) => {
       // })
 
       // 3) Seteo el total de la orden
-      const totalOrderPrice = body.articles.reduce(
+      const totalOrderPrice = articles.reduce(
          (acumulation, article) => acumulation + article.clientPrice * article.quantity,
          0
       )
 
       // 4) Crear pedido con transacción para generar code único
       const newOrder = await prismaClient.$transaction(async (tx) => {
-         const lastOrder = await tx.order.findFirst({
-            orderBy: { createdAt: 'desc' },
-         })
-
          const newCode = await getNextCode(tx, 'ORDER', 6)
 
-         return tx.order.create({
+         const order = await tx.order.create({
             data: {
                code: newCode,
-               clientId: body.clientId,
-               observation: body.observation || '',
-               status: body.status || 'PENDING',
-               articles: body.articles,
-               articlesCount: body.articles.length,
+               clientId,
+               articles,
+               observation: observation || '',
+               status: status || 'PENDING',
+               articlesCount: articles.length,
                totalPrice: totalOrderPrice,
             },
          })
+         // Update client's lastOrderAt field
+         await tx.client.update({
+            where: { id: clientId },
+            data: { lastOrderAt: order.createdAt },
+         })
+
+         return order
       })
 
       return res.status(201).send({ message: 'Pedido creado', order: newOrder })
@@ -153,7 +167,7 @@ ordersRouter.post('/', async (req: Request, res: Response) => {
    }
 })
 
-//
+// GET -> obtener estadísticas de pedidos de un cliente
 ordersRouter.get('/client/:clientId/stats', async (req, res) => {
    try {
       const { clientId } = getOrdersStatsSchema.parse(req.params)

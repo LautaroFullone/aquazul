@@ -5,6 +5,7 @@ import AdminDashboard from './Admin/Dashboard/AdminDashboard.page'
 import AdminArticlesPanel from './Admin/Articles/AdminArticlesPanel.page'
 import AdminArticleForm from './Admin/Articles/AdminArticleForm.page'
 import AdminPricesPanel from './Admin/Prices/AdminPricesPanel.page'
+import AdminClientsPanel from './Admin/Clients/AdminClientsPanel.page'
 
 import ClientDashboard from './Client/Dashboard/ClientDashboard.page'
 import ClientOrderForm from './Client/Orders/ClientOrderForm.page'
@@ -19,6 +20,7 @@ export {
    AdminDashboard,
    AdminArticleForm,
    AdminPricesPanel,
+   AdminClientsPanel,
    ClientDashboard,
    ClientOrderForm,
    ClientOrdersPanel,
