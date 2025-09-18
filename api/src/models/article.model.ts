@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
 export interface ArticleSummary {
-   name: string
    id: string
+   name: string
    basePrice: number
    code: string
    category: {

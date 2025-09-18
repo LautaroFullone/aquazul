@@ -20,7 +20,7 @@ import {
 
 const navigationItems = [
    { label: 'Inicio', route: routesConfig.ADMIN_DASHBOARD, icon: Home },
-   { label: 'Clientes', route: '/admin/testimonials', icon: UsersRound },
+   { label: 'Clientes', route: routesConfig.ADMIN_CLIENTS, icon: UsersRound },
    { label: 'Pedidos', route: '/admin/posts', icon: WashingMachine },
    { label: 'Artículos', route: routesConfig.ADMIN_ARTICLE_LIST, icon: ClipboardList },
    { label: 'Precios', route: routesConfig.ADMIN_PRICES, icon: CircleDollarSign },

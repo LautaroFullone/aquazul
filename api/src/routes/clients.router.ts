@@ -3,10 +3,11 @@ import { Router, type Request, type Response } from 'express'
 import { clientCreateSchema } from '../models/Client.model'
 import prismaClient from '../prisma/prismaClient'
 import { sleep } from '../utils/sleep'
+import { generateCategoriesMap } from '../utils/generateMap'
 
 const clientsRouter = Router()
 
-// GET -> listar clientes
+// GET -> listar clientes y categorias
 clientsRouter.get('/', async (req: Request, res: Response) => {
    await sleep(3000)
    try {
@@ -19,11 +20,15 @@ clientsRouter.get('/', async (req: Request, res: Response) => {
             phone: true,
             email: true,
             address: true,
+            category: { select: { id: true, name: true } },
          },
       })
 
+      const categories = generateCategoriesMap(clients)
+
       return res.status(200).send({
          clients,
+         categories,
       })
    } catch (error) {
       return handleRouteError(res, error)

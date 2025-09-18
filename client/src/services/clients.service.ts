@@ -6,7 +6,7 @@ import { api } from '@lib/axios'
  * @returns Mensaje de éxito y datos de los clientes
  */
 export async function getClients() {
-   type Response = Pick<ResponseApi, 'clients'>
+   type Response = Pick<ResponseApi, 'clients' | 'categories'>
    const { data } = await api.get<Response>(`/clients`)
    return data
 }

@@ -1,4 +1,16 @@
 import z from 'zod'
+export interface ClientSummary {
+   id: string
+   name: string
+   contactName: string
+   address: string | null
+   phone: string | null
+   email: string | null
+   category: {
+      id: string
+      name: string
+   }
+}
 
 export const clientCreateSchema = z.object({
    name: z.string().trim().min(1, 'El nombre es requerido'),
