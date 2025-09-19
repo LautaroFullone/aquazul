@@ -12,4 +12,5 @@ export interface Client {
    email?: string
    category: ClientCategory
    lastOrderAt?: string
+   createdAt?: string
 }

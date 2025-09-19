@@ -17,7 +17,7 @@ const NotFound = () => {
                La ruta que buscas no existe, verificá la URL.
             </p>
             <div className="mt-6 flex items-center justify-center gap-3">
-               <Link to={routesConfig.PANEL_CLIENT}>
+               <Link to={routesConfig.ADMIN_DASHBOARD}>
                   <Button
                      variant="ghost"
                      className="text-zinc-600 hover:text-zinc-700 hover:bg-zinc-100"

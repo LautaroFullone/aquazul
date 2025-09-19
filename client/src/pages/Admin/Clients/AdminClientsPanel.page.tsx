@@ -1,10 +1,13 @@
+import { ActionButton, CommandForm, PageTitle } from '@shared'
 import { useEffect, useMemo, useState } from 'react'
 import { useFetchClients } from '@hooks/react-query'
 import { usePagination } from '@hooks/usePagination'
 import normalizeString from '@utils/normalizeString'
-import { CommandForm, PageTitle } from '@shared'
+import ClientsTable from './components/ClientsTable'
+import { routesConfig } from '@config/routesConfig'
 import { useDebounce } from '@hooks/useDebounce'
-import { Search } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Plus, Search } from 'lucide-react'
 import {
    Button,
    Card,
@@ -24,9 +27,11 @@ import {
 const AdminClientsPanel = () => {
    const [categoryFilter, setCategoryFilter] = useState<string>('all')
    const [searchTerm, setSearchTerm] = useState<string>('')
+
+   const navigate = useNavigate()
    const debouncedSearch = useDebounce(searchTerm, 400)
 
-   const { clients, isLoading: isClientLoading } = useFetchClients()
+   const { clients, categories, isLoading: isClientLoading } = useFetchClients()
 
    const filteredClients = useMemo(() => {
       return clients.filter((client) => {
@@ -67,13 +72,35 @@ const AdminClientsPanel = () => {
       if (currentPage !== 1) goToPage(1)
    }, [debouncedSearch, categoryFilter]) // eslint-disable-line
 
+   const paginatedClients = filteredClients.slice(startIndex, endIndex)
+
    return (
       <>
-         <PageTitle
-            title="Gestión de Clientes"
-            hasGoBack
-            goBackRoute="ADMIN_DASHBOARD"
-            description="Administrá los clientes del sistema y sus respectivos usuarios"
+         <div className="flex justify-between">
+            <PageTitle
+               title="Gestión de Clientes"
+               hasGoBack
+               goBackRoute="ADMIN_DASHBOARD"
+               description="Administrá los clientes del sistema y sus respectivos usuarios"
+            />
+
+            <ActionButton
+               size="lg"
+               icon={Plus}
+               variant="primary"
+               label="Nuevo Cliente"
+               onClick={() => navigate(routesConfig.ADMIN_CLIENT_NEW)}
+               className="hidden md:flex"
+            />
+         </div>
+
+         <ActionButton
+            size="lg"
+            icon={Plus}
+            variant="primary"
+            label="Nuevo Cliente"
+            onClick={() => navigate(routesConfig.ADMIN_CLIENT_NEW)}
+            className="md:hidden w-full"
          />
 
          <Card>
@@ -114,7 +141,7 @@ const AdminClientsPanel = () => {
                      onSelect={setCategoryFilter}
                      loadingMessage="Cargando categorías..."
                      noResultsMessage="No se encontraron categorías."
-                     disabled={isFetchingLoading}
+                     disabled={isClientLoading}
                   />
 
                   <div className="flex flex-col md:flex-row md:items-center justify-between col-span-full gap-4">
@@ -166,62 +193,11 @@ const AdminClientsPanel = () => {
                         </Button>
                      </div>
                   </div>
-
-                  {/* <Separator className="col-span-full" />
-
-                  <div className="flex flex-col md:flex-row md:items-end justify-between col-span-full gap-4">
-                     <InputPercentage
-                        label="Aplicar Porcentaje Global"
-                        tooltip={
-                           <>
-                              Aplica el porcentaje ingresado (positivo o negativo) sobre
-                              el <strong>precio unitario base</strong> de todos los
-                              artículos. Podés revertir cambios puntuales desde el botón{' '}
-                              <strong>Revertir</strong>.
-                           </>
-                        }
-                        value={globalPercentage}
-                        onApply={(percentageNumber) => {
-                           dispatchGlobalPercentage(percentageNumber)
-                           applyGlobalPercentage(articles)
-                        }}
-                        disabled={!selectedClient || isFetchingLoading || isEditing}
-                     />
-
-                     <Button
-                        variant="outline"
-                        disabled={!selectedClient || isFetchingLoading || isEditing}
-                        onClick={() => dispatchIsEditing(true)}
-                     >
-                        <SquarePen className="size-4" />
-                        Editar Precios
-                     </Button>
-                  </div>
-
-                  {isEditing && (
-                     <InfoBanner
-                        mode="info"
-                        title="Modo de edición múltiple activo"
-                        description={editingBannerMessage}
-                        primaryAction={{
-                           icon: Save,
-                           label: 'Guardar Cambios',
-                           disabled: Object.keys(newArticlesPrices).length === 0,
-                           onClick: () => handleSetArticlesPrices(selectedClient.id),
-                           isLoading: isSettingPricesPending,
-                        }}
-                        secondaryAction={{
-                           label: 'Cancelar',
-                           onClick: () => resetPrices(),
-                        }}
-                        classname="col-span-full"
-                     />
-                  )} */}
                </div>
 
-               {/* <ClientPricesTable
-                  paginatedArticles={paginatedArticles}
-                  isLoading={isFetchingLoading}
+               <ClientsTable
+                  paginatedClients={paginatedClients}
+                  isLoading={isClientLoading}
                   currentPage={currentPage}
                   totalPages={totalPages}
                   canGoNext={canGoNext}
@@ -229,18 +205,12 @@ const AdminClientsPanel = () => {
                   onPageChange={goToPage}
                   emptyMessage={
                      debouncedSearch || categoryFilter !== 'all'
-                        ? `No hay artículos que coincidan con los filtros, probá limpiarlos o intentá con otros términos de búsqueda`
-                        : 'Navegá hacia la sección de Artículos para crear el primero'
+                        ? `No hay clientes que coincidan con los filtros, probá limpiarlos o intentá con otros términos de búsqueda`
+                        : 'Hacé clic en "Nuevo Cliente" para crear el primero'
                   }
-               /> */}
+               />
             </CardContent>
          </Card>
-
-         {/* <ConfirmCancelModal
-            isModalOpen={isCancelModalOpen}
-            onClose={() => cancelClientChange()}
-            onConfirm={() => confirmClientChange()}
-         /> */}
       </>
    )
 }

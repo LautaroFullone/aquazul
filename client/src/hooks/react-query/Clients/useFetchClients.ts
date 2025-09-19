@@ -48,6 +48,7 @@ const useFetchClients = () => {
 
    return {
       clients: data?.clients || [],
+      categories: data?.categories || [],
       isLoading,
       isError,
       error,

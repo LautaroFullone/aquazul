@@ -7,9 +7,14 @@ export const routesConfig = {
    CLIENT_ORDER_HISTORY: '/panel/historial-pedidos',
 
    ADMIN_DASHBOARD: '/panel-admin',
+
    ADMIN_ARTICLE_LIST: '/panel-admin/articulos',
    ADMIN_ARTICLE_NEW: '/panel-admin/articulos/formulario',
    ADMIN_ARTICLE_EDIT: '/panel-admin/articulos/formulario/:articleId',
+
    ADMIN_PRICES: '/panel-admin/precios',
+
    ADMIN_CLIENTS: '/panel-admin/clientes',
+   ADMIN_CLIENT_NEW: '/panel-admin/clientes/formulario',
+   ADMIN_CLIENT_EDIT: '/panel-admin/clientes/formulario/:clientId',
 }

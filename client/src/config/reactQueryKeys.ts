@@ -13,4 +13,7 @@ export const queriesKeys = {
    CREATE_ORDER: 'create_order',
 
    FETCH_CLIENTS: 'clients',
+   CREATE_CLIENT: 'create_client',
+   UPDATE_CLIENT: 'update_client',
+   DELETE_CLIENT: 'delete_client',
 } as const
