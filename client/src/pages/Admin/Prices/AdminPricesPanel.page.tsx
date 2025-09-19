@@ -1,6 +1,4 @@
-import { CommandForm, EmptyBanner, InfoBanner, PageTitle } from '@shared'
-import { Save, Search, SquarePen, UserRoundSearch } from 'lucide-react'
-import ConfirmCancelModal from './components/ConfirmCancelModal'
+import { ArrowRightLeft, Save, Search, SquarePen, UserRoundSearch } from 'lucide-react'
 import ClientPricesTable from './components/ClientPricesTable'
 import InputPercentage from '@shared/InputPercentage'
 import { useEffect, useMemo, useState } from 'react'
@@ -29,6 +27,13 @@ import {
    SelectValue,
    Separator,
 } from '@shadcn'
+import {
+   CommandForm,
+   ConfirmActionModal,
+   EmptyBanner,
+   InfoBanner,
+   PageTitle,
+} from '@shared'
 
 const AdminPricesPanel = () => {
    const isEditing = usePricesStore.use.isEditing()
@@ -146,7 +151,6 @@ const AdminPricesPanel = () => {
       }
    }, [newArticlesPrices])
 
-   console.log('# prices; ', newArticlesPrices)
    return (
       <>
          <PageTitle
@@ -362,10 +366,21 @@ const AdminPricesPanel = () => {
             </CardContent>
          </Card>
 
-         <ConfirmCancelModal
-            isModalOpen={isCancelModalOpen}
-            onClose={() => cancelClientChange()}
-            onConfirm={() => confirmClientChange()}
+         <ConfirmActionModal
+            isOpen={isCancelModalOpen}
+            title="¿Estás seguro que querés cambiar de cliente?"
+            description="Tenes cambios pendientes, si decidís cambiar de cliente se perderán todos estos cambios sin guardar."
+            confirmButton={{
+               icon: ArrowRightLeft,
+               label: 'Cambiar de cliente',
+               variant: 'primary',
+               onConfirm: confirmClientChange,
+            }}
+            cancelButton={{
+               label: 'No, seguir editando',
+               variant: 'outline',
+               onCancel: cancelClientChange,
+            }}
          />
       </>
    )

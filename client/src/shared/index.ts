@@ -1,5 +1,6 @@
 import ActionButton from './ActionButton'
 import CommandForm from './CommandForm'
+import ConfirmActionModal from './ConfirmActionModal'
 import EmptyBanner from './EmptyBanner'
 import InfoBanner from './InfoBanner'
 import InputForm from './InputForm'
@@ -11,6 +12,7 @@ import TextAreaForm from './TextAreaForm'
 export {
    ActionButton,
    CommandForm,
+   ConfirmActionModal,
    EmptyBanner,
    InfoBanner,
    InputForm,

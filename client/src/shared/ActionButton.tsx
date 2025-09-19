@@ -7,7 +7,7 @@ import useMobile from '@hooks/useMobile'
 interface ActionButtonProps
    extends Omit<React.ComponentProps<'button'>, 'children'>,
       VariantProps<typeof buttonVariants> {
-   icon: LucideIcon
+   icon?: LucideIcon
    isLoading?: boolean
    label?: string
    loadingLabel?: string
@@ -33,7 +33,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
          onClick={(e) => !isLoading && onClick && onClick(e)} //previene acciones mientras carga
          {...props}
       >
-         {isLoading ? <Loader2 className="animate-spin" /> : <Icon />}
+         {isLoading ? <Loader2 className="animate-spin" /> : Icon ? <Icon /> : null}
          {message}
       </Button>
    )

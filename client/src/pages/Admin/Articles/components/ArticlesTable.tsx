@@ -1,10 +1,11 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@shadcn'
-import ConfirmDeleteModal from './ConfirmDeleteModal'
+import { ConfirmActionModal, EmptyBanner, Pagination } from '@shared'
+import { useDeleteArticle } from '@hooks/react-query'
 import type { Article } from '@models/Article.model'
 import { routesConfig } from '@config/routesConfig'
-import { EmptyBanner, Pagination } from '@shared'
 import { useNavigate } from 'react-router-dom'
 import ArticleRow from './ArticleRow'
+import { Trash2 } from 'lucide-react'
 import { useState } from 'react'
 
 interface ArticlesTableProps {
@@ -30,6 +31,8 @@ const ArticlesTable: React.FC<ArticlesTableProps> = ({
 }) => {
    const navigate = useNavigate()
    const [selectedArticle, setSelectedArticle] = useState<Article | null>(null)
+
+   const { deleteArticleMutate, isPending } = useDeleteArticle()
 
    return (
       <>
@@ -63,11 +66,7 @@ const ArticlesTable: React.FC<ArticlesTableProps> = ({
                                  )
                               )
                            }
-                           onDelete={(article) => {
-                              // Handle delete action
-                              console.log('Deleting article:', article)
-                              setSelectedArticle(article)
-                           }}
+                           onDelete={setSelectedArticle}
                         />
                      ))
                   ) : (
@@ -94,10 +93,32 @@ const ArticlesTable: React.FC<ArticlesTableProps> = ({
             />
          )}
 
-         <ConfirmDeleteModal
-            isModalOpen={!!selectedArticle}
-            selectedArticle={selectedArticle}
-            onClose={() => setSelectedArticle(null)}
+         <ConfirmActionModal
+            isOpen={!!selectedArticle}
+            isLoading={isPending}
+            title={
+               <>
+                  ¿Estás seguro que querés eliminar
+                  <span className="font-semibold">"{selectedArticle?.name}"</span>?
+               </>
+            }
+            description="Esta acción eliminará permanentemente el artículo. Recordá que los
+                  pedidos que ya lo incluyan no se verán afectados."
+            confirmButton={{
+               icon: Trash2,
+               label: 'Eliminar artículo',
+               loadingLabel: 'Eliminando...',
+               variant: 'destructive',
+               onConfirm: async () => {
+                  await deleteArticleMutate(selectedArticle!.id)
+                  setSelectedArticle(null)
+               },
+            }}
+            cancelButton={{
+               label: 'No, mantener',
+               variant: 'outline',
+               onCancel: () => setSelectedArticle(null),
+            }}
          />
       </>
    )
