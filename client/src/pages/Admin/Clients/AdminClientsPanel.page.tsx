@@ -1,4 +1,4 @@
-import { ActionButton, CommandForm, PageTitle } from '@shared'
+import { ActionButton, CommandForm, InfoBanner, PageTitle } from '@shared'
 import { useEffect, useMemo, useState } from 'react'
 import { useFetchClients } from '@hooks/react-query'
 import { usePagination } from '@hooks/usePagination'
@@ -94,6 +94,14 @@ const AdminClientsPanel = () => {
             />
          </div>
 
+         <InfoBanner
+            title="Información importante"
+            withDropdown
+            description={[
+               'Las categorías se generan automáticamente a partir de los clientes. Si se crea un cliente nuevo con una categoría distinta, ésta se añadirá. Si se elimina el único cliente de una categoría, esa categoría también será eliminada.',
+            ]}
+         />
+
          <ActionButton
             size="lg"
             icon={Plus}
@@ -109,13 +117,17 @@ const AdminClientsPanel = () => {
                   Listado de Clientes
                </CardTitle>
 
-               <CardDescription>Filtrá por ID, nombre y/o categoría</CardDescription>
+               <CardDescription>
+                  Filtrá por nombre, contacto, email y/o categoría
+               </CardDescription>
             </CardHeader>
 
             <CardContent className="space-y-4">
                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="md:col-span-2">
-                     <Label htmlFor="search-filter">Buscar por ID o Nombre</Label>
+                     <Label htmlFor="search-filter">
+                        Buscar por Nombre, Contacto o Email
+                     </Label>
 
                      <div className="relative mt-1">
                         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -124,7 +136,7 @@ const AdminClientsPanel = () => {
                            value={searchTerm}
                            disabled={isClientLoading}
                            className="pl-8 bg-white"
-                           placeholder="Ej: ART-0004"
+                           placeholder="Ej: Hotel Beder"
                            onChange={(e) => setSearchTerm(e.target.value)}
                         />
                      </div>
